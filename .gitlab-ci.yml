@@ -1,0 +1,182 @@
+stages:
+  - backup
+  - build
+  - deploy
+  - rollback
+
+dev_backup_job:
+  stage: backup
+  script:
+    - docker image tag devws-api:latest devws-api:prev || true
+  tags:
+    - devapp
+  only :
+    - develop
+
+
+dev_build_job:
+  stage: build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=devws;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=devws;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$DEV_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=192.168.0.10;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5433;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=1;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=devws.zippyttech.com;g" .env
+    - sed -i -e "s;^\s*USERS_API=.*;USERS_API=http://dvus-api/us/;g" .env
+    - sed -i -e "s;^\s*CUSTOMERS_API=.*;CUSTOMERS_API=https://devcs.zippyttech.com/cs/;g" .env
+    - sed -i -e "s;^\s*PAYMENTS_API=.*;CUSTOMERS_API=http://devpay-api/pay/;g" .env
+    - docker build -t devws-api .
+  when: on_success
+  tags:
+    - devapp
+  only :
+    - develop
+
+dev_deploy_job:
+  stage: deploy
+  script:
+    - docker stop devws-api || true
+    - docker rm devws-api || true
+    - docker run -d --restart always --name devws-api -p 10095:80 --network=devapp devws-api
+    - docker exec devws-api php artisan migrate
+  when: on_success
+  tags:
+    - devapp
+  only:
+    - develop
+
+dev_rollback_job:
+  stage: rollback
+  script:
+    - docker stop devws-api || true
+    - docker rm devws-api || true
+    - docker image tag devws-api:prev devws-api:latest || true
+    - docker run -d --restart always --name devws-api -p 10095:80 --network=devapp devws-api
+  when: manual
+  tags:
+    - devapp
+  only:
+    - develop
+
+
+qa_backup_job:
+  stage: backup
+  script:
+    - docker image tag qaws-api:latest qaws-api:prev || true
+  tags:
+    - qaapp
+  only :
+    - qa
+
+qa_build_job:
+  stage: build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=qaws;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=qaws;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$QA_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.25;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=1;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=qaws.zippyttech.com;g" .env
+    - sed -i -e "s;^\s*USERS_API=.*;USERS_API=https://qaus.zippyttech.com/us/;g" .env
+    - sed -i -e "s;^\s*CUSTOMERS_API=.*;CUSTOMERS_API=https://qacs.zippyttech.com/cs/;g" .env
+    - sed -i -e "s;^\s*PAYMENTS_API=.*;CUSTOMERS_API=https://qapay.zippyttech.com/pay/;g" .env
+    - docker build -t qaws-api .
+  when: on_success
+  tags:
+    - qaapp
+  only :
+    - qa
+
+
+qa_deploy_job:
+  stage: deploy
+  script:
+    - docker stop qaws-api || true
+    - docker rm qaws-api || true
+    - docker run -d --restart always --name qaws-api -p 8059:80 qaws-api
+    - docker exec qaws-api php artisan migrate
+  when: on_success
+  tags:
+    - qaapp
+  only:
+    - qa
+
+qa_rollback_job:
+  stage: rollback
+  script:
+    - docker stop qaws-api || true
+    - docker rm qaws-api || true
+    - docker image tag qaws-api:prev qaws-api:latest || true
+    - docker run -d --restart always --name qaws-api -p 8059:80 qaws-api
+  when: manual
+  tags:
+    - qaapp
+  only:
+    - qa
+
+prod_backup_job:
+  stage: backup
+  script:
+    - docker image tag wallet-api:latest wallet-api:prev || true
+  tags:
+    - prodapp
+  only :
+    - master
+
+prod_build_job:
+  stage: build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=wallet;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=wallet;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$PROD_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=wallet.zippyttech.com;g" .env
+    - sed -i -e "s;^\s*USERS_API=.*;USERS_API=https://us.zippyttech.com/us/;g" .env
+    - sed -i -e "s;^\s*CUSTOMERS_API=.*;CUSTOMERS_API=https://cs.zippyttech.com/cs/;g" .env
+    - sed -i -e "s;^\s*PAYMENTS_API=.*;CUSTOMERS_API=https://pay.zippyttech.com/pay/;g" .env
+    - docker build -t wallet-api .
+  when: on_success
+  tags:
+    - prodapp
+  only :
+    - master
+
+prod_deploy_job:
+  stage: deploy
+  script:
+    - docker stop wallet-api || true
+    - docker rm wallet-api || true
+    - docker run -d --restart always --name wallet-api -p 8075:80 wallet-api
+    - docker exec wallet-api php artisan migrate
+  when: on_success
+  tags:
+    - prodapp
+  only:
+    - master
+
+prod_rollback_job:
+  stage: rollback
+  script:
+    - docker stop wallet-api || true
+    - docker rm wallet-api || true
+    - docker image tag wallet-api:prev wallet-api:latest || true
+    - docker run -d --restart always --name wallet-api -p 8075:80 wallet-api
+  when: manual
+  tags:
+    - prodapp
+  only:
+    - master
