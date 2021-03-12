@@ -138,13 +138,13 @@ prod_build_job:
     - cp .env.example .env
     - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
     - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
-    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=wallet;g" .env
-    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=wallet;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=orders;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=orders;g" .env
     - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$PROD_DB_PASS;g" .env
     - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
-    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=wallet.zippyttech.com;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=orders.zippyttech.com;g" .env
     - sed -i -e "s;^\s*USERS_API=.*;USERS_API=https://us.zippyttech.com/us/;g" .env
     - sed -i -e "s;^\s*CUSTOMERS_API=.*;CUSTOMERS_API=https://cs.zippyttech.com/cs/;g" .env
     - sed -i -e "s;^\s*PAYMENTS_API=.*;CUSTOMERS_API=https://pay.zippyttech.com/pay/;g" .env
