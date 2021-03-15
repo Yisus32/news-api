@@ -2,15 +2,14 @@
 /**
  * Created by PhpStorm.
  * User: zippyttech
- * Date: 23/07/18
- * Time: 04:35 PM
  */
 
-namespace App\Http\Repositories;
+namespace App\Repositories\Order;
 
 use App\Core\CrudRepository;
 use App\Models\Order;
 
+/** @property Order $model */
 class OrderRepository extends CrudRepository
 {
 

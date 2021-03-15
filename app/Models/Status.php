@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use App\Core\CrudModel;
 use Illuminate\Database\Eloquent\Model;
-use App\Core\TatucoModel;
+use App\Core\CrudModel;
 
 class Status extends CrudModel
 {
@@ -12,7 +11,7 @@ class Status extends CrudModel
 
     protected $table = 'statuses';
 
-    protected $fillable = ['id', 'name', 'detail'];
+    protected $fillable = ['id', 'order_id', 'name', 'detail'];
 
     protected $hidden = ['created_at', 'updated_at'];
 

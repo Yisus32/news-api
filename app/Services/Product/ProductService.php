@@ -2,18 +2,19 @@
 /**
  * Created by PhpStorm.
  * User: zippyttech
- * Date: 23/07/18
- * Time: 04:33 PM
  */
 
-namespace App\Http\Services;
+namespace App\Services\Product;
+
 
 use App\Core\CrudService;
-use App\Http\Repositories\ProductRepository;
 use App\Models\Order;
 use App\Models\Product;
+use App\Repositories\Product\ProductRepository;
 use Illuminate\Http\Request;
 
+
+/** @property ProductRepository $repository */
 class ProductService extends CrudService
 {
 
@@ -27,18 +28,21 @@ class ProductService extends CrudService
 
     public function _store(Request $request)
     {
-        $order = Order::where('id', $request->order_id);
+        
+        $order = Order::find($request->order_id);
 
         $quantity = 1;
 
         if (isset($request->quantity)) {
             $quantity = $request->quantity; 
         }
-
+        
         $order->total_amount = $order->total_amount + ($request->price * $quantity); 
         $order->quantity = $order->quantity + $quantity;
        
         $order->save();
+
+        return $this->repository->_store($request);
     }
 
     public function _update($id, Request $request)

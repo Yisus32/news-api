@@ -55,11 +55,11 @@ class GeneratorCommand extends Command
 
         $this->getBr($name);
         $separator = '\\';
-        File::append(base_path('routes/api.php'), '$router->get(\'' . Str::plural(strtolower($name)) . "', '{$package}{$separator}{$name}Controller@index');\n");
-        File::append(base_path('routes/api.php'), '$router->get(\'' .  Str::plural(strtolower($name)) . "/{id}', '{$package}{$separator}{$name}Controller@show');\n");
-        File::append(base_path('routes/api.php'), '$router->post(\'' .  Str::plural(strtolower($name)) . "', '{$package}{$separator}{$name}Controller@store');\n");
-        File::append(base_path('routes/api.php'), '$router->put(\'' .  Str::plural(strtolower($name)) . "/{id}', '{$package}{$separator}{$name}Controller@update');\n");
-        File::append(base_path('routes/api.php'), '$router->delete(\'' .  Str::plural(strtolower($name)) . "/{id}', '{$package}{$separator}{$name}Controller@destroy');\n");
+        File::append(base_path('routes/api.php'), '$router->get(\'' . Str::plural(strtolower($name)) . "', '{$package}{$separator}{$name}Controller@_index');\n");
+        File::append(base_path('routes/api.php'), '$router->get(\'' .  Str::plural(strtolower($name)) . "/{id}', '{$package}{$separator}{$name}Controller@_show');\n");
+        File::append(base_path('routes/api.php'), '$router->post(\'' .  Str::plural(strtolower($name)) . "', '{$package}{$separator}{$name}Controller@_store');\n");
+        File::append(base_path('routes/api.php'), '$router->put(\'' .  Str::plural(strtolower($name)) . "/{id}', '{$package}{$separator}{$name}Controller@_update');\n");
+        File::append(base_path('routes/api.php'), '$router->delete(\'' .  Str::plural(strtolower($name)) . "/{id}', '{$package}{$separator}{$name}Controller@_destroy');\n");
     }
 
     protected function model($name,$package)

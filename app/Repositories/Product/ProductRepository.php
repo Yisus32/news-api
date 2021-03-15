@@ -2,21 +2,25 @@
 /**
  * Created by PhpStorm.
  * User: zippyttech
- * Date: 23/07/18
- * Time: 04:35 PM
  */
 
-namespace App\Http\Repositories;
+namespace App\Repositories\Product;
 
 use App\Core\CrudRepository;
 use App\Models\Product;
 
+/** @property Product $model */
 class ProductRepository extends CrudRepository
 {
 
     public function __construct(Product $model)
     {
         parent::__construct($model);
+    }
+
+    public function _store($data)
+    {
+        return parent::_store($data);
     }
 
 }

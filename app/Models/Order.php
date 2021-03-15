@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use App\Core\CrudModel;
 use Illuminate\Database\Eloquent\Model;
-use App\Core\TatucoModel;
+use App\Core\CrudModel;
 
 class Order extends CrudModel
 {
@@ -12,7 +11,7 @@ class Order extends CrudModel
 
     protected $model = 'orders';
 
-    protected $fillable = ['id', 'msa_account', 'quantity', 'total_amount'];
+    protected $fillable = ['id', 'msa_account', 'store_id','quantity', 'total_amount'];
 
     protected $casts    = [
         "total_amount" => "decimal:2"

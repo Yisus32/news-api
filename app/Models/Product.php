@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use App\Core\CrudModel;
 use Illuminate\Database\Eloquent\Model;
+use App\Core\CrudModel;
 
 class Product extends CrudModel
 {
     protected $guarded = ['id'];
 
-    protected $table = 'orders';
+    protected $table = 'products';
 
-    protected $fillable = ['id', 'name','detail', 'quantity', 'price'];
+    protected $fillable = ['id', 'order_id','name','detail', 'quantity', 'price'];
 
     protected $casts    = [
         "price" => "decimal:2"

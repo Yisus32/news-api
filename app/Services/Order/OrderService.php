@@ -2,16 +2,15 @@
 /**
  * Created by PhpStorm.
  * User: zippyttech
- * Date: 23/07/18
- * Time: 04:33 PM
  */
 
-namespace App\Http\Services;
+namespace App\Services\Order;
+
 
 use App\Core\CrudService;
-use App\Http\Repositories\OrderRepository;
-use Illuminate\Http\Request;
+use App\Repositories\Order\OrderRepository;
 
+/** @property OrderRepository $repository */
 class OrderService extends CrudService
 {
 
@@ -21,11 +20,6 @@ class OrderService extends CrudService
     public function __construct(OrderRepository $repository)
     {
         parent::__construct($repository);
-    }
-
-    public function _store(Request $request)
-    {
-        
     }
 
 }

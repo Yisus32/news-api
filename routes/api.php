@@ -30,7 +30,6 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         ]);
     });
 
-
     /*
      *routes with report prefix
      * rutas con el prefijo report
@@ -39,14 +38,34 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('/automatic', 'ReportController@automatic');
 
     });
+    /** routes para Order **/ 
+ 
+    $router->get('orders', 'Order\OrderController@_index');
+    $router->get('orders/{id}', 'Order\OrderController@_show');
+    $router->post('orders', 'Order\OrderController@_store');
+    $router->put('orders/{id}', 'Order\OrderController@_update');
+    $router->delete('orders/{id}', 'Order\OrderController@_destroy');
+    
+    /** routes para Product **/ 
+ 
+    $router->get('products', 'Product\ProductController@_index');
+    $router->get('products/{id}', 'Product\ProductController@_show');
+    $router->post('products', 'Product\ProductController@_store');
+    $router->put('products/{id}', 'Product\ProductController@_update');
+    $router->delete('products/{id}', 'Product\ProductController@_destroy');
+    
+    /** routes para Status **/ 
+    
+    $router->get('statuses', 'Status\StatusController@_index');
+    $router->get('statuses/{id}', 'Status\StatusController@_show');
+    $router->post('statuses', 'Status\StatusController@_store');
+    $router->put('statuses/{id}', 'Status\StatusController@_update');
+    $router->delete('statuses/{id}', 'Status\StatusController@_destroy');
+    
     $router->group(['middleware' => ['auth']],function () use ($router) {
 
+    
 
-        $router->get('examples', 'ExampleController@_index');
-        $router->get('examples/{id}', 'ExampleController@_show');
-        $router->post('examples', 'ExampleController@_store');
-        $router->put('examples/{id}', 'ExampleController@_update');
-        $router->delete('examples/{id}', 'ExampleController@_destroy');
         $router->group(['middleware' => ['authorize']],function () use ($router) {
 
             $router->group(['namespace' => '\Rap2hpoutre\LaravelLogViewer'], function() use ($router) {
@@ -58,26 +77,6 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
 });
  
-/** routes para Order **/ 
+
  
-$router->get('orders', 'OrderController@_index');
-$router->get('orders/{id}', 'OrderController@_show');
-$router->post('orders', 'OrderController@_store');
-$router->put('orders/{id}', 'OrderController@_update');
-$router->delete('orders/{id}', 'OrderController@_destroy');
- 
-/** routes para Product **/ 
- 
-$router->get('products', 'ProductController@_index');
-$router->get('products/{id}', 'ProductController@_show');
-$router->post('products', 'ProductController@_store');
-$router->put('products/{id}', 'ProductController@_update');
-$router->delete('products/{id}', 'ProductController@_destroy');
- 
-/** routes para Status **/ 
- 
-$router->get('statuses', 'StatusController@_index');
-$router->get('statuses/{id}', 'StatusController@_show');
-$router->post('statuses', 'StatusController@_store');
-$router->put('statuses/{id}', 'StatusController@_update');
-$router->delete('statuses/{id}', 'StatusController@_destroy');
+

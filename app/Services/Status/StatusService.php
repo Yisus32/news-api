@@ -2,15 +2,15 @@
 /**
  * Created by PhpStorm.
  * User: zippyttech
- * Date: 23/07/18
- * Time: 04:33 PM
  */
 
-namespace App\Http\Services;
+namespace App\Services\Status;
+
 
 use App\Core\CrudService;
-use App\Http\Repositories\StatusRepository;
+use App\Repositories\Status\StatusRepository;
 
+/** @property StatusRepository $repository */
 class StatusService extends CrudService
 {
 

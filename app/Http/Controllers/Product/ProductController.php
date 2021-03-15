@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Product;
 
-use App\Core\CrudController;
 use Illuminate\Http\Request;
-use App\Core\TatucoController;
-use App\Http\Services\ProductService;
-
+use App\Core\CrudController;
+use App\Services\Product\ProductService;
+/** @property ProductService $service */
 class ProductController extends CrudController
 {
     public function __construct(ProductService $service)
