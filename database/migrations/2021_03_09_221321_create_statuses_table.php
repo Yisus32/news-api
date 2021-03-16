@@ -15,13 +15,10 @@ class CreateStatusesTable extends Migration
     {
         Schema::create('statuses', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('order_id')->index();
             $table->string('name');
             $table->string('detail');
             $table->timestamps();
 
-            
-            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
         });
     }
 

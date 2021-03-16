@@ -8,7 +8,9 @@ namespace App\Services\Status;
 
 
 use App\Core\CrudService;
+use App\Models\Status;
 use App\Repositories\Status\StatusRepository;
+use Illuminate\Http\Request;
 
 /** @property StatusRepository $repository */
 class StatusService extends CrudService
@@ -21,5 +23,7 @@ class StatusService extends CrudService
     {
         parent::__construct($repository);
     }
+
+    
 
 }

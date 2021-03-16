@@ -15,11 +15,15 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('status_id')->index();
             $table->integer('msa_account')->index();
             $table->integer('store_id');
+            $table->integer('sale_id');
             $table->integer('quantity')->default(0);
             $table->float('total_amount',11,4)->default(0.0000);
             $table->timestamps();
+
+            $table->foreign('status_id')->references('id')->on('statuses');
         });
     }
 

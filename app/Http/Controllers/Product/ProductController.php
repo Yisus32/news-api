@@ -12,4 +12,13 @@ class ProductController extends CrudController
     {
         parent::__construct($service);
     }
+
+    public function delete($id){
+        return $this->service->delete($id);
+    }
+
+    public function getByOrder($order_id){
+       
+        return $this->service->getByOrder($order_id);
+    }
 }

@@ -23,4 +23,19 @@ class ProductRepository extends CrudRepository
         return parent::_store($data);
     }
 
+    public function getByOrder($order_id){
+        
+        $product = Product::where('order_id', $order_id)->get();
+        
+        if ($product->count() >= 1 ){
+            return $product;
+        }else{
+            return response()->json([
+                'status' => 404,
+                'message'=> 'Productos de pedido '. $order_id .' no encontrados'
+            ], 404);
+        }
+        
+    }
+
 }

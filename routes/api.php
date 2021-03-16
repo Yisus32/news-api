@@ -44,7 +44,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     $router->get('orders/{id}', 'Order\OrderController@_show');
     $router->post('orders', 'Order\OrderController@_store');
     $router->put('orders/{id}', 'Order\OrderController@_update');
-    $router->delete('orders/{id}', 'Order\OrderController@_destroy');
+    $router->delete('orders/{id}', 'Order\OrderController@delete');
     
     /** routes para Product **/ 
  
@@ -52,7 +52,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     $router->get('products/{id}', 'Product\ProductController@_show');
     $router->post('products', 'Product\ProductController@_store');
     $router->put('products/{id}', 'Product\ProductController@_update');
-    $router->delete('products/{id}', 'Product\ProductController@_destroy');
+    $router->delete('products/{id}', 'Product\ProductController@delete');
     
     /** routes para Status **/ 
     
@@ -60,8 +60,19 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     $router->get('statuses/{id}', 'Status\StatusController@_show');
     $router->post('statuses', 'Status\StatusController@_store');
     $router->put('statuses/{id}', 'Status\StatusController@_update');
-    $router->delete('statuses/{id}', 'Status\StatusController@_destroy');
+    $router->delete('statuses/{id}', 'Status\StatusController@delete');
+
     
+    /** routes para User Actions **/
+
+        /** Orders Actions */
+           $router->get('user/orders/{user_id}', 'Order\OrderController@getByUser');
+
+    /** routes para Order Actions */
+
+        /** Product Actions */
+            $router->get('order/products/{order_id}', 'Product\ProductController@getByOrder');
+
     $router->group(['middleware' => ['auth']],function () use ($router) {
 
     

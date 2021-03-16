@@ -11,7 +11,7 @@ class Product extends CrudModel
 
     protected $table = 'products';
 
-    protected $fillable = ['id', 'order_id','name','detail', 'quantity', 'price'];
+    protected $fillable = ['id', 'order_id','type_id','name','detail', 'quantity', 'price'];
 
     protected $casts    = [
         "price" => "decimal:2"

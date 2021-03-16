@@ -22,4 +22,8 @@ class OrderService extends CrudService
         parent::__construct($repository);
     }
 
+    public function getByUser($user_id){
+        return $this->repository->getByUser($user_id);
+    }
+
 }

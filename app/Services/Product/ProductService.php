@@ -10,6 +10,7 @@ namespace App\Services\Product;
 use App\Core\CrudService;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Status;
 use App\Repositories\Product\ProductRepository;
 use Illuminate\Http\Request;
 
@@ -49,7 +50,7 @@ class ProductService extends CrudService
     {
         if (isset($request->quantity) || isset($request->price)) {
 
-            $product = Product::where('id', $id);  
+            $product = Product::find($id);  
 
             if (isset($request->quantity) && isset($request->price)) {
                 $changeprice = $request->quantity * $request->price;     
@@ -61,27 +62,53 @@ class ProductService extends CrudService
 
             $this->updateOrder($changeprice, $product);
         }
+
+        return $this->repository->_update($id, $request);
     }
 
-    public function _delete($id){
-        $product = Product::where('id', $id);
+    public function delete($id){
+        $product = Product::find($id);
         
-        $order = Order::where('id', $product->order_id);
+        if (!$product) {
+            return response()->json([
+                'status' => 404,
+                'message' => $this->name . ' no existe'
+            ], 404);
+        }
+        $order = Order::find($product->order_id);
         
         $order->total_amount = $order->total_amount - ($product->price * $product->quantity);
 
+        $order->save();
+
         $product->delete();
+
+        return response()->json([
+            'status' => 206,
+            'message' => $this->name . ' Eliminado'
+        ], 206);
     }
 
     private function updateOrder($changeprice, $product){
                   
-        $order = Order::where('id', $product->order_id);
+        $order = Order::find($product->order_id);
            
-        $price = abs(($changeprice) - ($product->quantity * $product->price));
+        $order->total_amount = $order->total_amount - ($product->quantity * $product->price);
 
-        $order->total_amount = $order->total_amount + $price;
+        $order->total_amount = $order->total_amount + $changeprice;
 
         $order->save();
+    }
+
+    public function getByOrder($order_id){
+        $order = Order::where('id', $order_id)->get();
+        if ($order->count() == 0) {
+            return response()->json([
+                'status' => 404,
+                'message'=> 'Id de pedido no encontrado'
+            ], 404);
+        }
+        return $this->repository->getByOrder($order_id);
     }
 
 }

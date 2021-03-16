@@ -11,7 +11,7 @@ class Status extends CrudModel
 
     protected $table = 'statuses';
 
-    protected $fillable = ['id', 'order_id', 'name', 'detail'];
+    protected $fillable = ['id', 'name', 'detail'];
 
     protected $hidden = ['created_at', 'updated_at'];
 
