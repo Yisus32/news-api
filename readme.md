@@ -1,26 +1,72 @@
-# Project: Wallet
-## Description: Endpoints and Request for APi-Wallet
-
-Api Wallet es una api que se encarga de gestionar un monedero virtual, con el objetivo de manejar un saldo interno capaz de aumentar o disminur conforme el usuario lo decida.
-
-Se acepta por diferentes medios de pagos 
-# 📁 Collection: Wallet 
+# Project: Orders
+## Description: API para carrito de compra
+# 📁 Collection: orders 
 
 
-## End-point: Store Wallet
-### Description: A wallet is a site where our users will store funds and make some operations like deposits, withdrwals or transfer that to another user.
+## End-point: index
+### Description: lista todas los pedidos existentes
+Method: GET
+>```
+>{{local}}/api/orders
+>```
+### 🔑 Authentication bearer
+
+|Param|value|Type|
+|---|---|---|
+|token|{{token}}|string|
+|password|{{token}}|string|
 
 
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+
+## End-point: show
+### Description: mostrará pedidos por el id
+Method: GET
+>```
+>{{local}}/api/orders/1
+>```
+### 🔑 Authentication bearer
+
+|Param|value|Type|
+|---|---|---|
+|token|{{token}}|string|
+|password|{{token}}|string|
+
+
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+
+## End-point: store
+### Description: en el post se creara el pedido con el id del user perteniciente a msa_account, el id de la tienda, el id de la venta y el id del status a la que le comprará los producto, para posteriormente ir añadiendole productos
 Method: POST
 >```
->{{wallets}}/wallets
+>{{local}}/api/orders
 >```
+### Headers
+
+|Content-Type|Value|
+|---|---|
+|Accept|application/json|
+
+
+### Headers
+
+|Content-Type|Value|
+|---|---|
+|Content-Type|application/json|
+
+
 ### Body (**raw**)
 
 ```json
 {
-    "user_id":10,
-    "account_number":"skander1705@gmail.com"
+    "status_id": 1, 
+    "msa_account": 865,
+    "store_id": 234,
+    "sale_id": 22
 }
 ```
 
@@ -28,105 +74,25 @@ Method: POST
 
 |Param|value|Type|
 |---|---|---|
-|token|eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvMTI3LjAuMC4xOjgwMDRcL3VzXC9sb2dpbiIsImlhdCI6MTYxMzc2OTkzNSwiZXhwIjoxNjU0NTY5OTM1LCJuYmYiOjE2MTM3Njk5MzUsImp0aSI6IkNOaElKSmlZR3lNVlR0elEiLCJzdWIiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlcm5hbWUiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJhY2NvdW50Ijo5LCJyb2xlcyI6WyJVc3VhcmlvIl19.ISF4QFBJEa4IC34071DC62XZWRoqtrfGzHoUtfE35SE|string|
+|token|{{token}}|string|
+|password|{{token}}|string|
 
 
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 
-## End-point: List Clients Wallets
-### Description: 
-Method: GET
+## End-point: update
+### Description: en el update solo se modificara el status id
+Method: PUT
 >```
->{{wallets}}/wallets
->```
-### 🔑 Authentication bearer
-
-|Param|value|Type|
-|---|---|---|
-|token|eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvMTI3LjAuMC4xOjgwMDRcL3VzXC9sb2dpbiIsImlhdCI6MTYxNDExNTYxOSwiZXhwIjoxNjU0OTE1NjE5LCJuYmYiOjE2MTQxMTU2MTksImp0aSI6ImRlNDYwZEo5VlFzck1ZQ0QiLCJzdWIiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlcm5hbWUiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJhY2NvdW50Ijo5LCJyb2xlcyI6WyJVc3VhcmlvIl19.DNi8xfD27lEAhDMqYeTp2Kk-P-ltZHjVkjK21vjeGeY|string|
-
-
-
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
-
-## End-point: Show a Wallet
-### Description: 
-Method: GET
->```
->{{wallets}}/wallets/1
->```
-### 🔑 Authentication bearer
-
-|Param|value|Type|
-|---|---|---|
-|token|eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvMTI3LjAuMC4xOjgwMDRcL3VzXC9sb2dpbiIsImlhdCI6MTYxMzc2OTkzNSwiZXhwIjoxNjU0NTY5OTM1LCJuYmYiOjE2MTM3Njk5MzUsImp0aSI6IkNOaElKSmlZR3lNVlR0elEiLCJzdWIiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlcm5hbWUiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJhY2NvdW50Ijo5LCJyb2xlcyI6WyJVc3VhcmlvIl19.ISF4QFBJEa4IC34071DC62XZWRoqtrfGzHoUtfE35SE|string|
-
-
-
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
-
-## End-point: Find Users Wallet
-### Description: The third parameter is de user_id field
-Method: GET
->```
->{{wallets}}/user/wallets/331
->```
-### 🔑 Authentication bearer
-
-|Param|value|Type|
-|---|---|---|
-|token|eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvMTI3LjAuMC4xOjgwMDRcL3VzXC9sb2dpbiIsImlhdCI6MTYxMzc2OTkzNSwiZXhwIjoxNjU0NTY5OTM1LCJuYmYiOjE2MTM3Njk5MzUsImp0aSI6IkNOaElKSmlZR3lNVlR0elEiLCJzdWIiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlcm5hbWUiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJhY2NvdW50Ijo5LCJyb2xlcyI6WyJVc3VhcmlvIl19.ISF4QFBJEa4IC34071DC62XZWRoqtrfGzHoUtfE35SE|string|
-
-
-
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
-# 📁 Collection: Deposit 
-
-
-## End-point: Lists of deposits
-### Description: Only the users with rol "admin","sysadmin" or "superadmin" can list this information
-
-
-Method: GET
->```
->{{wallets}}/deposits
->```
-### 🔑 Authentication bearer
-
-|Param|value|Type|
-|---|---|---|
-|token|eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvMTI3LjAuMC4xOjgwMDRcL3VzXC9sb2dpbiIsImlhdCI6MTYxMzc2OTkzNSwiZXhwIjoxNjU0NTY5OTM1LCJuYmYiOjE2MTM3Njk5MzUsImp0aSI6IkNOaElKSmlZR3lNVlR0elEiLCJzdWIiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlcm5hbWUiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJhY2NvdW50Ijo5LCJyb2xlcyI6WyJVc3VhcmlvIl19.ISF4QFBJEa4IC34071DC62XZWRoqtrfGzHoUtfE35SE|string|
-
-
-
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
-
-## End-point: Save Deposit
-### Description: If the rol is "admin", "sysadmin" or "superadmin" you can send the user_id field to create a deposit to another user.
-
-also there you can send null to ommit this field because this id is taken for the token with the wallet_id field
-Method: POST
->```
->{{wallets}}/deposits
+>{{local}}/api/orders/2
 >```
 ### Body (**raw**)
 
 ```json
 {
-    "amount" :25.0001,
-    "user_id":null,
-    "detail": {
-        "method_payment_id": 2,
-        "method_payment"   : "Efectivo",
-        "message"          : "opcional, se usa para las trasferencias entre usuarios",
-        "method_detail"    :{}
-    }
+    "status_id": 3
 }
 ```
 
@@ -134,68 +100,109 @@ Method: POST
 
 |Param|value|Type|
 |---|---|---|
-|token|eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvMTI3LjAuMC4xOjgwMDRcL3VzXC9sb2dpbiIsImlhdCI6MTYxMzc2OTkzNSwiZXhwIjoxNjU0NTY5OTM1LCJuYmYiOjE2MTM3Njk5MzUsImp0aSI6IkNOaElKSmlZR3lNVlR0elEiLCJzdWIiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlcm5hbWUiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJhY2NvdW50Ijo5LCJyb2xlcyI6WyJVc3VhcmlvIl19.ISF4QFBJEa4IC34071DC62XZWRoqtrfGzHoUtfE35SE|string|
+|token|{{token}}|string|
+|password|{{token}}|string|
 
 
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 
-## End-point: List of deposits for user
-### Description: The user_id parameter is taken by the current logger user, if you are "admin","sysadmin" or "superadmin" you cant send the user_id as the url paramert
-
-
-Method: GET
+## End-point: delete
+### Description: cuando se elimina un pedido se hace un borrado en cascada a los productos asociados
+Method: DELETE
 >```
->{{wallets}}/user/deposits/
+>{{local}}/api/orders/5
 >```
 ### 🔑 Authentication bearer
 
 |Param|value|Type|
 |---|---|---|
-|token|eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvMTI3LjAuMC4xOjgwMDRcL3VzXC9sb2dpbiIsImlhdCI6MTYxMzc2OTkzNSwiZXhwIjoxNjU0NTY5OTM1LCJuYmYiOjE2MTM3Njk5MzUsImp0aSI6IkNOaElKSmlZR3lNVlR0elEiLCJzdWIiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlcm5hbWUiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJhY2NvdW50Ijo5LCJyb2xlcyI6WyJVc3VhcmlvIl19.ISF4QFBJEa4IC34071DC62XZWRoqtrfGzHoUtfE35SE|string|
+|token|{{token}}|string|
+|password|{{token}}|string|
 
 
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-# 📁 Collection: Withdrawal 
 
-
-## End-point: List of withdrawals for user
-### Description: 
+## End-point: orders by user
+### Description: En esta sección se obtienen todos los pedidos asociados a un id de usuario
 Method: GET
 >```
->{{wallets}}/user/withdrawals/
+>{{local}}/api/user/orders/865
+>```
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+# 📁 Collection: products 
+
+
+## End-point: index
+### Description: este endpoint muestra todos los productos
+Method: GET
+>```
+>{{local}}/api/products
 >```
 ### 🔑 Authentication bearer
 
 |Param|value|Type|
 |---|---|---|
-|token|eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvMTI3LjAuMC4xOjgwMDRcL3VzXC9sb2dpbiIsImlhdCI6MTYxMzc2OTkzNSwiZXhwIjoxNjU0NTY5OTM1LCJuYmYiOjE2MTM3Njk5MzUsImp0aSI6IkNOaElKSmlZR3lNVlR0elEiLCJzdWIiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlcm5hbWUiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJhY2NvdW50Ijo5LCJyb2xlcyI6WyJVc3VhcmlvIl19.ISF4QFBJEa4IC34071DC62XZWRoqtrfGzHoUtfE35SE|string|
+|token|{{token}}|string|
+|password|{{token}}|string|
 
 
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 
-## End-point: Save withdrawal
-### Description: 
+## End-point: show
+### Description: este endpoint muestra un producto a traves de su id
+Method: GET
+>```
+>{{local}}/api/products/4
+>```
+### 🔑 Authentication bearer
+
+|Param|value|Type|
+|---|---|---|
+|token|{{token}}|string|
+|password|{{token}}|string|
+
+
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+
+## End-point: store
+### Description: al añadir un producto se suma su costo total en el pedido
 Method: POST
 >```
->{{wallets}}/withdrawals
+>{{local}}/api/products
 >```
+### Headers
+
+|Content-Type|Value|
+|---|---|
+|Accept|application/json|
+
+
+### Headers
+
+|Content-Type|Value|
+|---|---|
+|Content-Type|application/json|
+
+
 ### Body (**raw**)
 
 ```json
 {
-    "amount" :20,
-    "user_id":null,
-    "detail": {
-        "method_payment_id": 1,
-        "method_payment"   : "Efectivo",
-        "message"          : "opcional, se usa para las trasferencias"
-    }
+    "name": "oreo'os",
+    "order_id": 2,
+    "detail": "cereales",
+    "price": 5.35,
+    "quantity": 4
 }
 ```
 
@@ -203,24 +210,178 @@ Method: POST
 
 |Param|value|Type|
 |---|---|---|
-|token|eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvMTI3LjAuMC4xOjgwMDRcL3VzXC9sb2dpbiIsImlhdCI6MTYxMzc2OTkzNSwiZXhwIjoxNjU0NTY5OTM1LCJuYmYiOjE2MTM3Njk5MzUsImp0aSI6IkNOaElKSmlZR3lNVlR0elEiLCJzdWIiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlcm5hbWUiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJhY2NvdW50Ijo5LCJyb2xlcyI6WyJVc3VhcmlvIl19.ISF4QFBJEa4IC34071DC62XZWRoqtrfGzHoUtfE35SE|string|
+|token|{{token}}|string|
+|password|{{token}}|string|
 
 
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 
-## End-point: Lists of withdrawals
-### Description: 
-Method: GET
+## End-point: update
+### Description: al modificar el precio o la cantidad de productos en el pedido se cambiara el valor del monto total en el pedido
+Method: PUT
 >```
->{{wallets}}/withdrawals
+>{{local}}/api/products/3
+>```
+### Body (**raw**)
+
+```json
+{
+    "price": 0.20,
+    "quantity": 1
+}
+```
+
+### 🔑 Authentication bearer
+
+|Param|value|Type|
+|---|---|---|
+|token|{{token}}|string|
+|password|{{token}}|string|
+
+
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+
+## End-point: delete
+### Description: al eliminar un producto de un pedido se resta el valor que tenia en el coste total del pedido
+Method: DELETE
+>```
+>{{local}}/api/products/1
 >```
 ### 🔑 Authentication bearer
 
 |Param|value|Type|
 |---|---|---|
-|token|eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvMTI3LjAuMC4xOjgwMDRcL3VzXC9sb2dpbiIsImlhdCI6MTYxMzc2OTkzNSwiZXhwIjoxNjU0NTY5OTM1LCJuYmYiOjE2MTM3Njk5MzUsImp0aSI6IkNOaElKSmlZR3lNVlR0elEiLCJzdWIiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlcm5hbWUiOiJza2FuZGVyMTcwNUBnbWFpbC5jb20iLCJhY2NvdW50Ijo5LCJyb2xlcyI6WyJVc3VhcmlvIl19.ISF4QFBJEa4IC34071DC62XZWRoqtrfGzHoUtfE35SE|string|
+|token|{{token}}|string|
+|password|{{token}}|string|
+
+
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+
+## End-point: ProductsByOrder
+### Description: En este endpoint se obtiene la lista de productos asociados a un pedido
+Method: GET
+>```
+>{{local}}/api/order/products/5000
+>```
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+# 📁 Collection: status 
+
+
+## End-point: index
+### Description: muestra todos los estatus
+Method: GET
+>```
+>{{local}}/api/statuses
+>```
+### 🔑 Authentication bearer
+
+|Param|value|Type|
+|---|---|---|
+|token|{{token}}|string|
+|password|{{token}}|string|
+
+
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+
+## End-point: show
+### Description: 
+Method: GET
+>```
+>{{local}}/api/statuses/1
+>```
+### 🔑 Authentication bearer
+
+|Param|value|Type|
+|---|---|---|
+|token|{{token}}|string|
+|password|{{token}}|string|
+
+
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+
+## End-point: store
+### Description: se guarda el estatus de un producto
+Method: POST
+>```
+>{{local}}/api/statuses
+>```
+### Headers
+
+|Content-Type|Value|
+|---|---|
+|Accept|application/json|
+
+
+### Headers
+
+|Content-Type|Value|
+|---|---|
+|Content-Type|application/json|
+
+
+### Body (**raw**)
+
+```json
+{
+    "name": "en proceso",
+    "detail": ""
+}
+```
+
+### 🔑 Authentication bearer
+
+|Param|value|Type|
+|---|---|---|
+|token|{{token}}|string|
+|password|{{token}}|string|
+
+
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+
+## End-point: update
+### Description: se modifica el estatus de un producto lo que puede restringir la modificación de datos en un pedido
+Method: PUT
+>```
+>{{local}}/api/statuses/1
+>```
+### 🔑 Authentication bearer
+
+|Param|value|Type|
+|---|---|---|
+|token|{{token}}|string|
+|password|{{token}}|string|
+
+
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+
+## End-point: delete Copy
+### Description: al eliminar un producto de un pedido se resta el valor que tenia en el coste total del pedido
+Method: DELETE
+>```
+>{{local}}/api/status/1
+>```
+### 🔑 Authentication bearer
+
+|Param|value|Type|
+|---|---|---|
+|token|{{token}}|string|
+|password|{{token}}|string|
 
 
 
