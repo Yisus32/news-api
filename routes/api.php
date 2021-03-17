@@ -38,6 +38,9 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('/automatic', 'ReportController@automatic');
 
     });
+
+    $router->group(['middleware' => ['auth']],function () use ($router) {
+
     /** routes para Order **/ 
  
     $router->get('orders', 'Order\OrderController@_index');
@@ -72,10 +75,6 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
         /** Product Actions */
             $router->get('order/products/{order_id}', 'Product\ProductController@getByOrder');
-
-    $router->group(['middleware' => ['auth']],function () use ($router) {
-
-    
 
         $router->group(['middleware' => ['authorize']],function () use ($router) {
 
