@@ -8,6 +8,7 @@ namespace App\Services\Product;
 
 
 use App\Core\CrudService;
+use App\Http\Mesh\InventoryService;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Status;
@@ -29,8 +30,15 @@ class ProductService extends CrudService
 
     public function _store(Request $request)
     {
-        
         $order = Order::find($request->order_id);
+        
+        $check = new InventoryService;
+
+        $response = $check->checkProduct($request->product_id, $order->store_id);
+
+        if ($response != 0) {
+            return $response;
+        }
 
         $quantity = 1;
 

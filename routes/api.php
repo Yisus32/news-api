@@ -41,40 +41,40 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
     $router->group(['middleware' => ['auth']],function () use ($router) {
 
-    /** routes para Order **/ 
- 
-    $router->get('orders', 'Order\OrderController@_index');
-    $router->get('orders/{id}', 'Order\OrderController@_show');
-    $router->post('orders', 'Order\OrderController@_store');
-    $router->put('orders/{id}', 'Order\OrderController@_update');
-    $router->delete('orders/{id}', 'Order\OrderController@delete');
+        /** routes para Order **/ 
     
-    /** routes para Product **/ 
- 
-    $router->get('products', 'Product\ProductController@_index');
-    $router->get('products/{id}', 'Product\ProductController@_show');
-    $router->post('products', 'Product\ProductController@_store');
-    $router->put('products/{id}', 'Product\ProductController@_update');
-    $router->delete('products/{id}', 'Product\ProductController@delete');
+        $router->get('orders', 'Order\OrderController@_index');
+        $router->get('orders/{id}', 'Order\OrderController@_show');
+        $router->post('orders', 'Order\OrderController@_store');
+        $router->put('orders/{id}', 'Order\OrderController@_update');
+        $router->delete('orders/{id}', 'Order\OrderController@delete');
+        
+        /** routes para Product **/ 
     
-    /** routes para Status **/ 
-    
-    $router->get('statuses', 'Status\StatusController@_index');
-    $router->get('statuses/{id}', 'Status\StatusController@_show');
-    $router->post('statuses', 'Status\StatusController@_store');
-    $router->put('statuses/{id}', 'Status\StatusController@_update');
-    $router->delete('statuses/{id}', 'Status\StatusController@delete');
+        $router->get('products', 'Product\ProductController@_index');
+        $router->get('products/{id}', 'Product\ProductController@_show');
+        $router->post('products', 'Product\ProductController@_store');
+        $router->put('products/{id}', 'Product\ProductController@_update');
+        $router->delete('products/{id}', 'Product\ProductController@delete');
+        
+        /** routes para Status **/ 
+        
+        $router->get('statuses', 'Status\StatusController@_index');
+        $router->get('statuses/{id}', 'Status\StatusController@_show');
+        $router->post('statuses', 'Status\StatusController@_store');
+        $router->put('statuses/{id}', 'Status\StatusController@_update');
+        $router->delete('statuses/{id}', 'Status\StatusController@delete');
 
-    
-    /** routes para User Actions **/
+        
+        /** routes para User Actions **/
 
-        /** Orders Actions */
-           $router->get('user/orders/{user_id}', 'Order\OrderController@getByUser');
+            /** Orders Actions */
+            $router->get('user/orders/{user_id}', 'Order\OrderController@getByUser');
 
-    /** routes para Order Actions */
+        /** routes para Order Actions */
 
-        /** Product Actions */
-            $router->get('order/products/{order_id}', 'Product\ProductController@getByOrder');
+            /** Product Actions */
+                $router->get('order/products/{order_id}', 'Product\ProductController@getByOrder');
 
         $router->group(['middleware' => ['authorize']],function () use ($router) {
 
