@@ -46,7 +46,7 @@ class Authenticate
             "Cache-Control" => "no-cache"
         ];
         try{
-            $response = $this->client->get(env('USERS_API') . '/validate',['headers' => $header]);
+            $response = $this->client->get(env('USERS_API') . 'validate',['headers' => $header]);
         }catch (ClientException $exception){
             $response = $exception->getResponse();
             return response()->json(["error"=>true,"message"=>'unauthenticated '],$response->getStatusCode());

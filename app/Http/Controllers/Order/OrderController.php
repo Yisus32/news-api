@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Core\CrudController;
 use App\Models\Order;
 use App\Services\Order\OrderService;
+
 /** @property OrderService $service */
 class OrderController extends CrudController
 {
@@ -35,5 +36,10 @@ class OrderController extends CrudController
 
     public function getByUser($user_id){
         return $this->service->getByUser($user_id);
+    }
+
+    public function _store(Request $request)
+    {
+       return $this->service->_store($request);
     }
 }

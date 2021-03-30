@@ -13,11 +13,9 @@ class Product extends CrudModel
 
     protected $fillable = ['id','product_id', 'order_id','type_id','name','detail', 'quantity', 'price'];
 
-    protected $casts    = [
+    protected $casts = [
         "price" => "decimal:2"
       ];
-
-    protected $hidden = ['created_at', 'updated_at'];
 
     public function order(){
         $this->belongsTo(Order::class,'order_id');

@@ -74,7 +74,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         /** routes para Order Actions */
 
             /** Product Actions */
-                $router->get('order/products/{order_id}', 'Product\ProductController@getByOrder');
+        $router->get('order/products/{order_id}', 'Product\ProductController@getByOrder');
 
         $router->group(['middleware' => ['authorize']],function () use ($router) {
 
@@ -84,7 +84,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
         });
     });
-
+    
 });
  
 
