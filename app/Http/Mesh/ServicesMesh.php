@@ -4,7 +4,7 @@
 namespace App\Http\Mesh;
 
 
-use App\Services\ConsumesExternalService;
+use App\Http\Services\ConsumesExternalService;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
