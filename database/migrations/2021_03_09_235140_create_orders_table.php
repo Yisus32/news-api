@@ -21,6 +21,7 @@ class CreateOrdersTable extends Migration
             $table->integer('sale_id');
             $table->integer('quantity')->default(0);
             $table->float('total_amount',11,4)->default(0.0000);
+            $table->string('location')->nullable();
             $table->timestamps();
 
             $table->foreign('status_id')->references('id')->on('statuses');

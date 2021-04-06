@@ -8,6 +8,9 @@ namespace App\Services\Order;
 
 
 use App\Core\CrudService;
+use App\Http\Mesh\MailService;
+use App\Models\Order;
+use App\Models\Product;
 use App\Repositories\Order\OrderRepository;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
@@ -30,20 +33,37 @@ class OrderService extends CrudService
 
     public function _store(Request $request)
     {
-        if($request->hasHeader('Authorization')){
-            $token = $request->header('Authorization');
-        }
-        if ($request->has('token')){
-            $token = "Bearer " .  $request->input('token');
-        }
-        $user = $this->getEmail($token);
-         
-        $email = $user['username'];
         
-     //   return $email;
      
     return $this->repository->_store($request);
 
+    }
+
+    public function _update($id, Request $request)
+    {
+        
+        if ($request->status_id === 2) {
+            if($request->hasHeader('Authorization')){
+                $token = $request->header('Authorization');
+            }
+            if ($request->has('token')){
+                $token = "Bearer " .  $request->input('token');
+            }
+            $user = $this->getEmail($token);
+             
+            $email = $user['username'];
+            $order = Order::find($id);
+            $products = Product::where('id', $id)->all();
+            $message = $this->Message($order, $products);
+
+         //   $mail = new MailService();
+
+           // $mail->sendMail($email, $message);
+         //   return $email;
+        }
+        
+
+        return $this->repository;
     }
 
     private function getEmail($token){
@@ -71,6 +91,24 @@ class OrderService extends CrudService
             
         } catch (\Throwable $th) {
             return 'error';
+        }
+    }
+
+    private function Message($order, $products){
+        $message = "<h1>El pedido numero $order->id ha sido aceptado</h1>
+                    <p>Monto: $order->total_amount </p>
+                    <p>Destino: $order->location </p>
+                    <p>Productos: </p>";
+        
+        foreach ($products as $product) {
+            $message = $message . '<tr>
+                            <td style="text-align:right"><?= floatval('. $product->quantity .') ?></td>
+                            <td style="width: 275px;"><?=' . $product->product_name ?? null . '?></td>
+                            <td style="text-align:right">
+                                ' .  $product->price . '
+                            </td>
+                            <td style="text-align:right"> ' . ($product->price * $product->quantity) . '</td>
+                        </tr>';
         }
     }
 }

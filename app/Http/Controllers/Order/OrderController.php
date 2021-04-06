@@ -42,4 +42,9 @@ class OrderController extends CrudController
     {
        return $this->service->_store($request);
     }
+
+    public function _update($id, Request $request)
+    {
+        return $this->service->_update($id, $request);
+    }
 }
