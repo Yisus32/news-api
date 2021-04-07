@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class UserService extends ServicesMesh
 {
-    
+    use ApiResponser;
 
     public function __construct()
     {

@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class ServicesMesh
 {
 
-    use ConsumesExternalService;
+  //  use ConsumesExternalService;
 
     public $client;
 

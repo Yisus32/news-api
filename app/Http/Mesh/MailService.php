@@ -21,11 +21,13 @@ class MailService extends ServicesMesh
         
         $url = env('NOTIFICATIONS_API');
         $client = new Client();
+        $email = 'pluvet01@gmail.com';
+        
         try {
-            $response = $client->request('POST', "$url", [
+            $response = $client->request('post',"$url", [
                 'headers' => ['Accept' => 'application/json', 'Content-Type'=> 'application/json'],
-                'body' => ['subscribers' => $email, 'message' => $message, 'subject' => "Pedido",
-                'sender_mail'=> "notificaciones@zippyttech.com"]
+                'body' => ['subscribers' => $email, 'message' => $message, 'subject' => "Pedido", "account" => 1,
+                'sender_mail'=> "notificaciones@zippyttech.com", 'type' => 'direct']
             ]);
 
             if ($response->getStatusCode() !== 200){
@@ -33,7 +35,7 @@ class MailService extends ServicesMesh
                 return [];
             }
 
-            return 0;
+            return $response->getBody();
 
         }catch (\Exception $exception){
             Log::critical($exception->getMessage());

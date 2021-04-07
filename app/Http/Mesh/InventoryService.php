@@ -12,7 +12,7 @@ class InventoryService extends ServicesMesh
 
     public function __construct()
     {
-        parent::__construct(env('INVENTORY_API'));
+        parent::__construct(env('INVENTORY_URL'));
     }
 
     public function checkProduct($product_id, $store_id){
@@ -22,10 +22,10 @@ class InventoryService extends ServicesMesh
             $options = $this->getOptions($this->getHeaders($this->getRequest()));
             $response = $this->client->get($endpoint,$options);
 
-            if ($response->getStatusCode() !== 200){
-                Log::critical($response->getStatusCode() . ":   " .  $response->getBody());
-                return [];
-            }
+       //     if ($response->getStatusCode() !== 200){
+         //       Log::critical($response->getStatusCode() . ":   " .  $response->getBody());
+           //     return [];
+            //}
 
             $product = json_decode($response->getBody(),true);
 

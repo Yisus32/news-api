@@ -42,8 +42,9 @@ class OrderService extends CrudService
     public function _update($id, Request $request)
     {
         
-        if ($request->status_id === 2) {
-            if($request->hasHeader('Authorization')){
+    /*    if ($request->status_id == 2) {
+            
+           if($request->hasHeader('Authorization')){
                 $token = $request->header('Authorization');
             }
             if ($request->has('token')){
@@ -53,14 +54,15 @@ class OrderService extends CrudService
              
             $email = $user['username'];
             $order = Order::find($id);
-            $products = Product::where('id', $id)->all();
+            $products = Product::where('order_id', $id)->get();
+            
             $message = $this->Message($order, $products);
 
-         //   $mail = new MailService();
+            $mail = new MailService();
 
-           // $mail->sendMail($email, $message);
-         //   return $email;
-        }
+            return $mail->sendMail($email, $message);
+            return $email;
+        }*/
         
 
         return $this->repository;
