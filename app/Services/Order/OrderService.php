@@ -42,7 +42,7 @@ class OrderService extends CrudService
     public function _update($id, Request $request)
     {
         
-    /*    if ($request->status_id == 2) {
+        if ($request->status_id == 2) {
             
            if($request->hasHeader('Authorization')){
                 $token = $request->header('Authorization');
@@ -62,10 +62,10 @@ class OrderService extends CrudService
 
             return $mail->sendMail($email, $message);
             return $email;
-        }*/
+        }
         
 
-        return $this->repository;
+        return $this->repository->_update($id, $request);
     }
 
     private function getEmail($token){

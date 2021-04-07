@@ -24,11 +24,15 @@ class MailService extends ServicesMesh
         $email = 'pluvet01@gmail.com';
         
         try {
-            $response = $client->request('post',"$url", [
+            $response = $client->request('POST',"$url", [
+                'json' => ['subscribers' => $email, 'message' => $message, 'subject' => "Pedido", "account" => 1,
+                'sender_mail'=> "notificaciones@zippyttech.com", 'type' => 'direct']
+            ]);
+          /*  $response = $client->request('POST',"$url", [
                 'headers' => ['Accept' => 'application/json', 'Content-Type'=> 'application/json'],
                 'body' => ['subscribers' => $email, 'message' => $message, 'subject' => "Pedido", "account" => 1,
                 'sender_mail'=> "notificaciones@zippyttech.com", 'type' => 'direct']
-            ]);
+            ]);*/
 
             if ($response->getStatusCode() !== 200){
                 Log::critical($response->getStatusCode() . ":   " .  $response->getBody());
