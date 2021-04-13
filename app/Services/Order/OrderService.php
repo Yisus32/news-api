@@ -34,7 +34,6 @@ class OrderService extends CrudService
     public function _store(Request $request)
     {
         
-     
     return $this->repository->_store($request);
 
     }
