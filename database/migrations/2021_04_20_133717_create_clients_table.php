@@ -19,6 +19,7 @@ class CreateClientsTable extends Migration
             $table->string('rif');
             $table->integer('msa_account');
             $table->string('logo');
+            $table->boolean('deleted')->default(false);
             $table->timestamps();
         });
     }

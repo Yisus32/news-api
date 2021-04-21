@@ -72,3 +72,11 @@ $router->get('activities/{id}', 'Activity\ActivityController@_show');
 $router->post('activities', 'Activity\ActivityController@_store');
 $router->put('activities/{id}', 'Activity\ActivityController@_update');
 $router->delete('activities/{id}', 'Activity\ActivityController@_destroy');
+ 
+/** routes para Schedule **/ 
+ 
+$router->get('schedules', 'Schedule\ScheduleController@_index');
+$router->get('schedules/{id}', 'Schedule\ScheduleController@_show');
+$router->post('schedules', 'Schedule\ScheduleController@_store');
+$router->put('schedules/{id}', 'Schedule\ScheduleController@_update');
+$router->delete('schedules/{id}', 'Schedule\ScheduleController@_destroy');

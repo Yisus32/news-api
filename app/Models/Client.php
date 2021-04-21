@@ -8,7 +8,17 @@ use App\Core\CrudModel;
 class Client extends CrudModel
 {
     protected $guarded = ['id'];
-    protected $table = 'Clients';
 
-    
+    protected $table = 'clients';
+
+    protected $fillable = ['id','commerce_name','rif','msa_account', 'logo'];
+
+    /**
+     * @return HasMany
+     */
+    public function schedules(){
+        return $this->hasMany(WorkSchedule::class,'client_id','id')
+            ->orderBy('day','asc')->orderBy('turn','asc');
+    }
+
 }

@@ -8,4 +8,9 @@ use App\Core\CrudModel;
 class Activity extends CrudModel
 {
     protected $guarded = ['id'];
+
+    protected $table = 'activities';
+
+    protected $fillable = ['client_id','name','icon','description'];
+
 }
