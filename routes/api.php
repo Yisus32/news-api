@@ -41,41 +41,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
     $router->group(['middleware' => ['auth']],function () use ($router) {
 
-        /** routes para Order **/ 
-    
-        $router->get('orders', 'Order\OrderController@_index');
-        $router->get('orders/{id}', 'Order\OrderController@_show');
-        $router->post('orders', 'Order\OrderController@_store');
-        $router->put('orders/{id}', 'Order\OrderController@_update');
-        $router->delete('orders/{id}', 'Order\OrderController@delete');
         
-        /** routes para Product **/ 
-    
-        $router->get('products', 'Product\ProductController@_index');
-        $router->get('products/{id}', 'Product\ProductController@_show');
-        $router->post('products', 'Product\ProductController@_store');
-        $router->put('products/{id}', 'Product\ProductController@_update');
-        $router->delete('products/{id}', 'Product\ProductController@delete');
-        
-        /** routes para Status **/ 
-        
-        $router->get('statuses', 'Status\StatusController@_index');
-        $router->get('statuses/{id}', 'Status\StatusController@_show');
-        $router->post('statuses', 'Status\StatusController@_store');
-        $router->put('statuses/{id}', 'Status\StatusController@_update');
-        $router->delete('statuses/{id}', 'Status\StatusController@delete');
-
-        
-        /** routes para User Actions **/
-
-            /** Orders Actions */
-            $router->get('user/orders/{user_id}', 'Order\OrderController@getByUser');
-
-        /** routes para Order Actions */
-
-            /** Product Actions */
-        $router->get('order/products/{order_id}', 'Product\ProductController@getByOrder');
-
         $router->group(['middleware' => ['authorize']],function () use ($router) {
 
             $router->group(['namespace' => '\Rap2hpoutre\LaravelLogViewer'], function() use ($router) {
@@ -90,3 +56,19 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
  
 
+ 
+/** routes para Client **/ 
+ 
+$router->get('clients', 'Client\ClientController@_index');
+$router->get('clients/{id}', 'Client\ClientController@_show');
+$router->post('clients', 'Client\ClientController@_store');
+$router->put('clients/{id}', 'Client\ClientController@_update');
+$router->delete('clients/{id}', 'Client\ClientController@_destroy');
+ 
+/** routes para Activity **/ 
+ 
+$router->get('activities', 'Activity\ActivityController@_index');
+$router->get('activities/{id}', 'Activity\ActivityController@_show');
+$router->post('activities', 'Activity\ActivityController@_store');
+$router->put('activities/{id}', 'Activity\ActivityController@_update');
+$router->delete('activities/{id}', 'Activity\ActivityController@_destroy');
