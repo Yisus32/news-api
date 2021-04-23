@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateActivitiesTable extends Migration
+class CreateBranchesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,18 @@ class CreateActivitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('activities', function (Blueprint $table) {
+        Schema::create('branches', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('client_id');
-            $table->string('icon')->nullable();
+            $table->integer('client_id')->index();
+            $table->integer('msa_account');
+            $table->string('owner');
+            $table->string('code')->index();
             $table->string('name');
-            $table->string('description')->nullable();
+            $table->string('address')->nullable();
+            $table->string('coordinate')->nullable();
+            $table->string('image')->nullable();
+            $table->string('phones')->nullable();
+            $table->boolean('status')->default(false);
             $table->timestamps();
 
             
@@ -33,6 +39,6 @@ class CreateActivitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('activities');
+        Schema::dropIfExists('branches');
     }
 }

@@ -16,9 +16,8 @@ class Client extends CrudModel
     /**
      * @return HasMany
      */
-    public function schedules(){
-        return $this->hasMany(WorkSchedule::class,'client_id','id')
-            ->orderBy('day','asc')->orderBy('turn','asc');
+    public function activities(){
+        return $this->hasMany(Activity::class,'client_id','id');
     }
 
 }

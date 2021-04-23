@@ -19,7 +19,7 @@ class Schedule extends CrudModel
         "null","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"
     ];
 
-    public function client(){
-        $this->belongsTo(Client::class,'id','client_id');
+    public function Branch(){
+        $this->belongsTo(Branch::class,'id','branch_id');
     }
 }

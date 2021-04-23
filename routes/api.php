@@ -80,3 +80,19 @@ $router->get('schedules/{id}', 'Schedule\ScheduleController@_show');
 $router->post('schedules', 'Schedule\ScheduleController@_store');
 $router->put('schedules/{id}', 'Schedule\ScheduleController@_update');
 $router->delete('schedules/{id}', 'Schedule\ScheduleController@_destroy');
+ 
+/** routes para Branch **/ 
+ 
+$router->get('branches', 'Branch\BranchController@_index');
+$router->get('branches/{id}', 'Branch\BranchController@_show');
+$router->post('branches', 'Branch\BranchController@_store');
+$router->put('branches/{id}', 'Branch\BranchController@_update');
+$router->delete('branches/{id}', 'Branch\BranchController@_destroy');
+ 
+/** routes para Sector **/ 
+ 
+$router->get('sectors', 'Sector\SectorController@_index');
+$router->get('sectors/{id}', 'Sector\SectorController@_show');
+$router->post('sectors', 'Sector\SectorController@_store');
+$router->put('sectors/{id}', 'Sector\SectorController@_update');
+$router->delete('sectors/{id}', 'Sector\SectorController@_destroy');

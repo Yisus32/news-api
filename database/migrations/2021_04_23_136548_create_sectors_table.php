@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateClientsTable extends Migration
+class CreateSectorsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,14 @@ class CreateClientsTable extends Migration
      */
     public function up()
     {
-        Schema::create('clients', function (Blueprint $table) {
+        Schema::create('sectors', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('commerce_name');
-            $table->string('rif')->index();
-            $table->integer('msa_account')->index();
-            $table->string('logo')->nullable();
+            $table->string('country');
+            $table->string('state');
+            $table->string('city');
+            $table->string('sector');
+            $table->float('price', 11, 4)->default(0.00);
+            $table->string('geofence')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +32,6 @@ class CreateClientsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('client');
+        Schema::dropIfExists('sectors');
     }
 }

@@ -13,4 +13,8 @@ class Activity extends CrudModel
 
     protected $fillable = ['client_id','name','icon','description'];
 
+    public function client(){
+        $this->belongsTo(Client::class,'id','client_id');
+    }
+
 }

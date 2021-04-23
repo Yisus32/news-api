@@ -15,7 +15,7 @@ class CreateSchedulesTable extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('client_id')->nullable()->index();
+            $table->integer('branch_id')->nullable()->index();
             $table->integer('day')->nullable()->index();
             $table->time('start_hour')->nullable()->index();
             $table->time('end_hour')->nullable()->index();
@@ -23,7 +23,7 @@ class CreateSchedulesTable extends Migration
             $table->string('description')->nullable();
             $table->timestamps();
 
-            $table->foreign('client_id')->references('id')->on('clients')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
 
         });
     }
