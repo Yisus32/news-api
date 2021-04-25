@@ -38,7 +38,7 @@ dev_deploy_job:
   script:
     - docker stop devrubick2client-api || true
     - docker rm devrubick2client-api || true
-    - docker run -d --restart always --name devrubick2client-api -p 10091:80 devrubick2client-api
+    - docker run -d --restart always --name devrubick2client-api --network devapp -p 10091:80 devrubick2client-api
     - docker exec devrubick2client-api php artisan migrate
   when: on_success
   tags:
@@ -52,7 +52,7 @@ dev_rollback_job:
     - docker stop devrubick2client-api || true
     - docker rm devrubick2client-api || true
     - docker image tag devrubick2client-api:prev devrubick2client-api:latest || true
-    - docker run -d --restart always --name devrubick2client-api -p 10091:80 devrubick2client-api
+    - docker run -d --restart always --name devrubick2client-api --network devapp -p 10091:80 devrubick2client-api
   when: manual
   tags:
     - devapp
@@ -93,7 +93,7 @@ qa_deploy_job:
   script:
     - docker stop qarubick2client-api || true
     - docker rm qarubick2client-api || true
-    - docker run -d --restart always --name qarubick2client-api -p 8103:80 qarubick2client-api
+    - docker run -d --restart always --name qarubick2client-api --network qaapp -p 8103:80 qarubick2client-api
     - docker exec qarubick2client-api php artisan migrate
   when: on_success
   tags:
@@ -107,7 +107,7 @@ qa_rollback_job:
     - docker stop qarubick2client-api || true
     - docker rm qarubick2client-api || true
     - docker image tag qarubick2client-api:prev qarubick2client-api:latest || true
-    - docker run -d --restart always --name qarubick2client-api -p 8103:80 qarubick2client-api
+    - docker run -d --restart always --name qarubick2client-api --network qaapp -p 8103:80 qarubick2client-api
   when: manual
   tags:
     - qaapp
@@ -148,7 +148,7 @@ prod_deploy_job:
   script:
     - docker stop rubick2client-api || true
     - docker rm rubick2client-api || true
-    - docker run -d --restart always --name rubick2client-api -p 9009:80 rubick2client-api
+    - docker run -d --restart always --name rubick2client-api --network app -p 9009:80 rubick2client-api
     - docker exec rubick2client-api php artisan migrate
   when: on_success
   tags:
@@ -162,7 +162,7 @@ prod_rollback_job:
     - docker stop rubick2client-api || true
     - docker rm rubick2client-api || true
     - docker image tag rubick2client-api:prev rubick2client-api:latest || true
-    - docker run -d --restart always --name rubick2client-api -p 9009:80 rubick2client-api
+    - docker run -d --restart always --name rubick2client-api --network app -p 9009:80 rubick2client-api
   when: manual
   tags:
     - prodapp
