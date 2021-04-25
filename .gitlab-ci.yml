@@ -13,7 +13,6 @@ dev_backup_job:
   only :
     - develop
 
-
 dev_build_job:
   stage: build
   script:
@@ -67,7 +66,7 @@ qa_backup_job:
   tags:
     - qaapp
   only :
-    - QA
+    - qa
 
 qa_build_job:
   stage: build
@@ -87,7 +86,7 @@ qa_build_job:
   tags:
     - qaapp
   only :
-    - QA
+    - qa
 
 qa_deploy_job:
   stage: deploy
@@ -100,7 +99,7 @@ qa_deploy_job:
   tags:
     - qaapp
   only:
-    - QA
+    - qa
 
 qa_rollback_job:
   stage: rollback
@@ -113,7 +112,7 @@ qa_rollback_job:
   tags:
     - qaapp
   only:
-    - QA
+    - qa
 
 prod_backup_job:
   stage: backup
