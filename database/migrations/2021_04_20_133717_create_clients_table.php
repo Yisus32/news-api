@@ -15,11 +15,17 @@ class CreateClientsTable extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->bigIncrements('id');
+            
+            $table->integer('branch_id')->index();
             $table->string('commerce_name');
             $table->string('rif')->index();
             $table->integer('msa_account')->index();
             $table->string('logo')->nullable();
             $table->timestamps();
+
+            
+            
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
         });
     }
 

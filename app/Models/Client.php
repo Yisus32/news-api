@@ -20,4 +20,12 @@ class Client extends CrudModel
         return $this->hasMany(Activity::class,'client_id','id');
     }
 
+    public function branch(){
+        return $this->belongsTo(Client::class, 'id', 'branch_id');
+    }
+
+    public function bank_account(){
+        return $this->hasMany(Bank_account::class,'client_id','id');
+    }
+
 }
