@@ -18,9 +18,9 @@ class CreateClientsTable extends Migration
             
             $table->integer('branch_id')->index();
             $table->string('commerce_name');
-            $table->string('rif')->index();
-            $table->integer('msa_account')->index();
-            $table->string('logo')->nullable();
+            $table->string('rif')->index()->nullable();
+            $table->integer('msa_account')->index()->nullable();
+            $table->string('logo')->nullable()->nullable();
             $table->timestamps();
 
             

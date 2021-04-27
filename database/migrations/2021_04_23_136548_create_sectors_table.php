@@ -17,10 +17,11 @@ class CreateSectorsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('branch_id');
             $table->string('country');
-            $table->string('state');
-            $table->string('city');
-            $table->string('sector');
+            $table->string('state')->nullable();
+            $table->string('city')->nullable();
+            $table->string('sector')->nullable();
             $table->float('price', 11, 4)->default(0.00);
+            $table->string('geofence')->nullable();
             $table->timestamps();
 
             $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
