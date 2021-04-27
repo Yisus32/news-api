@@ -96,3 +96,11 @@ $router->get('sectors/{id}', 'Sector\SectorController@_show');
 $router->post('sectors', 'Sector\SectorController@_store');
 $router->put('sectors/{id}', 'Sector\SectorController@_update');
 $router->delete('sectors/{id}', 'Sector\SectorController@_destroy');
+ 
+/** routes para Bank_account **/ 
+ 
+$router->get('bank_accounts', 'Bank_account\Bank_accountController@_index');
+$router->get('bank_accounts/{id}', 'Bank_account\Bank_accountController@_show');
+$router->post('bank_accounts', 'Bank_account\Bank_accountController@_store');
+$router->put('bank_accounts/{id}', 'Bank_account\Bank_accountController@_update');
+$router->delete('bank_accounts/{id}', 'Bank_account\Bank_accountController@_destroy');
