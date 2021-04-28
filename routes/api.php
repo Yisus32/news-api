@@ -104,3 +104,11 @@ $router->get('bank_accounts/{id}', 'Bank_account\Bank_accountController@_show');
 $router->post('bank_accounts', 'Bank_account\Bank_accountController@_store');
 $router->put('bank_accounts/{id}', 'Bank_account\Bank_accountController@_update');
 $router->delete('bank_accounts/{id}', 'Bank_account\Bank_accountController@_destroy');
+ 
+/** routes para Aplication **/ 
+ 
+$router->get('aplications', 'Aplication\AplicationController@_index');
+$router->get('aplications/{id}', 'Aplication\AplicationController@_show');
+$router->post('aplications', 'Aplication\AplicationController@_store');
+$router->put('aplications/{id}', 'Aplication\AplicationController@_update');
+$router->delete('aplications/{id}', 'Aplication\AplicationController@_destroy');
