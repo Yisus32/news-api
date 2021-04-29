@@ -16,12 +16,15 @@ class Client extends CrudModel
     /**
      * @return HasMany
      */
-    public function activities(){
-        return $this->hasMany(Activity::class,'client_id','id');
+    public function branches(){
+        return $this->hasMany(Branch::class,'client_id','id');
     }
 
-    public function branch(){
-        return $this->belongsTo(Client::class, 'id', 'branch_id');
+    /**
+     * @return HasMany
+     */
+    public function activities(){
+        return $this->hasMany(Activity::class,'client_id','id');
     }
 
     public function bank_account(){
