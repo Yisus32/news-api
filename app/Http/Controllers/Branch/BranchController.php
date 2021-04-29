@@ -12,4 +12,9 @@ class BranchController extends CrudController
     {
         parent::__construct($service);
     }
+
+    public function _store(Request $request)
+    {
+        return $this->service->_store($request);
+    }
 }

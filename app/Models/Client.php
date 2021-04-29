@@ -11,7 +11,7 @@ class Client extends CrudModel
 
     protected $table = 'clients';
 
-    protected $fillable = ['id','commerce_name','rif','msa_account', 'logo'];
+    protected $fillable = ['id','branch_id','commerce_name','rif','msa_account', 'logo'];
 
     /**
      * @return HasMany

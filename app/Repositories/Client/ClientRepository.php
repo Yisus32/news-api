@@ -29,10 +29,8 @@ class ClientRepository extends CrudRepository
         }
 
         $client =  $this->model::query()->create($data->all());
-        $schedules = $data->input('schedules') ?? [];
-
-        
-        $client->schedules()->createMany($schedules);
+       
+        return $client;
     }
 
 

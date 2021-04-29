@@ -94,7 +94,7 @@ class CrudService
     {
         try{
             DB::beginTransaction();
-            $this->object = $this->repository->_store($request->all());
+            $this->object = $this->repository->_store($request);
             DB::commit();
             if($this->object){
                 Log::info('Guardado');

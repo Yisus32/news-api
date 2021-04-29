@@ -11,7 +11,7 @@ class Schedule extends CrudModel
 
     protected $table ="schedules";
     protected $fillable = [
-        'id', 'day','start_hour','end_hour','turn','client_id','description','day_description','active'
+        'id', 'day','start_hour','end_hour','turn','branch_id','description','day_description','active'
     ];
     protected $hidden = ["created_at","updated_at"];
 
