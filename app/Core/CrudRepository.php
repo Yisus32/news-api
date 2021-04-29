@@ -41,7 +41,7 @@ class CrudRepository
      * @param $data
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
      */
-    public function _store($data)
+    public function _store(Request $data)
     {
         if (count($this->data) == 0) {
             $this->data = ( $data instanceof Request) ?  $data->all() : $data ;
