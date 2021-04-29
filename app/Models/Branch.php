@@ -11,7 +11,7 @@ class Branch extends CrudModel
 
     protected $table = 'branches';
 
-    protected $fillable = ['id','msa_account','code', 'name', 'address', 'coordinate', 'image', 'phones', 'status'];
+    protected $fillable = ['id','client_id', 'msa_account','code', 'name', 'address', 'coordinate', 'image', 'phones', 'status'];
 
     /**
      * @return HasMany
@@ -21,10 +21,9 @@ class Branch extends CrudModel
             ->orderBy('day','asc')->orderBy('turn','asc');
     }
 
-    /**
-     * @return HasMany
-     */
-    public function clients(){
-        return $this->hasMany(Client::class,'branch_id','id');
+    public function client(){
+        return $this->belongsTo(Client::class, 'id', 'client_id');
     }
+
+    
 }

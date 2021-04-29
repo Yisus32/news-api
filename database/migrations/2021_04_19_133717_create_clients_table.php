@@ -16,7 +16,6 @@ class CreateClientsTable extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->bigIncrements('id');
             
-            $table->integer('branch_id')->index();
             $table->string('commerce_name');
             $table->string('rif')->index()->nullable();
             $table->integer('msa_account')->index()->nullable();
@@ -25,7 +24,6 @@ class CreateClientsTable extends Migration
 
             
             
-            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
         });
     }
 
