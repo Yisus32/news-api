@@ -11,10 +11,10 @@ class Bank_account extends CrudModel
 
     protected $table = 'bank_account';
 
-    protected $fillable = ['client_id', 'name', 'phone', 'account_number', 'type', 'detail'];
+    protected $fillable = ['client_id','bank_id', 'name', 'identifier','phone', 'account_number', 'account_type', 'detail'];
 
     
-    public function Branch(){
-        $this->belongsTo(Branch::class,'id','branch_id');
+    public function Client(){
+        $this->belongsTo(Client::class,'id','client_id');
     }
 }

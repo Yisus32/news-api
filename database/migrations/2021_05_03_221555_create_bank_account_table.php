@@ -16,15 +16,18 @@ class CreateBankAccountTable extends Migration
         Schema::create('bank_account', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('client_id');
+            $table->integer('bank_id');
             $table->string('name');
+            $table->string('identifier');
             $table->string('phone')->nullable();
             $table->integer('account_number');
-            $table->string('type');
+            $table->string('account_type');
             $table->string('detail')->nullable();
             $table->timestamps();
 
             $table->foreign('client_id')->references('id')->on('clients')->onUpdate('cascade')->onDelete('restrict');
-
+            
+            $table->foreign('bank_id')->references('id')->on('banks')->onUpdate('cascade')->onDelete('restrict');
         });
     }
 

@@ -5,14 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Core\CrudModel;
 
-class Activity extends CrudModel
+class Sub_Activity extends CrudModel
 {
     protected $guarded = ['id'];
 
-    protected $table = 'activities';
+    protected $table = 'sub_Activity';
 
-    protected $fillable = ['name','icon','description'];
-
-    
+    protected $fillable = ['id','name', 'detail'];
 
 }

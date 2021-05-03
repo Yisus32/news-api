@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateActivitiesTable extends Migration
+class CreateClientRateTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,15 @@ class CreateActivitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('activities', function (Blueprint $table) {
+        Schema::create('client_rate', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('icon')->nullable();
-            $table->string('name');
+            $table->integer('coin_id');
+            $table->float('rate');
             $table->string('description')->nullable();
             $table->timestamps();
 
             
+            $table->foreign('coin_id')->references('id')->on('coins')->onDelete('restrict');
         });
     }
 
@@ -31,6 +32,6 @@ class CreateActivitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('activities');
+        Schema::dropIfExists('client_rate');
     }
 }
