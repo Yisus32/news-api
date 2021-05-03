@@ -9,6 +9,7 @@ namespace App\Repositories\Client;
 use App\Core\CrudRepository;
 use App\Core\ImageService;
 use App\Models\Client;
+use Illuminate\Http\Request;
 
 /** @property Client $model */
 class ClientRepository extends CrudRepository
@@ -17,6 +18,8 @@ class ClientRepository extends CrudRepository
     public function __construct(Client $model)
     {
         parent::__construct($model);
+
+        
     }
 
     public function _store($data)
@@ -30,6 +33,41 @@ class ClientRepository extends CrudRepository
 
         $client =  $this->model::query()->create($data->all());
        
+        return $client;
+    }
+
+    public function _delete($id, Request $request){
+
+        try {
+
+            $client = Client::find($id);
+
+            if (!$client) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Cliente no existe'
+                ], 404);
+            }
+            $client->delete();
+            return response()->json([
+                'status' => 206,
+                'message' => 'cliente Eliminado'
+            ], 206);
+
+        }catch (\Exception $e){
+            return $this->errorException($e);
+        }
+    }
+
+    public function searchByRif(Request $request){
+        $client = Client::where('rif', $request->rif)->first();
+
+        if (!$client) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Cliente no existe'
+            ], 404);
+        }
         return $client;
     }
 

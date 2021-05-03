@@ -11,7 +11,8 @@ class Branch extends CrudModel
 
     protected $table = 'branches';
 
-    protected $fillable = ['id','client_id', 'msa_account','code', 'name', 'address', 'coordinate', 'image', 'phones', 'status'];
+    protected $fillable = ['id','client_id', 'msa_account','code', 'name', 'address', 'coordinate', 'image', 'phones', 'status', 
+    'sector_id'];
 
     /**
      * @return HasMany

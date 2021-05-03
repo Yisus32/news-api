@@ -16,7 +16,7 @@ class CreateBranchesTable extends Migration
         Schema::create('branches', function (Blueprint $table) {
             $table->bigIncrements('id');
             
-            $table->integer('branch_id')->index();
+            $table->integer('client_id')->index();
             $table->integer('msa_account');
             $table->string('code')->index();
             $table->string('name');
@@ -25,10 +25,14 @@ class CreateBranchesTable extends Migration
             $table->string('image')->nullable();
             $table->string('phones')->nullable();
             $table->boolean('status')->default(true);
+            $table->integer('sector_id')->index()->nullable();
             $table->timestamps();
 
             
-            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('restrict');
+            
+            $table->foreign('sector_id')->references('id')->on('sectors')->onDelete('restrict');
+
         });
     }
 
