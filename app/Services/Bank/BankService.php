@@ -21,5 +21,5 @@ class BankService extends CrudService
     {
         parent::__construct($repository);
     }
-
+    
 }
