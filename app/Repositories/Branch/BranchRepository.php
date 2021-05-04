@@ -9,6 +9,7 @@ namespace App\Repositories\Branch;
 use App\Core\CrudRepository;
 use App\Core\ImageService;
 use App\Models\Branch;
+use App\Models\Schedule;
 use Illuminate\Http\Request;
 
 /** @property Branch $model */
@@ -37,7 +38,13 @@ class BranchRepository extends CrudRepository
         return $branch;
 
     }
-
+    public function _show($id)
+    {
+        $branch = Branch::find($id);
+        $schedule = Schedule::where('branch_id', $id)->get();
+        $branch->schedule = $schedule;
+        return $branch;
+    }
 
     private function saveImageFile($image, $imgType){
         $imageService = new ImageService();

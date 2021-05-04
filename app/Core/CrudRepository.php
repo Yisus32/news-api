@@ -113,6 +113,10 @@ class CrudRepository
     public function getModel(){
         return $this->model;
     }
+
+    public function find($id){
+        return $this->model::find($id);
+    }
     /**
      * @named getQueryString() Funcion para obtener el Sql Plano
      * @param Builder $cadena
