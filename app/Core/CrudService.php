@@ -176,6 +176,11 @@ class CrudService
         }
     }
 
+    public function _delete($id)
+    {  
+        return $this->repository->_delete($id);
+    }
+
 
 
     public function decode(Request $request)

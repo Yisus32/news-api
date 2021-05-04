@@ -23,7 +23,6 @@ class CoinController extends CrudController
             'name.required' => 'El nombre de la moneda es requerido.',
             'symbol.required' => 'El símbolo es requerido.',
             'rate.required' => 'La tasa es requerida'
-
         ];
     }
 }
