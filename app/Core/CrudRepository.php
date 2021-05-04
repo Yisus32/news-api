@@ -62,6 +62,19 @@ class CrudRepository
 
     }
 
+    public function _delete($id){
+        try{
+            $object = $this->model::findOrFail($id);
+            $object->delete();
+            return ['message' => 'deleted'];
+        
+        }catch(\Exception $e){
+            return ['status' => 500,
+                    'message' => $e->getMessage()];
+        }
+        
+    }
+
     public function errorException(\Exception $e)
     {
         Log::critical("Error, archivo del peo: {$e->getFile()}, linea del peo: {$e->getLine()}, el peo: {$e->getMessage()}");
@@ -112,6 +125,10 @@ class CrudRepository
     public function getQueryString(Builder $cadena){
         $sql = str_replace('?', "'?'", $cadena->toSql());
         return vsprintf(str_replace('?', '%s', $sql), $cadena->getBindings());
+    }
+
+    public function find($id){
+        return $this->model::find($id);
     }
 
 }

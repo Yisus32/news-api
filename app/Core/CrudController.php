@@ -74,9 +74,11 @@ class CrudController extends BaseController
         return $this->service->_destroy($id, $request);
     }
 
-    public function _delete($id, Request $request){
-        return $this->service->_delete($id, $request);
+    public function _delete($id)
+    {
+        return $this->service->_delete($id);
     }
+    
     public function parseMessageBag($messageBag){
         return array_merge(array_values($messageBag->getMessages()));
     }

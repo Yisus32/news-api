@@ -122,7 +122,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     $router->get('coins/{id}', 'Coin\CoinController@_show');
     $router->post('coins', 'Coin\CoinController@_store');
     $router->put('coins/{id}', 'Coin\CoinController@_update');
-    $router->delete('coins/{id}', 'Coin\CoinController@_destroy');
+    $router->patch('coins/{id}', 'Coin\CoinController@_destroy');
+    $router->delete('coins/{id}', 'Coin\CoinController@_delete');
      
     /** routes para Bank **/ 
      
@@ -130,7 +131,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     $router->get('banks/{id}', 'Bank\BankController@_show');
     $router->post('banks', 'Bank\BankController@_store');
     $router->put('banks/{id}', 'Bank\BankController@_update');
-    $router->delete('banks/{id}', 'Bank\BankController@_destroy');
+    $router->patch('banks/{id}', 'Bank\BankController@_destroy');
+    $router->delete('banks/{id}', 'Bank\BankController@_delete');
      
     /** routes para Client_rate **/ 
      
