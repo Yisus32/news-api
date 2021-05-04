@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateActivitiesTable extends Migration
+class CreateBanksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,15 @@ class CreateActivitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('activities', function (Blueprint $table) {
+        Schema::create('banks', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('icon')->nullable();
+            $table->integer('coin_id');
+            $table->string('country');
             $table->string('name');
             $table->string('description')->nullable();
             $table->timestamps();
 
+            $table->foreign('coin_id')->references('id')->on('coins')->onDelete('restrict');
             
         });
     }
@@ -31,6 +33,6 @@ class CreateActivitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('activities');
+        Schema::dropIfExists('banks');
     }
 }

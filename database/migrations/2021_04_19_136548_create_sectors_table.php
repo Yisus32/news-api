@@ -15,7 +15,6 @@ class CreateSectorsTable extends Migration
     {
         Schema::create('sectors', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('branch_id');
             $table->string('country');
             $table->string('state')->nullable();
             $table->string('city')->nullable();
@@ -23,8 +22,6 @@ class CreateSectorsTable extends Migration
             $table->float('price', 11, 4)->default(0.00);
             $table->string('geofence')->nullable();
             $table->timestamps();
-
-            $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
 
         });
     }

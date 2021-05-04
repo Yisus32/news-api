@@ -15,11 +15,16 @@ class CreateAplicationsTable extends Migration
     {
         Schema::create('aplications', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('app_name');
-            $table->string('email');
-            $table->string('user');
-            $table->string('wallet');
+            $table->integer('client_id');
+            $table->string('app_name')->nullable();
+            $table->string('email')->nullable();
+            $table->string('user')->nullable();
+            $table->integer('wallet_number')->nullable();
+            $table->string('detail')->nullable();
             $table->timestamps();
+
+            
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('restrict');
         });
     }
 
