@@ -17,6 +17,7 @@ class CreateSubActivityTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('detail');
+            $table->boolean('deleted')->default(false);
             $table->timestamps();
         });
     }

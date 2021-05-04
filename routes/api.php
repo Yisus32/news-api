@@ -47,7 +47,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('clients/{id}', 'Client\ClientController@_show');
         $router->post('clients', 'Client\ClientController@_store');
         $router->put('clients/{id}', 'Client\ClientController@_update');
-        $router->delete('clients/{id}', 'Client\ClientController@_delete');
+        $router->delete('clients/{id}', 'Client\ClientController@_destroy');
         
         $router->post('/search/clients', 'Client\ClientController@searchByRif');
 
