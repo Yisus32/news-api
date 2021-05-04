@@ -23,6 +23,7 @@ class CreateBankAccountTable extends Migration
             $table->integer('account_number');
             $table->string('account_type');
             $table->string('detail')->nullable();
+            $table->boolean('deleted')->default(false);
             $table->timestamps();
 
             $table->foreign('client_id')->references('id')->on('clients')->onUpdate('cascade')->onDelete('restrict');

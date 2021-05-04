@@ -26,6 +26,7 @@ class CreateBranchesTable extends Migration
             $table->string('phones')->nullable();
             $table->boolean('status')->default(true);
             $table->integer('sector_id')->index()->nullable();
+            $table->boolean('deleted')->default(false);
             $table->timestamps();
 
             
