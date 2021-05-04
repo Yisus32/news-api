@@ -107,42 +107,39 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
         });
     });
+
+    /** routes para Sub_Activity **/ 
+ 
+    $router->get('sub_activities', 'Sub_Activity\Sub_ActivityController@_index');
+    $router->get('sub_activities/{id}', 'Sub_Activity\Sub_ActivityController@_show');
+    $router->post('sub_activities', 'Sub_Activity\Sub_ActivityController@_store');
+    $router->put('sub_activities/{id}', 'Sub_Activity\Sub_ActivityController@_update');
+    $router->delete('sub_activities/{id}', 'Sub_Activity\Sub_ActivityController@_destroy');
+     
+    /** routes para Coin **/ 
+     
+    $router->get('coins', 'Coin\CoinController@_index');
+    $router->get('coins/{id}', 'Coin\CoinController@_show');
+    $router->post('coins', 'Coin\CoinController@_store');
+    $router->put('coins/{id}', 'Coin\CoinController@_update');
+    $router->delete('coins/{id}', 'Coin\CoinController@_destroy');
+     
+    /** routes para Bank **/ 
+     
+    $router->get('banks', 'Bank\BankController@_index');
+    $router->get('banks/{id}', 'Bank\BankController@_show');
+    $router->post('banks', 'Bank\BankController@_store');
+    $router->put('banks/{id}', 'Bank\BankController@_update');
+    $router->delete('banks/{id}', 'Bank\BankController@_destroy');
+     
+    /** routes para Client_rate **/ 
+     
+    $router->get('client_rates', 'Client_rate\Client_rateController@_index');
+    $router->get('client_rates/{id}', 'Client_rate\Client_rateController@_show');
+    $router->post('client_rates', 'Client_rate\Client_rateController@_store');
+    $router->put('client_rates/{id}', 'Client_rate\Client_rateController@_update');
+    $router->delete('client_rates/{id}', 'Client_rate\Client_rateController@_destroy');
+
     
 });
  
-
- 
-
- 
- 
-/** routes para Sub_Activity **/ 
- 
-$router->get('sub_activities', 'Sub_Activity\Sub_ActivityController@_index');
-$router->get('sub_activities/{id}', 'Sub_Activity\Sub_ActivityController@_show');
-$router->post('sub_activities', 'Sub_Activity\Sub_ActivityController@_store');
-$router->put('sub_activities/{id}', 'Sub_Activity\Sub_ActivityController@_update');
-$router->delete('sub_activities/{id}', 'Sub_Activity\Sub_ActivityController@_destroy');
- 
-/** routes para Coin **/ 
- 
-$router->get('coins', 'Coin\CoinController@_index');
-$router->get('coins/{id}', 'Coin\CoinController@_show');
-$router->post('coins', 'Coin\CoinController@_store');
-$router->put('coins/{id}', 'Coin\CoinController@_update');
-$router->delete('coins/{id}', 'Coin\CoinController@_destroy');
- 
-/** routes para Bank **/ 
- 
-$router->get('banks', 'Bank\BankController@_index');
-$router->get('banks/{id}', 'Bank\BankController@_show');
-$router->post('banks', 'Bank\BankController@_store');
-$router->put('banks/{id}', 'Bank\BankController@_update');
-$router->delete('banks/{id}', 'Bank\BankController@_destroy');
- 
-/** routes para Client_rate **/ 
- 
-$router->get('client_rates', 'Client_rate\Client_rateController@_index');
-$router->get('client_rates/{id}', 'Client_rate\Client_rateController@_show');
-$router->post('client_rates', 'Client_rate\Client_rateController@_store');
-$router->put('client_rates/{id}', 'Client_rate\Client_rateController@_update');
-$router->delete('client_rates/{id}', 'Client_rate\Client_rateController@_destroy');

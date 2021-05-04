@@ -9,7 +9,7 @@ class Coin extends CrudModel
 {
     protected $guarded = ['id'];
 
-    protected $table = 'branches';
+    protected $table = 'coins';
 
     protected $fillable = ['id','name', 'symbol','rate', 'description'];
 

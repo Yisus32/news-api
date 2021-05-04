@@ -6,6 +6,7 @@
 
 namespace App\Repositories\Coin;
 
+use Illuminate\Http\Request;
 use App\Core\CrudRepository;
 use App\Models\Coin;
 
@@ -17,5 +18,4 @@ class CoinRepository extends CrudRepository
     {
         parent::__construct($model);
     }
-
 }
