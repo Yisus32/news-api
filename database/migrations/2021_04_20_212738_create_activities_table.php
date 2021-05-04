@@ -18,6 +18,7 @@ class CreateActivitiesTable extends Migration
             $table->string('icon')->nullable();
             $table->string('name');
             $table->string('description')->nullable();
+            $table->boolean('deleted')->default(false);
             $table->timestamps();
 
             

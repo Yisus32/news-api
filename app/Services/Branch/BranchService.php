@@ -8,6 +8,8 @@ namespace App\Services\Branch;
 
 
 use App\Core\CrudService;
+use App\Models\Branch;
+use App\Models\Client;
 use App\Repositories\Branch\BranchRepository;
 use Illuminate\Http\Request;
 
@@ -25,6 +27,14 @@ class BranchService extends CrudService
 
     public function _store(Request $request)
     {
+        $client = Client::find($request->client_id);
+        $code_exist = Branch::where('code', $request->code)->first();
+        if (!$client) {
+            return response()->json(["error"=>true,"message"=>"Cliente no encontrado"],404);
+        }
+        if ($code_exist and !empty($request->code)) {
+            return response()->json(["error"=>true,"message"=>"Código ya registrado"],409);
+        }
         return $this->repository->_store($request);
     }
 
