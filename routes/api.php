@@ -112,3 +112,11 @@ $router->group(['prefix' => 'api'], function (Router $router) {
  
 
  
+ 
+/** routes para Bank **/ 
+ 
+$router->get('banks', 'Bank\BankController@_index');
+$router->get('banks/{id}', 'Bank\BankController@_show');
+$router->post('banks', 'Bank\BankController@_store');
+$router->put('banks/{id}', 'Bank\BankController@_update');
+$router->delete('banks/{id}', 'Bank\BankController@_destroy');
