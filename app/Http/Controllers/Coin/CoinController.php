@@ -11,5 +11,19 @@ class CoinController extends CrudController
     public function __construct(CoinService $service)
     {
         parent::__construct($service);
+
+        $this->validateStore = [
+        	'name' => 'required',
+        	'symbol' => 'required',
+        	'rate' => 'required'
+
+        ];
+
+        $this->messages = [
+            'name.required' => 'El nombre de la moneda es requerido.',
+            'symbol.required' => 'El símbolo es requerido.',
+            'rate.required' => 'La tasa es requerida'
+
+        ];
     }
 }
