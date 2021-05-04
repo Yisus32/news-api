@@ -21,7 +21,6 @@ class CreateSchedulesTable extends Migration
             $table->time('end_hour')->nullable()->index();
             $table->integer('turn')->nullable()->index();
             $table->string('description')->nullable();
-            $table->boolean('deleted')->default(false);
             $table->timestamps();
 
             $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');

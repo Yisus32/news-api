@@ -21,7 +21,6 @@ class CreateAplicationsTable extends Migration
             $table->string('user')->nullable();
             $table->integer('wallet_number')->nullable();
             $table->string('detail')->nullable();
-            $table->boolean('deleted')->default(false);
             $table->timestamps();
 
             

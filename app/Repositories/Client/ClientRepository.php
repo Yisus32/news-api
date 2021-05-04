@@ -36,29 +36,6 @@ class ClientRepository extends CrudRepository
         return $client;
     }
 
-    public function _delete($id, Request $request){
-
-        try {
-
-            $client = Client::find($id);
-
-            if (!$client) {
-                return response()->json([
-                    'status' => 404,
-                    'message' => 'Cliente no existe'
-                ], 404);
-            }
-            $client->delete();
-            return response()->json([
-                'status' => 206,
-                'message' => 'cliente Eliminado'
-            ], 206);
-
-        }catch (\Exception $e){
-            return $this->errorException($e);
-        }
-    }
-
     public function searchByRif(Request $request){
         $client = Client::where('rif', $request->rif)->first();
 

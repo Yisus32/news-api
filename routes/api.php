@@ -47,7 +47,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('clients/{id}', 'Client\ClientController@_show');
         $router->post('clients', 'Client\ClientController@_store');
         $router->put('clients/{id}', 'Client\ClientController@_update');
-        $router->delete('clients/{id}', 'Client\ClientController@_destroy');
+        $router->patch('clients/{id}', 'Client\ClientController@_destroy');
+        $router->delete('clients/{id}', 'Client\ClientController@_delete');
         
         $router->post('/search/clients', 'Client\ClientController@searchByRif');
 
@@ -57,7 +58,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('activities/{id}', 'Activity\ActivityController@_show');
         $router->post('activities', 'Activity\ActivityController@_store');
         $router->put('activities/{id}', 'Activity\ActivityController@_update');
-        $router->delete('activities/{id}', 'Activity\ActivityController@_destroy');
+        $router->patch('activities/{id}', 'Activity\ActivityController@_destroy');
+        $router->delete('activities/{id}', 'Activity\ActivityController@_delete');
         
         /** routes para Schedule **/ 
         
@@ -73,7 +75,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('branches/{id}', 'Branch\BranchController@_show');
         $router->post('branches', 'Branch\BranchController@_store');
         $router->put('branches/{id}', 'Branch\BranchController@_update');
-        $router->delete('branches/{id}', 'Branch\BranchController@_destroy');
+        $router->patch('branches/{id}', 'Branch\BranchController@_destroy');
+        $router->delete('branches/{id}', 'Branch\BranchController@_delete');
         
         /** routes para Sector **/ 
         

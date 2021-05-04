@@ -23,10 +23,7 @@ class ClientService extends CrudService
         parent::__construct($repository);
     }
 
-    public function _delete($id, Request $request){
-
-        return $this->repository->_delete($id, $request);
-    }
+    
 
     public function searchByRif(Request $request){
         return $this->repository->searchByRif($request);

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateActivitiesTable extends Migration
+class AddClientIdToClientRateTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,10 @@ class CreateActivitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('activities', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('icon')->nullable();
-            $table->string('name');
-            $table->string('description')->nullable();
-            $table->timestamps();
-
+        Schema::table('client_rate', function (Blueprint $table) {
+            $table->integer('client_id')->index()->nullable(); 
             
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('restrict');
         });
     }
 
@@ -31,6 +27,8 @@ class CreateActivitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('activities');
+        Schema::table('client_rate', function (Blueprint $table) {
+            //
+        });
     }
 }

@@ -30,11 +30,6 @@ class ClientController extends CrudController
         return parent::_store($request);
     }
 
-    public function _delete($id, Request $request){
-
-        return $this->service->_delete($id, $request);
-    }
-
     public function searchByRif(Request $request){
         return $this->service->searchByRif($request);
     }

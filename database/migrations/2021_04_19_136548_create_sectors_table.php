@@ -21,7 +21,6 @@ class CreateSectorsTable extends Migration
             $table->string('sector')->nullable();
             $table->float('price', 11, 4)->default(0.00);
             $table->string('geofence')->nullable();
-            $table->boolean('deleted')->default(false);
             $table->timestamps();
 
         });

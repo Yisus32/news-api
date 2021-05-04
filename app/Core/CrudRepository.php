@@ -127,8 +127,4 @@ class CrudRepository
         return vsprintf(str_replace('?', '%s', $sql), $cadena->getBindings());
     }
 
-    public function find($id){
-        return $this->model::find($id);
-    }
-
 }
