@@ -67,7 +67,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('schedules/{id}', 'Schedule\ScheduleController@_show');
         $router->post('schedules', 'Schedule\ScheduleController@_store');
         $router->put('schedules/{id}', 'Schedule\ScheduleController@_update');
-        $router->delete('schedules/{id}', 'Schedule\ScheduleController@_destroy');
+        $router->patch('schedules/{id}', 'Schedule\ScheduleController@_destroy');
+        $router->delete('schedules/{id}', 'Schedule\ScheduleController@_delete');
         
         /** routes para Branch **/ 
         
@@ -84,7 +85,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('sectors/{id}', 'Sector\SectorController@_show');
         $router->post('sectors', 'Sector\SectorController@_store');
         $router->put('sectors/{id}', 'Sector\SectorController@_update');
-        $router->delete('sectors/{id}', 'Sector\SectorController@_destroy');
+        $router->patch('sectors/{id}', 'Sector\SectorController@_destroy');
+        $router->delete('sectors/{id}', 'Sector\SectorController@_delete');
         
         /** routes para Bank_account **/ 
         
@@ -92,7 +94,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('bank_accounts/{id}', 'Bank_account\Bank_accountController@_show');
         $router->post('bank_accounts', 'Bank_account\Bank_accountController@_store');
         $router->put('bank_accounts/{id}', 'Bank_account\Bank_accountController@_update');
-        $router->delete('bank_accounts/{id}', 'Bank_account\Bank_accountController@_destroy');
+        $router->patch('bank_accounts/{id}', 'Bank_account\Bank_accountController@_destroy');
+        $router->delete('bank_accounts/{id}', 'Bank_account\Bank_accountController@_delete');
         
         /** routes para Aplication **/ 
         
@@ -100,7 +103,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('aplications/{id}', 'Aplication\AplicationController@_show');
         $router->post('aplications', 'Aplication\AplicationController@_store');
         $router->put('aplications/{id}', 'Aplication\AplicationController@_update');
-        $router->delete('aplications/{id}', 'Aplication\AplicationController@_destroy');
+        $router->patch('aplications/{id}', 'Aplication\AplicationController@_destroy');
+        $router->delete('aplications/{id}', 'Aplication\AplicationController@_delete');
 
         $router->group(['middleware' => ['authorize']],function () use ($router) {
 
@@ -117,7 +121,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     $router->get('sub_activities/{id}', 'Sub_Activity\Sub_ActivityController@_show');
     $router->post('sub_activities', 'Sub_Activity\Sub_ActivityController@_store');
     $router->put('sub_activities/{id}', 'Sub_Activity\Sub_ActivityController@_update');
-    $router->delete('sub_activities/{id}', 'Sub_Activity\Sub_ActivityController@_destroy');
+    $router->patch('sub_activities/{id}', 'Sub_Activity\Sub_ActivityController@_destroy');
+    $router->delete('sub_activities/{id}', 'Sub_Activity\Sub_ActivityController@_delete');
      
     /** routes para Coin **/ 
      
@@ -143,7 +148,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     $router->get('client_rates/{id}', 'Client_rate\Client_rateController@_show');
     $router->post('client_rates', 'Client_rate\Client_rateController@_store');
     $router->put('client_rates/{id}', 'Client_rate\Client_rateController@_update');
-    $router->delete('client_rates/{id}', 'Client_rate\Client_rateController@_destroy');
+    $router->patch('client_rates/{id}', 'Client_rate\Client_rateController@_destroy');
+    $router->delete('client_rates/{id}', 'Client_rate\Client_rateController@_delete');
 
     
 });
