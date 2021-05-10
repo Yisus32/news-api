@@ -25,6 +25,7 @@ class BranchService extends CrudService
         parent::__construct($repository);
     }
 
+  
     public function _store(Request $request)
     {
         $client = Client::find($request->client_id);
@@ -36,6 +37,14 @@ class BranchService extends CrudService
             return response()->json(["error"=>true,"message"=>"Código ya registrado"],409);
         }
         return $this->repository->_store($request);
+    }
+
+    public function getBySector(Request $request ,$sector_id){
+        try {
+            return $this->repository->getBySector($sector_id);
+        } catch (\Throwable $th) {
+            abort(400, "error al buscar las sucursales");
+        }
     }
 
 }

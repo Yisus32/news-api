@@ -30,6 +30,9 @@ class ClientRepository extends CrudRepository
         if (isset($data->logo) AND !empty($data->logo)){
             $data->merge(['logo' => ($this->saveImageFile($data->logo, 'logo'))]);
         }
+        if (isset($data["activity"])){
+            $data["activity"] = $this->model->formatTypeArray($data["activity"]);
+        }
 
         $client =  $this->model::query()->create($data->all());
        

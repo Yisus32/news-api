@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Core\CrudModel;
+use App\Scopes\DeletedScope;
 
 class Sub_Activity extends CrudModel
 {
@@ -13,4 +14,14 @@ class Sub_Activity extends CrudModel
 
     protected $fillable = ['id','name', 'detail'];
 
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope(new DeletedScope);
+    }
 }

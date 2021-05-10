@@ -78,7 +78,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('branches/{id}', 'Branch\BranchController@_update');
         $router->patch('branches/{id}', 'Branch\BranchController@_destroy');
         $router->delete('branches/{id}', 'Branch\BranchController@_delete');
-        
+        $router->get('sector/branches[/{sector_id}]', 'Branch\BranchController@getBySector');
+
         /** routes para Sector **/ 
         
         $router->get('sectors', 'Sector\SectorController@_index');

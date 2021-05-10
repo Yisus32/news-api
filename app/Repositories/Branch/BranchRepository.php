@@ -21,6 +21,8 @@ class BranchRepository extends CrudRepository
         parent::__construct($model);
     }
 
+    
+
     public function _store(Request $request)
     {
         
@@ -35,6 +37,8 @@ class BranchRepository extends CrudRepository
         
         $branch->schedules()->createMany($schedules);
 
+        $branch->schedule = $schedules;
+         
         return $branch;
 
     }
@@ -49,6 +53,13 @@ class BranchRepository extends CrudRepository
     private function saveImageFile($image, $imgType){
         $imageService = new ImageService();
         return filter_var($image, FILTER_VALIDATE_URL) ? $image :  $imageService->image($image);
+    }
+
+    public function getBySector($sector_id){
+
+        $branches = Branch::where('sector_id', "$sector_id")->get();
+
+        return $branches;
     }
 
 }

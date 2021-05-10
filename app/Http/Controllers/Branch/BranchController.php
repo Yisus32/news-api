@@ -30,4 +30,8 @@ class BranchController extends CrudController
     {
         return $this->service->_store($request);
     }
+
+    public function getBySector(Request $request ,$sector_id){
+        return $this->service->getBySector($request, $sector_id);
+    }
 }

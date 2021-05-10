@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Core\CrudModel;
+use App\Scopes\DeletedScope;
 
 class Schedule extends CrudModel
 {
@@ -21,5 +22,16 @@ class Schedule extends CrudModel
 
     public function Branch(){
         $this->belongsTo(Branch::class,'id','branch_id');
+    }
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope(new DeletedScope);
     }
 }

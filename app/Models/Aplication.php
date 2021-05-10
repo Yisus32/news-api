@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Core\CrudModel;
+use App\Scopes\DeletedScope;
 
 class Aplication extends CrudModel
 {
@@ -17,4 +18,15 @@ class Aplication extends CrudModel
         return $this->belongsTo(Client::class, 'id', 'client_id');
     }
 
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope(new DeletedScope);
+    }
 }
