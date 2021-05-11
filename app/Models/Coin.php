@@ -14,7 +14,9 @@ class Coin extends CrudModel
 
     protected $fillable = ['id','name', 'symbol','rate', 'description'];
 
-
+    protected $casts    = [
+        "rate" => "decimal:2"
+      ];
     /**
      * The "booting" method of the model.
      *
