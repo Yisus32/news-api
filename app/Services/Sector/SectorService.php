@@ -25,7 +25,7 @@ class SectorService extends CrudService
 
     public function _index(Request $request)
     {
-        if ($request->sector) {
+        if (isset($request->sector)) {
             try {
                 return $this->repository->_index($request);
             } catch (\Throwable $th) {

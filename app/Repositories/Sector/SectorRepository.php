@@ -21,7 +21,7 @@ class SectorRepository extends CrudRepository
 
     public function _index($request = null, $user = null)
     {
-        if ($request->sector) {
+        if (isset($request->sector)) {
             
             $sector = Sector::whereRaw("lower(sector) like lower('%{$request->sector}%')")->get();
             
