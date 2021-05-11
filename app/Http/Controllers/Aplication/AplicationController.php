@@ -11,5 +11,7 @@ class AplicationController extends CrudController
     public function __construct(AplicationService $service)
     {
         parent::__construct($service);
+
+        
     }
 }

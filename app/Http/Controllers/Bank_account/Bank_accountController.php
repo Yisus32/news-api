@@ -20,5 +20,15 @@ class Bank_accountController extends CrudController
             'account_number' => 'required',
             'account_type' => 'required'
         ];
+
+        $this->messages = [
+            'client_id.required' => 'El id del cliente es requerido.',
+            'bank_id.required' => 'El id del banco es requerido.',
+            'name.required' => 'El nombre del banco es requerido.',
+            'identifier.required' => 'El identificador del usuario del banco es requerido.',
+            'account_number.required' => 'El numero de cuenta es requerido.',
+            'account_type.required' => 'El tipo de cuenta es requerido.'
+
+        ];
     }
 }

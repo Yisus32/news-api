@@ -11,5 +11,14 @@ class SectorController extends CrudController
     public function __construct(SectorService $service)
     {
         parent::__construct($service);
+
+        $this->validateStore = [
+            'country' => 'required'
+        ];
+
+        $this->messages = [
+            'country.required' => 'El país es requerido.'
+
+        ];
     }
 }

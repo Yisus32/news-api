@@ -12,7 +12,7 @@ class Aplication extends CrudModel
 
     protected $table = 'aplications';
 
-    protected $fillable = ['id','client_id', 'app_name','email', 'user', 'wallet_number', 'detail'];
+    protected $fillable = ['id','client_id', 'app_name','email', 'user', 'wallet_number', 'detail', 'deleted'];
 
     public function client(){
         return $this->belongsTo(Client::class, 'id', 'client_id');

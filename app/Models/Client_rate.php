@@ -11,7 +11,7 @@ class Client_rate extends CrudModel
     protected $guarded = ['id'];
     protected $table = 'client_rate';
 
-    protected $fillable = ['id','coin_id', 'rate','description'];
+    protected $fillable = ['id','client_id','coin_id', 'rate','description', 'deleted'];
 
     /**
      * The "booting" method of the model.
