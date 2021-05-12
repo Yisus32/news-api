@@ -10,7 +10,7 @@ class Sub_Activity extends CrudModel
 {
     protected $guarded = ['id'];
 
-    protected $table = 'sub_Activity';
+    protected $table = 'sub_activity';
 
     protected $fillable = ['id','name', 'detail'];
 

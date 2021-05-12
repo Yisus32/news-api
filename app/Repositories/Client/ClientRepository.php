@@ -33,7 +33,9 @@ class ClientRepository extends CrudRepository
         if (isset($data["activity"])){
             $data["activity"] = $this->model->formatTypeArray($data["activity"]);
         }
-
+        if (isset($data["sub_activity"])) {
+            $data["sub_activity"] = $this->model->formatTypeArray($data["sub_activity"]);
+        }
         $client =  $this->model::query()->create($data->all());
        
         return $client;

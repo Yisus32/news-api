@@ -38,7 +38,10 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('/automatic', 'ReportController@automatic');
 
     });
-    /** routes para Client **/ 
+    
+    $router->group(['middleware' => ['auth']],function () use ($router) {
+
+        /** routes para Client **/ 
  
     $router->get('clients', 'Client\ClientController@_index');
     $router->get('clients/{id}', 'Client\ClientController@_show');
@@ -148,9 +151,6 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     $router->put('client_rates/{id}', 'Client_rate\Client_rateController@_update');
     $router->patch('client_rates/{id}', 'Client_rate\Client_rateController@_destroy');
     $router->delete('client_rates/{id}', 'Client_rate\Client_rateController@_delete');
-    $router->group(['middleware' => ['auth']],function () use ($router) {
-
-        
 
     
 });

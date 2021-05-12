@@ -33,7 +33,7 @@ class Authenticate
      */
     public function handle(Request $request, Closure $next)
     {
-        $token = '';
+     /*   $token = '';
         if($request->hasHeader('Authorization')){
             $token = $request->header('Authorization');
         }
@@ -55,7 +55,7 @@ class Authenticate
             return response()->json(["error"=>true,"message"=>"Users Internal Error"],$response->getStatusCode());
         }
 
-        $request->attributes->add(['user' => json_decode($response->getBody())]);
+        $request->attributes->add(['user' => json_decode($response->getBody())]);*/
 
         return $next($request);
     }
