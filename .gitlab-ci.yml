@@ -1,0 +1,171 @@
+stages:
+  - backup
+  - build
+  - deploy
+  - rollback
+
+dev_backup_job:
+  stage: backup
+  script:
+    - docker image tag devrubick2reservations-api:latest devrubick2reservations-api:prev || true
+  tags:
+    - devapp
+  only :
+    - develop
+
+dev_build_job:
+  stage: build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=devreservations;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=devreservations;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$DEV_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=192.168.0.10;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5433;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=1;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=devreservations.zippyttech.com;g" .env
+    - docker build -t devrubick2reservations-api .
+  when: on_success
+  tags:
+    - devapp
+  only :
+    - develop
+
+dev_deploy_job:
+  stage: deploy
+  script:
+    - docker stop devrubick2reservations-api || true
+    - docker rm devrubick2reservations-api || true
+    - docker run -d --restart always --name devrubick2reservations-api --network devapp -p 10091:80 devrubick2reservations-api
+    - docker exec devrubick2reservations-api php artisan migrate
+  when: on_success
+  tags:
+    - devapp
+  only:
+    - develop
+
+dev_rollback_job:
+  stage: rollback
+  script:
+    - docker stop devrubick2reservations-api || true
+    - docker rm devrubick2reservations-api || true
+    - docker image tag devrubick2reservations-api:prev devrubick2reservations-api:latest || true
+    - docker run -d --restart always --name devrubick2reservations-api --network devapp -p 10091:80 devrubick2reservations-api
+  when: manual
+  tags:
+    - devapp
+  only:
+    - develop
+
+qa_backup_job:
+  stage: backup
+  script:
+    - docker image tag qarubick2reservations-api:latest qarubick2reservations-api:prev || true
+  tags:
+    - qaapp
+  only :
+    - qa
+
+qa_build_job:
+  stage: build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=qarubick2reservations;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=qarubick2reservations;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$QA_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.25;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=1;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=qarubick2reservations.zippyttech.com;g" .env
+    - docker build -t qarubick2reservations-api .
+  when: on_success
+  tags:
+    - qaapp
+  only :
+    - qa
+
+
+qa_deploy_job:
+  stage: deploy
+  script:
+    - docker stop qarubick2reservations-api || true
+    - docker rm qarubick2reservations-api || true
+    - docker run -d --restart always --name qarubick2reservations-api --network qaapp -p 8114:80  qarubick2reservations-api
+    - docker exec qarubick2reservations-api php artisan migrate
+  when: on_success
+  tags:
+    - qaapp
+  only:
+    - qa
+
+qa_rollback_job:
+  stage: rollback
+  script:
+    - docker stop qarubick2reservations-api || true
+    - docker rm qarubick2reservations-api || true
+    - docker image tag qarubick2reservations-api:prev qarubick2reservations-api:latest || true
+    - docker run -d --restart always --name qarubick2reservations-api --network qaapp -p 8114:80 qarubick2reservations-api
+  when: manual
+  tags:
+    - qaapp
+  only:
+    - qa
+
+prod_backup_job:
+  stage: backup
+  script:
+    - docker image tag rubick2reservations-api:latest rubick2reservations-api:prev || true
+  tags:
+    - prodapp
+  only :
+    - tags
+
+prod_build_job:
+  stage: build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=rubick2reservations;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=rubick2reservations;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$PROD_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=qarubick2reservations.zippyttech.com;g" .env
+    - docker build -t rubick2reservations-api .
+  when: on_success
+  tags:
+    - prodapp
+  only :
+    - tags
+
+prod_deploy_job:
+  stage: deploy
+  script:
+    - docker stop rubick2reservations-api || true
+    - docker rm rubick2reservations-api || true
+    - docker run -d --restart always --name rubick2reservations-api --network app -p 9020:80 rubick2reservations-api
+    - docker exec rubick2reservations-api php artisan migrate
+  when: on_success
+  tags:
+    - prodapp
+  only:
+    - tags
+
+prod_rollback_job:
+  stage: rollback
+  script:
+    - docker stop rubick2reservations-api || true
+    - docker rm rubick2reservations-api || true
+    - docker image tag rubick2reservations-api:prev rubick2reservations-api:latest || true
+    - docker run -d --restart always --name rubick2reservations-api --network app -p 9020:80 rubick2reservations-api
+  when: manual
+  tags:
+    - prodapp
+  only:
+    - tags
