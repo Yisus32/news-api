@@ -9,6 +9,7 @@
 namespace App\Http\Middleware;
 
 
+use App\Traits\ManageRoles;
 use Closure;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -17,6 +18,7 @@ use Illuminate\Http\Request;
 
 class Authenticate
 {
+    use ManageRoles;
     protected $client;
 
     public function __construct()
@@ -33,12 +35,14 @@ class Authenticate
      */
     public function handle(Request $request, Closure $next)
     {
-     /*   $token = '';
+        $token = '';
         if($request->hasHeader('Authorization')){
-            $token = $request->header('Authorization');
+            $tokenA = $request->header('Authorization');
+            $tokenA = explode(" ", $tokenA);
+            $token = $tokenA[1];
         }
         if ($request->has('token')){
-            $token = "Bearer " .  $request->input('token');
+            $token = $request->input('token');
         }
         $header = [
             "Authorization" => $token,
@@ -46,7 +50,7 @@ class Authenticate
             "Cache-Control" => "no-cache"
         ];
         try{
-            $response = $this->client->get(env('USERS_API') . 'validate',['headers' => $header]);
+            $response = $this->client->get(env('USERS_API') . 'get/auth/'. $token,['headers' => $header]);
         }catch (ClientException $exception){
             $response = $exception->getResponse();
             return response()->json(["error"=>true,"message"=>'unauthenticated '],$response->getStatusCode());
@@ -55,7 +59,11 @@ class Authenticate
             return response()->json(["error"=>true,"message"=>"Users Internal Error"],$response->getStatusCode());
         }
 
-        $request->attributes->add(['user' => json_decode($response->getBody())]);*/
+        $user = json_decode($response->getBody());
+
+        if ($user->success == false) {
+            return response()->json(["error"=>true,"message"=>'unauthenticated '], 403);
+        }
 
         return $next($request);
     }

@@ -3,12 +3,20 @@
 
 namespace App\Http\Middleware;
 
-
 use Closure;
-use Firebase\JWT\JWT;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
+use Illuminate\Http\Client\Request;
 
 class Authorize
 {
+    protected $client;
+
+    public function __construct()
+    {
+        $this->client= new Client();
+    }
     /**
      * Handle an incoming request.
      *
@@ -18,26 +26,42 @@ class Authorize
      */
     public function handle($request, Closure $next)
     {
-        if($request->hasHeader("Authorization")) {
-            $token = $request->header("Authorization");
+        $token = '';
+        if($request->hasHeader('Authorization')){
+            $tokenA = $request->header('Authorization');
+            $tokenA = explode(" ", $tokenA);
+            $token = $tokenA[1];
         }
-        if($request->has("token")){
-            $token=$request->input('token');
+        if ($request->has('token')){
+            $token = $request->input('token');
         }
-        $tks = explode('.', $token);
-        list($headb64, $bodyb64, $cryptob64) = $tks;
-        $user = JWT::jsonDecode(JWT::urlsafeB64Decode($bodyb64));
-        if(!$user OR !isset($user->roles) OR empty($user->roles)){
-            return response()->json(["error"=>true,"message"=>'unauthorized'],403);
+        $header = [
+            "Authorization" => $token,
+            "Accept" => "application/json",
+            "Cache-Control" => "no-cache"
+        ];
+        try{
+            $response = $this->client->get(env('USERS_API') . 'get/auth/'. $token,['headers' => $header]);
+        }catch (ClientException $exception){
+            $response = $exception->getResponse();
+            return response()->json(["error"=>true,"message"=>'unauthenticated '],$response->getStatusCode());
+        }catch (ServerException $exception){
+            $response = $exception->getResponse();
+            return response()->json(["error"=>true,"message"=>"Users Internal Error"],$response->getStatusCode());
         }
 
-        $array_map = [];
-        foreach ($user->roles as $key => $item) {
-            $array_map[$key] = strtolower($item);
+        $user = json_decode($response->getBody());
+
+        if ($user->success == false) {
+            return response()->json(["error"=>true,"message"=>'unauthenticated '], 403);
         }
-        if(count(array_intersect(["admin","sysadmin","superadmin"], $array_map)) == 0) {
-            return response()->json(["error"=>true,"message"=>'unauthorized'],403);
-        }
+
+        $type = $user->value;
+        $type = $type->user;
+
+  /*      if ($type == 'User') {
+            return response()->json(["error"=>true,"message"=>'user without permission'], 403);
+        }   */ 
 
         return $next($request);
     }

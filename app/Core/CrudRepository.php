@@ -28,7 +28,8 @@ class CrudRepository
         if (isset($request->where)){
             return $this->model->doWhere($request)->get();
         }
-        return $this->model::all();
+            return $this->model::all();
+          
     }
 
 
@@ -62,22 +63,9 @@ class CrudRepository
 
     }
 
-    public function _delete($id){
-        try{
-            $object = $this->model::findOrFail($id);
-            $object->delete();
-            return ['message' => 'deleted'];
-        
-        }catch(\Exception $e){
-            return ['status' => 500,
-                    'message' => $e->getMessage()];
-        }
-        
-    }
-
     public function errorException(\Exception $e)
     {
-        Log::critical("Error, archivo del peo: {$e->getFile()}, linea del peo: {$e->getLine()}, el peo: {$e->getMessage()}");
+        Log::critical("Error, archivo del problema: {$e->getFile()}, linea del problema: {$e->getLine()}, el problema: {$e->getMessage()}");
         return response()->json([
             "message" => "Error de servidor",
             "exception" => $e->getMessage(),

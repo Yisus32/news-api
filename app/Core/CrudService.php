@@ -161,14 +161,14 @@ class CrudService
             if (!$this->object) {
                 return response()->json([
                     'status' => 404,
-                    'message' => $this->name . ' no existe'
+                    'message' => $this->name . 'doesn\' exist'
                 ], 404);
             }
             $this->object->$name_pk = true;
             $this->object->update();
             return response()->json([
                 'status' => 206,
-                'message' => $this->name . ' Eliminado'
+                'message' => $this->name . ' deleted'
             ], 206);
 
         }catch (\Exception $e){
@@ -178,7 +178,15 @@ class CrudService
 
     public function _delete($id)
     {  
-        return $this->repository->_delete($id);
+        try{
+            $object = $this->model::findOrFail($id);
+            $object->delete();
+            return ['message' => $this->name . 'deleted'];
+        
+        }catch(\Exception $e){
+            return ['status' => 500,
+                    'message' => $e->getMessage()];
+        }
     }
 
 
