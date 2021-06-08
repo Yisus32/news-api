@@ -53,15 +53,8 @@ class Authorize
         $user = json_decode($response->getBody());
 
         if ($user->success == false) {
-            return response()->json(["error"=>true,"message"=>'unauthenticated '], 403);
+          return response()->json(["error"=>true,"message"=>'unauthenticated '], 403);
         }
-
-        $type = $user->value;
-        $type = $type->user;
-
-  /*      if ($type == 'User') {
-            return response()->json(["error"=>true,"message"=>'user without permission'], 403);
-        }   */ 
 
         return $next($request);
     }

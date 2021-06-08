@@ -59,14 +59,40 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('holes', 'Hole\HoleController@_store');
         $router->put('holes/{id}', 'Hole\HoleController@_update');
         $router->delete('holes/{id}', 'Hole\HoleController@_delete');
+
+        /** routes para Teetime **/ 
+ 
+        $router->get('teetimes', 'Teetime\TeetimeController@_index');
+        $router->get('teetimes/{id}', 'Teetime\TeetimeController@_show');
+        $router->post('teetimes', 'Teetime\TeetimeController@_store');
+        $router->put('teetimes/{id}', 'Teetime\TeetimeController@_update');
+        $router->delete('teetimes/{id}', 'Teetime\TeetimeController@_delete');
     });
+
+    /** routes para Reservation **/ 
+ 
+    $router->get('reservations', 'Reservation\ReservationController@_index');
+    $router->get('reservations/{id}', 'Reservation\ReservationController@_show');
+    $router->post('reservations', 'Reservation\ReservationController@_store');
+    $router->put('reservations/{id}', 'Reservation\ReservationController@_update');
+    $router->delete('reservations/{id}', 'Reservation\ReservationController@_destroy');
     
 }); 
  
-/** routes para Teetime **/ 
+/** routes para Break_time **/ 
  
-$router->get('teetimes', 'Teetime\TeetimeController@_index');
-$router->get('teetimes/{id}', 'Teetime\TeetimeController@_show');
-$router->post('teetimes', 'Teetime\TeetimeController@_store');
-$router->put('teetimes/{id}', 'Teetime\TeetimeController@_update');
-$router->delete('teetimes/{id}', 'Teetime\TeetimeController@_destroy');
+$router->get('break_times', 'Break_time\Break_timeController@_index');
+$router->get('break_times/{id}', 'Break_time\Break_timeController@_show');
+$router->post('break_times', 'Break_time\Break_timeController@_store');
+$router->put('break_times/{id}', 'Break_time\Break_timeController@_update');
+$router->delete('break_times/{id}', 'Break_time\Break_timeController@_delete');
+ 
+
+ 
+/** routes para Guest **/ 
+ 
+$router->get('guests', 'Guest\GuestController@_index');
+$router->get('guests/{id}', 'Guest\GuestController@_show');
+$router->post('guests', 'Guest\GuestController@_store');
+$router->put('guests/{id}', 'Guest\GuestController@_update');
+$router->delete('guests/{id}', 'Guest\GuestController@_destroy');
