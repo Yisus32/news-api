@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTeetimeTypesTable extends Migration
+class CreateBreakTimesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,14 @@ class CreateTeetimeTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('teetime_types', function (Blueprint $table) {
+        Schema::create('break_times', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->index();
-            $table->string('name');
-            $table->string('description')->nullable();
+            $table->integer('teetime_id');
+            $table->time('start_hour');
+            $table->time('end_hour');
             $table->timestamps();
+
+            $table->foreign('teetime_id')->references('id')->on('teetimes')->onDelete('cascade');
         });
     }
 
@@ -29,6 +31,6 @@ class CreateTeetimeTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('teetime_types');
+        Schema::dropIfExists('break_times');
     }
 }

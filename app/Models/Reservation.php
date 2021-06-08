@@ -5,15 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Core\CrudModel;
 
-class Teetime extends CrudModel
+class Reservation extends CrudModel
 {
     protected $guarded = ['id'];
 
-    protected $table = 'teetimes';
+    protected $table = 'reservations';
 
-    protected $fillable = ['type_id', 'start_date', 'end_date', 'min_capacity', 'max_capacity', 'time_interval', 'available',
-    'cancel_time', 'start_hour', 'end_hour', 'target', 'days'];
+    protected $fillable = ['teetime_id', 'hole_id','date', 'start_hour', 'end_hour', 'owner', 'partners', 'guests'];
 
+    public function teetime(){
+        return $this->belongsTo(Teetime::class, 'id', 'teetime_id');
+    }
 
     /**
      * @named Funcion para convertir a string (Estandarizada)
@@ -36,19 +38,5 @@ class Teetime extends CrudModel
         }
 
         return '{}';
-    }
-
-    /**
-     * @return HasMany
-     */
-    public function break_times(){
-        return $this->hasMany(Break_time::class,'teetime_id','id');
-    }
-
-    /**
-     * @return HasMany
-     */
-    public function reservations(){
-        return $this->hasMany(Reservation::class,'teetime_id','id');
     }
 }

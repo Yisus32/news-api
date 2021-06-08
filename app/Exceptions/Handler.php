@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use App\Traits\ApiResponse;
 use DomainException;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\UnauthorizedException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
@@ -12,6 +14,7 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    use ApiResponse;
     /**
      * A list of the exception types that should not be reported.
      *
@@ -49,6 +52,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {   
+
         if ($exception instanceof HttpException) {
             $code = $exception->getStatusCode();
             $message = Response::$statusTexts[$code];
@@ -76,5 +80,9 @@ class Handler extends ExceptionHandler
 
         return $this->errorResponse($this->defaultResponse('Unexpected error. Try later'), Response::HTTP_INTERNAL_SERVER_ERROR);
       
+    }
+
+    public function parseModelName($model_name){
+        return last(explode("\\",$model_name));
     }
 }
