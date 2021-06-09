@@ -196,7 +196,7 @@ berygo_deploy_job:
     - docker rm bvslark-front || true
     - docker run --restart always --name bvslark-front -d -p 10080:80 bvslark-front:1.1
   when: manual
-   tags:
+  tags:
     - berygo
   only:
     
