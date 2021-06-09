@@ -94,7 +94,7 @@ qa_deploy_job:
   script:
     - docker stop qarubick2teetime-api || true
     - docker rm qarubick2teetime-api || true
-    - docker run -d --restart always --name qarubick2teetime-api --network qaapp -p 8114:80  qarubick2teetime-api
+    - docker run -d --restart always --name qarubick2teetime-api --network qaapp -p 8116:80  qarubick2teetime-api
     - docker exec qarubick2teetime-api php artisan migrate
   when: on_success
   tags:
@@ -108,7 +108,7 @@ qa_rollback_job:
     - docker stop qarubick2teetime-api || true
     - docker rm qarubick2teetime-api || true
     - docker image tag qarubick2teetime-api:prev qarubick2teetime-api:latest || true
-    - docker run -d --restart always --name qarubick2teetime-api --network qaapp -p 8114:80 qarubick2teetime-api
+    - docker run -d --restart always --name qarubick2teetime-api --network qaapp -p 8116:80 qarubick2teetime-api
   when: manual
   tags:
     - qaapp
