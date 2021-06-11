@@ -94,7 +94,7 @@ qa_deploy_job:
   script:
     - docker stop qarubick2teetime-api || true
     - docker rm qarubick2teetime-api || true
-    - docker run -d --restart always --name qarubick2teetime-api --network qaapp -p 8116:80  qarubick2teetime-api
+    - docker run -d --restart always --name qarubick2teetime-api -v qarubick2teetime-api-images:/var/www/html/public/images -v qarubick2teetime-api-images:/var/www/html/public/logos --network qaapp -p 8116:80  qarubick2teetime-api
     - docker exec qarubick2teetime-api php artisan migrate
   when: on_success
   tags:
@@ -108,7 +108,7 @@ qa_rollback_job:
     - docker stop qarubick2teetime-api || true
     - docker rm qarubick2teetime-api || true
     - docker image tag qarubick2teetime-api:prev qarubick2teetime-api:latest || true
-    - docker run -d --restart always --name qarubick2teetime-api --network qaapp -p 8116:80 qarubick2teetime-api
+    - docker run -d --restart always --name qarubick2teetime-api -v qarubick2teetime-api-images:/var/www/html/public/images -v qarubick2teetime-api-images:/var/www/html/public/logos --network qaapp -p 8116:80 qarubick2teetime-api
   when: manual
   tags:
     - qaapp
@@ -173,15 +173,17 @@ prod_rollback_job:
 berygo_build_job:
   stage:  build
   script:
-    - sed -i -e "s;^\s*api:.*;               api:'https://ac.buenaventura.zippyttech.com/',;g"       src/environments/environment.prod.ts
-    - sed -i -e "s;^\s*apiAcces:.*;     apiAcces:'https://ac.buenaventura.zippyttech.com/ac/',;g"    src/environments/environment.prod.ts
-    - sed -i -e "s;^\s*apidevice:.*;   apidevice:'https://mg.buenaventura.zippyttech.com/',;g"       src/environments/environment.prod.ts
-    - sed -i -e "s;^\s*apidevice2:.*; apidevice2:'https://an.buenaventura.zippyttech.com/',;g"       src/environments/environment.prod.ts
-    - sed -i -e "s;^\s*apiUsers:.*;     apiUsers:'https://us.buenaventura.zippyttech.com/us/',;g"    src/environments/environment.prod.ts
-    - sed -i -e "s;^\s*apiIcons:.*;     apiIcons:'http://qaapp.zippyttech.com:43895/',;g"            src/environments/environment.prod.ts
-    - sed -i -e "s;^\s*GateWay:.*;       GateWay:'https://gw.buenaventura.zippyttech.com/gw/',;g"    src/environments/environment.prod.ts
-    - docker build -t bvslark-front:1.1 .
-    - docker push bvslark-front:1.1
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=teetime;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=rubick2teetime;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$PROD_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=qarubick2teetime.zippyttech.com;g" .env
+    - docker build -t teetime-api .
   when: on_success
   tags:
     - qaapp
@@ -189,14 +191,15 @@ berygo_build_job:
     - berygo
 
 berygo_deploy_job:
-  stage:  deploy
+  stage: deploy
   script:
-    - docker pull bvslark-front:1.1
-    - docker stop  bvslark-front || true
-    - docker rm bvslark-front || true
-    - docker run --restart always --name bvslark-front -d -p 10080:80 bvslark-front:1.1
+    - docker stop teetime-api || true
+    - docker rm teetime-api || true
+    - docker run -d --restart always --name teetime-api --network app -p 9020:80 teetime-api
+    - docker exec teetime-api php artisan migrate
   when: manual
   tags:
     - berygo
   only:
-    
+    - berygo
+ 
