@@ -11,5 +11,5 @@ class Teetime_type extends CrudModel
 
     protected $table = 'teetime_types';
 
-    protected $fillable = ['code', 'name', 'descriptions'];
+    protected $fillable = ['code', 'name', 'description'];
 }

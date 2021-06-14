@@ -11,5 +11,5 @@ class Hole extends CrudModel
 
     protected $table = 'holes';
 
-    protected $fillable = ['code', 'name', 'descriptions'];
+    protected $fillable = ['code', 'name', 'description'];
 }
