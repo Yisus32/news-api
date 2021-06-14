@@ -74,7 +74,7 @@ class CrudService
             }
 
 
-         //   Log::info('Encontrado');
+            Log::info('Encontrado');
 
             return response()->json([
                 $this->name => $this->data,
@@ -97,7 +97,7 @@ class CrudService
             $this->object = $this->repository->_store($request);
             DB::commit();
             if($this->object){
-              //  Log::info('Guardado');
+                Log::info('Guardado');
                 return response()->json([
                     "status" => 201,
                     $this->name => $this->object],
@@ -138,7 +138,7 @@ class CrudService
                 'status' => 200,
                 'message'=>$this->name. ' Modificado',
                 $this->name=> $request->all()
-            ], 200); // ->setStatusCode(200, "Registro Actualizado");
+            ], 200)->setStatusCode(200, "Registro Actualizado");
 
         }catch(\Exception $e){
             return $this->errorException($e);
