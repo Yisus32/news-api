@@ -95,7 +95,6 @@ class GuestRepository extends CrudRepository
                     : $guest->documents()->create($doc);
             }
         }
-        
 
         return $guest;
     }
