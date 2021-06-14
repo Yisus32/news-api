@@ -29,5 +29,6 @@ WORKDIR /var/www/html
 COPY . /var/www/html
 RUN cd /var/www/html && composer install
 
+RUN chmod -R 777 storage && chmod -R 777 public/images/
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
