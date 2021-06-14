@@ -1,0 +1,205 @@
+stages:
+  - backup
+  - build
+  - deploy
+  - rollback
+
+dev_backup_job:
+  stage: backup
+  script:
+    - docker image tag devrubick2teetime-api:latest devrubick2teetime-api:prev || true
+  tags:
+    - devapp
+  only :
+    - develop
+
+dev_build_job:
+  stage: build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=devteetime;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=devteetime;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$DEV_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=192.168.0.10;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5433;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=1;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=devteetime.zippyttech.com;g" .env
+    - docker build -t devrubick2teetime-api .
+  when: on_success
+  tags:
+    - devapp
+  only :
+    - develop
+
+dev_deploy_job:
+  stage: deploy
+  script:
+    - docker stop devrubick2teetime-api || true
+    - docker rm devrubick2teetime-api || true
+    - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 10091:80 devrubick2teetime-api
+    - docker exec devrubick2teetime-api php artisan migrate
+  when: on_success
+  tags:
+    - devapp
+  only:
+    - develop
+
+dev_rollback_job:
+  stage: rollback
+  script:
+    - docker stop devrubick2teetime-api || true
+    - docker rm devrubick2teetime-api || true
+    - docker image tag devrubick2teetime-api:prev devrubick2teetime-api:latest || true
+    - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 10091:80 devrubick2teetime-api
+  when: manual
+  tags:
+    - devapp
+  only:
+    - develop
+
+qa_backup_job:
+  stage: backup
+  script:
+    - docker image tag qarubick2teetime-api:latest qarubick2teetime-api:prev || true
+  tags:
+    - qaapp
+  only :
+    - qa
+
+qa_build_job:
+  stage: build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=qarubick2teetime;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=qarubick2teetime;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$QA_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.25;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=1;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=qarubick2teetime.zippyttech.com;g" .env
+    - docker build -t qarubick2teetime-api .
+  when: on_success
+  tags:
+    - qaapp
+  only :
+    - qa
+
+
+qa_deploy_job:
+  stage: deploy
+  script:
+    - docker stop qarubick2teetime-api || true
+    - docker rm qarubick2teetime-api || true
+    - docker run -d --restart always --name qarubick2teetime-api -v qarubick2teetime-api-images:/var/www/html/public/images -v qarubick2teetime-api-images:/var/www/html/public/logos --network qaapp -p 8116:80  qarubick2teetime-api
+    - docker exec qarubick2teetime-api php artisan migrate
+  when: on_success
+  tags:
+    - qaapp
+  only:
+    - qa
+
+qa_rollback_job:
+  stage: rollback
+  script:
+    - docker stop qarubick2teetime-api || true
+    - docker rm qarubick2teetime-api || true
+    - docker image tag qarubick2teetime-api:prev qarubick2teetime-api:latest || true
+    - docker run -d --restart always --name qarubick2teetime-api -v qarubick2teetime-api-images:/var/www/html/public/images -v qarubick2teetime-api-images:/var/www/html/public/logos --network qaapp -p 8116:80 qarubick2teetime-api
+  when: manual
+  tags:
+    - qaapp
+  only:
+    - qa
+
+prod_backup_job:
+  stage: backup
+  script:
+    - docker image tag rubick2teetime-api:latest rubick2teetime-api:prev || true
+  tags:
+    - prodapp
+  only :
+    - tags
+
+prod_build_job:
+  stage: build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=rubick2teetime;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=rubick2teetime;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$PROD_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=qarubick2teetime.zippyttech.com;g" .env
+    - docker build -t rubick2teetime-api .
+  when: on_success
+  tags:
+    - prodapp
+  only :
+    - tags
+
+prod_deploy_job:
+  stage: deploy
+  script:
+    - docker stop rubick2teetime-api || true
+    - docker rm rubick2teetime-api || true
+    - docker run -d --restart always --name rubick2teetime-api --network app -p 9020:80 rubick2teetime-api
+    - docker exec rubick2teetime-api php artisan migrate
+  when: on_success
+  tags:
+    - prodapp
+  only:
+    - tags
+
+prod_rollback_job:
+  stage: rollback
+  script:
+    - docker stop rubick2teetime-api || true
+    - docker rm rubick2teetime-api || true
+    - docker image tag rubick2teetime-api:prev rubick2teetime-api:latest || true
+    - docker run -d --restart always --name rubick2teetime-api --network app -p 9020:80 rubick2teetime-api
+  when: manual
+  tags:
+    - prodapp
+  only:
+    - tags
+
+berygo_build_job:
+  stage:  build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=teetime;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=rubick2teetime;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$PROD_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=qarubick2teetime.zippyttech.com;g" .env
+    - docker build -t teetime-api .
+  when: on_success
+  tags:
+    - qaapp
+  only:
+    - berygo
+
+berygo_deploy_job:
+  stage: deploy
+  script:
+    - docker stop teetime-api || true
+    - docker rm teetime-api || true
+    - docker run -d --restart always --name teetime-api --network app -p 9020:80 teetime-api
+    - docker exec teetime-api php artisan migrate
+  when: manual
+  tags:
+    - berygo
+  only:
+    - berygo
+ 
