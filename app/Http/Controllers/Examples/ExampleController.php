@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Examples;
 
+use App\Core\CrudController;
 use App\Core\TatucoController;
 use App\Services\Examples\ExampleService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 /** @property ExampleService $service */
-class ExampleController extends TatucoController
+class ExampleController extends CrudController
 {
 
     public $validateStore = [

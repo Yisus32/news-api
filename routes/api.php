@@ -75,7 +75,15 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     $router->get('reservations/{id}', 'Reservation\ReservationController@_show');
     $router->post('reservations', 'Reservation\ReservationController@_store');
     $router->put('reservations/{id}', 'Reservation\ReservationController@_update');
-    $router->delete('reservations/{id}', 'Reservation\ReservationController@_destroy');
+    $router->delete('reservations/{id}', 'Reservation\ReservationController@_delete');
+
+    /** routes para Guest **/ 
+ 
+    $router->get('guests', 'Guest\GuestController@_index');
+    $router->get('guests/{id}', 'Guest\GuestController@_show');
+    $router->post('guests', 'Guest\GuestController@_store');
+    $router->put('guests/{id}', 'Guest\GuestController@_update');
+    $router->delete('guests/{id}', 'Guest\GuestController@_delete');
     
 }); 
  
@@ -89,10 +97,4 @@ $router->delete('break_times/{id}', 'Break_time\Break_timeController@_delete');
  
 
  
-/** routes para Guest **/ 
- 
-$router->get('guests', 'Guest\GuestController@_index');
-$router->get('guests/{id}', 'Guest\GuestController@_show');
-$router->post('guests', 'Guest\GuestController@_store');
-$router->put('guests/{id}', 'Guest\GuestController@_update');
-$router->delete('guests/{id}', 'Guest\GuestController@_destroy');
+

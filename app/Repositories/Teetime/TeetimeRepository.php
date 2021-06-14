@@ -19,6 +19,8 @@ class TeetimeRepository extends CrudRepository
         parent::__construct($model);
     }
 
+    
+
     public function _store(Request $data)
     {
         if (isset($data["target"])){
