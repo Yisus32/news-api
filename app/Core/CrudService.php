@@ -179,9 +179,10 @@ class CrudService
     public function _delete($id)
     {  
         try{
-            $object = $this->model::findOrFail($id);
+            $object = $this->repository->find($id);
+
             $object->delete();
-            return ['message' => $this->name . 'deleted'];
+            return ['message' => $this->name . ' deleted'];
         
         }catch(\Exception $e){
             return ['status' => 500,
