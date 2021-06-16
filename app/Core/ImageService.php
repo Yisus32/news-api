@@ -47,8 +47,8 @@ class ImageService //extends TatucoService
 
     public function document($document, $id = 'zippyttech'){
         try{
-            $route = rtrim(app()->basePath('public/'), '/') . "/documents/";
-            $route_web = env('CUSTOM_URL') . '/documents/';
+            $route = rtrim(app()->basePath('public/'), '/') . "/images/";
+            $route_web = env('CUSTOM_URL') . '/images/';
             $now = Carbon::now()->format('Y-m-d');
             $upload_dir =$route;
             $doc = $document;
