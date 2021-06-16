@@ -73,9 +73,12 @@ $router->group(['prefix' => 'api'], function (Router $router) {
  
     $router->get('reservations', 'Reservation\ReservationController@_index');
     $router->get('reservations/{id}', 'Reservation\ReservationController@_show');
-    $router->post('reservations', 'Reservation\ReservationController@_store');
+   // $router->post('reservations', 'Reservation\ReservationController@_store');
     $router->put('reservations/{id}', 'Reservation\ReservationController@_update');
     $router->delete('reservations/{id}', 'Reservation\ReservationController@_delete');
+
+    $router->post('reservations/take/{id}', 'Reservation\ReservationController@take');
+    $router->post('reservations/register/{id}', 'Reservation\ReservationController@reservation_register');
 
     /** routes para Guest **/ 
  

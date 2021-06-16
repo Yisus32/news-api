@@ -46,4 +46,32 @@ class ReservationRepository extends CrudRepository
         return $reservation;
     }
 
+    public function take($id, Request $request){
+
+        $reservation = Reservation::find($id);
+        $reservation->status = "reservado";
+        $reservation->owner = $request->owner;
+        $reservation->update();
+
+        return $reservation;
+    }
+
+    public function reservation_register($id, Request $request){
+
+        if (isset($request["partners"])){
+            $request["partners"] = $this->model->formatTypeArray($request["partners"]);
+        }
+        if (isset($request["guests"])){
+            $request["guests"] = $this->model->formatTypeArray($request["guests"]);
+        }
+
+        $reservation = Reservation::findOrFail($id);
+        $data = $request->all();
+        $reservation->update($data);
+        if($reservation)
+            return $reservation;
+        else
+            return null;
+    }
+
 }

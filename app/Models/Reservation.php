@@ -11,7 +11,9 @@ class Reservation extends CrudModel
 
     protected $table = 'reservations';
 
-    protected $fillable = ['teetime_id', 'hole_id','date', 'start_hour', 'end_hour', 'owner', 'partners', 'guests'];
+    protected $fillable = ['teetime_id', 'hole_id','date', 'start_hour', 'end_hour', 'owner', 'partners', 'guests', 'status','created_at', 'updated_at'];
+
+    protected $hidden = [];
 
     public function teetime(){
         return $this->belongsTo(Teetime::class, 'id', 'teetime_id');
