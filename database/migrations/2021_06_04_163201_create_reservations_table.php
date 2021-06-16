@@ -20,9 +20,12 @@ class CreateReservationsTable extends Migration
             $table->integer('hole_id');
             $table->date('date');
             $table->time('start_hour');
-            $table->time('end_hour');
-            $table->integer('owner');
+            $table->integer('owner')->nullable();
+            $table->enum('status', ["no reservado", "reservado", "registrado"])->default("no reservado");
             $table->timestamps();
+
+            $table->foreign('teetime_id')->references('id')->on('teetimes')->onDelete('restrict');
+            $table->foreign('hole_id')->references('id')->on('holes')->onDelete('restrict');
         });
         DB::connection()->getPdo()->exec("alter table reservations add column guests integer[] DEFAULT '{}'");
         DB::connection()->getPdo()->exec("alter table reservations add column partners integer[] DEFAULT '{}'");

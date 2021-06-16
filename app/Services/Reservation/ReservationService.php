@@ -13,6 +13,8 @@ use App\Models\Teetime;
 use App\Repositories\Reservation\ReservationRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /** @property ReservationRepository $repository */
 class ReservationService extends CrudService
@@ -26,47 +28,93 @@ class ReservationService extends CrudService
         parent::__construct($repository);
     }
 
-    public function _store(Request $request)
+    public function _index(Request $request)
     {
-        if (isset($request->teetime_id)) {
-            $teetime = Teetime::find($request->teetime_id);
-            $now = Carbon::now(env('APP_TIMEZONE'));
+        $reservations = Reservation::where('status', '=', 'reservado')->get();
+        
+        if (count($reservations) > 0) {
+            $now = Carbon::now();
+
+            foreach ($reservations as $reservation) {
+
+                $check = Carbon::createFromFormat('Y-m-d H:i:s', $reservation->updated_at);
+                $check->addMinutes(5);
+
+                if ($now > $check) {
+                    $reservation->status = 'no reservado';
+                    $reservation->update();
+                }
+
+            }
+
+        }
+        
+        return parent::_index($request);
+    }
+
+    public function reservation_register($id, Request $request){
+
+        $reservation = Reservation::find($id);
+
+        $teetime = Teetime::find($reservation->teetime_id);
+
+        //checar que no se haya excedido los 5 minutos
+
+        $now = Carbon::now();
+        $check = Carbon::createFromFormat('Y-m-d H:i:s', $reservation->updated_at);
+        $check->addMinutes(5);
+
+        if ($now > $check) {
+
+            $reservation->status = 'no reservado';
+
+            $reservation->update();
+
+            return response()->json(["error" => true, "message" => "Se excedieron los 5 minutos para registrar la reservación"], 409);    
+        }
+
+        //checar tiempo de disponibilidad para registrar una reservacion
+
+        $now = Carbon::now(env('APP_TIMEZONE'));
          
-            $date = $request->date . ' '. $request->start_hour;
-            
-            $final = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-            $final->subHours($teetime->available);
-            //se usa para comprobar que se esta haciendo la reservacion con el tiempo previo de disponibilidad de la programacion
-           if ($now->greaterThan($final)) {
-               return response()->json(["error" => true, "message" => "La fecha ingresada no cumple con el tiempo de disponibilidad"], 409);
-           }
+        $date = $reservation->date . ' '. $reservation->start_hour;
+        
+        $final = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
 
-           //verificar numero de jugadores
-           if ($this->countPlayers($request->partners, $request->guest) > $teetime->max_capacity) {
-            return response()->json(["error" => true, "message" => "El número maximo de jugadores es $teetime->max_capacity"], 409);
-           }
-           
-           if ($this->countPlayers($request->partners, $request->guest) < $teetime->min_capacity) {
+        $final->subHours($teetime->available);
+
+        //se usa para comprobar que se esta haciendo la reservacion con el tiempo previo de disponibilidad de la programacion
+        if ($now->greaterThan($final)) {
+            return response()->json(["error" => true, "message" => "La fecha ingresada no cumple con el tiempo de disponibilidad"], 409);
+        }
+
+
+        //checar numero de jugadores
+        $number_players = $this->countPlayers($request->partners, $request->guests);
+
+        if ($number_players > $teetime->max_capacity) {
+            return response()->json(["error" => true, "message" => "El número máximo de jugadores es $teetime->max_capacity"], 409);
+        }elseif ($number_players < $teetime->min_capacity) {
             return response()->json(["error" => true, "message" => "El número mínimo de jugadores es $teetime->min_capacity"], 409);
-           }
-
-        }else{
-            return response()->json(["error" => true, "message" => "La reservación no pertenece a una programación valida"], 409);
         }
 
-        // comprueba que las horas ingresadas no choquen con otra reservacion
-        $hour_between = Reservation::where('teetime_id', '=', "$request->teetime_id")
-                                    ->where('date', '=', "$request->date")
-                                    ->where('hole_id', '=', "$request->hole_id")
-                                    ->whereRaw("start_hour BETWEEN '$request->start_hour' and '$request->end_hour' or 
-                                    end_hour BETWEEN '$request->start_hour' and '$request->end_hour'")->get();
-        
-        
-        if ($hour_between->count() > 0) {
-            return response()->json(["error" => true, "message" => "Las horas ingresadas ya han sido ocupadas por otro cliente"], 409);
+        // comienza a guardar los datos
+        try{
+            DB::beginTransaction();
+            $this->object = $this->repository->reservation_register($id, $request);
+            DB::commit();
+            if($this->object){
+                Log::info('Registrado');
+                return response()->json([
+                    "status" => 201,
+                    $this->name => $this->object],
+                    201);
+            }
+        }catch (\Exception $e){
+            DB::rollBack();
+            return $this->errorException($e);
         }
         
-        return parent::_store($request);
     }
 
     public function _update($id, Request $request)
@@ -93,6 +141,43 @@ class ReservationService extends CrudService
         }
         
         return parent::_delete($id);
+    }
+
+    public function take($id, Request $request){
+
+        $reservation = Reservation::find($id);
+
+        if ($reservation->status == 'reservado' || $reservation->status == 'registrado') {
+            return response()->json(["error" => true, "message" => "La hora ingresada ya ha sido ocupada por otro cliente"], 409);
+        }
+
+        try {
+
+            $this->object = $this->repository->_show($id);
+
+            if (!$this->object) {
+                return response()->json(['status' => 404,
+                    'message' => $this->name . ' no existe'
+                ], 404);
+            }
+
+            if (!$this->repository->take($id, $request)){
+                return response()->json([
+                    'message'=>'No se pudo Modificar',
+                    $this->name => $this->object
+                ], 200);
+            }
+
+            return response()->json([
+                'status' => 200,
+                'message'=>'Reservado con exito',
+                $this->name=> $request->all()
+            ], 200)->setStatusCode(200, "Registro Actualizado");
+
+        }catch(\Exception $e){
+            return $this->errorException($e);
+        }
+      
     }
 
     private function countPlayers($partners = null, $guests = null){
