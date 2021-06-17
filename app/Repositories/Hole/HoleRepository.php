@@ -18,4 +18,12 @@ class HoleRepository extends CrudRepository
         parent::__construct($model);
     }
 
+    public function _index($request = null, $user = null)
+    {
+        if (isset($request->name)){
+            return Hole::whereraw("lower(name) like lower('%{$request->name}%')")->get();
+        }
+            return $this->model::all();
+    }
+
 }
