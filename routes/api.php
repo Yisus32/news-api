@@ -43,6 +43,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         
     });
 
+    $router->get('holes', 'Hole\HoleController@_index');
+
     $router->group(['middleware' => ['authorize']],function () use ($router) {
         /** routes para Teetime_type **/ 
  
@@ -54,7 +56,6 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         
         /** routes para Hole **/ 
         
-        $router->get('holes', 'Hole\HoleController@_index');
         $router->get('holes/{id}', 'Hole\HoleController@_show');
         $router->post('holes', 'Hole\HoleController@_store');
         $router->put('holes/{id}', 'Hole\HoleController@_update');
