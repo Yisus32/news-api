@@ -40,15 +40,20 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     });
     
     $router->group(['middleware' => ['auth']],function () use ($router) {
-        
+        //routes para reports
+        $router->group(['prefix' => 'report'], function () use ($router) {
+            $router->get('/reservations', 'Reservation\ReservationController@report');
+            $router->post('/automatic', 'ReportController@automatic');
+        });
     });
 
     $router->get('holes', 'Hole\HoleController@_index');
+    $router->get('teetime_types', 'Teetime_type\Teetime_typeController@_index');
 
     $router->group(['middleware' => ['authorize']],function () use ($router) {
         /** routes para Teetime_type **/ 
  
-        $router->get('teetime_types', 'Teetime_type\Teetime_typeController@_index');
+        
         $router->get('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_show');
         $router->post('teetime_types', 'Teetime_type\Teetime_typeController@_store');
         $router->put('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_update');
