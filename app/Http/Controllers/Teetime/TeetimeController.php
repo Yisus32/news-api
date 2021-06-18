@@ -13,7 +13,6 @@ class TeetimeController extends CrudController
         parent::__construct($service);
 
         $this->validateStore = [
-            'type_id' => 'required', 
             'start_date' => 'required',
             'end_date' => 'required',
             'min_capacity' => 'required',

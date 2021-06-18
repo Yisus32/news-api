@@ -11,6 +11,7 @@ use App\Models\Reservation;
 use App\Models\Teetime;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /** @property Teetime $model */
 class TeetimeRepository extends CrudRepository
@@ -19,6 +20,23 @@ class TeetimeRepository extends CrudRepository
     public function __construct(Teetime $model)
     {
         parent::__construct($model);
+    }
+
+    public function _index($request = null, $user = null)
+    {
+        $teetimes = DB::select('SELECT t.id, t.start_date, t.end_date, t.min_capacity,t.max_capacity,
+        t.time_interval,t.available,t.cancel_time,t.start_hour,t.end_hour,t.target,t.days,array_agg(h.name) holes_names 
+        FROM teetimes t JOIN holes h ON h.id = ANY(t.target) GROUP BY t.id');
+
+        foreach ($teetimes as $teetime) {
+            $days = $teetime->days;
+            $days = str_replace("{", '', $days);
+            $days = str_replace("}", '', $days);
+            $days = explode(',', $days);
+            $teetime->days = $days;
+        }
+
+        return $teetimes;
     }
 
     public function _store(Request $data)
