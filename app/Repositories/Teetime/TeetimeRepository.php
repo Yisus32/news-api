@@ -34,6 +34,18 @@ class TeetimeRepository extends CrudRepository
             $days = str_replace("}", '', $days);
             $days = explode(',', $days);
             $teetime->days = $days;
+
+            $target = $teetime->target;
+            $target = str_replace("{", '', $target);
+            $target = str_replace("}", '', $target);
+            $target = explode(',', $target);
+            $teetime->target = $target;
+
+            $holes_names = $teetime->holes_names;
+            $holes_names = str_replace("{", '', $holes_names);
+            $holes_names = str_replace("}", '', $holes_names);
+            $holes_names = explode(',', $holes_names);
+            $teetime->holes_names = $holes_names;
         }
 
         return $teetimes;
@@ -52,6 +64,18 @@ class TeetimeRepository extends CrudRepository
             $days = str_replace("}", '', $days);
             $days = explode(',', $days);
             $teetime->days = $days;
+
+            $target = $teetime->target;
+            $target = str_replace("{", '', $target);
+            $target = str_replace("}", '', $target);
+            $target = explode(',', $target);
+            $teetime->target = $target;
+
+            $holes_names = $teetime->holes_names;
+            $holes_names = str_replace("{", '', $holes_names);
+            $holes_names = str_replace("}", '', $holes_names);
+            $holes_names = explode(',', $holes_names);
+            $teetime->holes_names = $holes_names;
 
             return $teetime;
         }
