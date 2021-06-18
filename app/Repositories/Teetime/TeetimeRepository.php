@@ -39,6 +39,26 @@ class TeetimeRepository extends CrudRepository
         return $teetimes;
     }
 
+    public function _show($id)
+    {
+        $teetime = DB::select("SELECT t.id, t.start_date, t.end_date, t.min_capacity,t.max_capacity,
+        t.time_interval,t.available,t.cancel_time,t.start_hour,t.end_hour,t.target,t.days,array_agg(h.name) holes_names 
+        FROM teetimes t JOIN holes h ON h.id = ANY(t.target) WHERE t.id = $id GROUP BY t.id");
+
+        if ($teetime) {
+            $teetime = $teetime[0];
+            $days = $teetime->days;
+            $days = str_replace("{", '', $days);
+            $days = str_replace("}", '', $days);
+            $days = explode(',', $days);
+            $teetime->days = $days;
+
+            return $teetime;
+        }
+
+        return null;
+    }
+
     public function _store(Request $data)
     {
         if (isset($data["target"])){
