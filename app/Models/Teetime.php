@@ -12,7 +12,7 @@ class Teetime extends CrudModel
     protected $table = 'teetimes';
 
     protected $fillable = ['type_id', 'start_date', 'end_date', 'min_capacity', 'max_capacity', 'time_interval', 'available',
-    'cancel_time', 'start_hour', 'end_hour', 'target', 'days'];
+    'cancel_time', 'start_hour', 'end_hour', 'target', 'days', 'user_id', 'user_name'];
 
 
     /**
