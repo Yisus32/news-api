@@ -24,8 +24,8 @@ class TeetimeRepository extends CrudRepository
 
     public function _index($request = null, $user = null)
     {
-        $teetimes = DB::select('SELECT t.id, t.start_date, t.end_date, t.min_capacity,t.max_capacity,
-        t.time_interval,t.available,t.cancel_time,t.start_hour,t.end_hour,t.target,t.days,t.user_id,t.user_name,array_agg(h.name) holes_names 
+        $teetimes = DB::select('SELECT t.id, t.start_date, t.end_date, t.min_capacity,t.max_capacity,t.time_interval,t.available,
+        t.cancel_time,t.start_hour,t.end_hour,t.target,t.days,t.user_id,t.user_name,t.created_at,t.updated_at,array_agg(h.name) holes_names 
         FROM teetimes t JOIN holes h ON h.id = ANY(t.target) GROUP BY t.id');
 
         foreach ($teetimes as $teetime) {
@@ -53,8 +53,8 @@ class TeetimeRepository extends CrudRepository
 
     public function _show($id)
     {
-        $teetime = DB::select("SELECT t.id, t.start_date, t.end_date, t.min_capacity,t.max_capacity,t.time_interval,
-        t.available,t.cancel_time,t.start_hour,t.end_hour,t.target,t.days,t.user_id,t.user_name,array_agg(h.name) holes_names 
+        $teetime = DB::select("SELECT t.id, t.start_date, t.end_date, t.min_capacity,t.max_capacity,t.time_interval,t.available,t.cancel_time,
+        t.start_hour,t.end_hour,t.target,t.days,t.user_id,t.user_name,t.created_at,t.updated_at,array_agg(h.name) holes_names 
         FROM teetimes t JOIN holes h ON h.id = ANY(t.target) WHERE t.id = $id GROUP BY t.id");
 
         if ($teetime) {
