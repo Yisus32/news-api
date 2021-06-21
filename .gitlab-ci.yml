@@ -186,7 +186,7 @@ berygo_build_job:
     - docker build -t berygo-teetime-api .
   when: on_success
   tags:
-    - berygo
+    - qaapp
   only:
     - berygo
 
