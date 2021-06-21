@@ -38,7 +38,7 @@ class TeetimeService extends CrudService
         foreach ($request->target as $hole) {
             $hole_exist = Hole::find($hole);
             if (!$hole_exist) {
-                return response()->json(['error' => true, 'message' => "El hoyo $hole no existe"],400);
+                return response()->json(['error' => true, 'message' => "El hoyo con id $hole no existe"],400);
             }
         }
 
