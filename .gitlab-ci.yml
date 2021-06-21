@@ -189,6 +189,7 @@ berygo_build_job:
     - berygo
   only:
     - berygo
+  
 
 berygo_deploy_job:
   stage: deploy
