@@ -122,7 +122,7 @@ prod_backup_job:
   tags:
     - prodapp
   only :
-    - tags
+    - prodapp
 
 prod_build_job:
   stage: build
@@ -142,7 +142,7 @@ prod_build_job:
   tags:
     - prodapp
   only :
-    - tags
+    - prodapp
 
 prod_deploy_job:
   stage: deploy
@@ -155,7 +155,7 @@ prod_deploy_job:
   tags:
     - prodapp
   only:
-    - tags
+    - prodapp
 
 prod_rollback_job:
   stage: rollback
@@ -168,7 +168,7 @@ prod_rollback_job:
   tags:
     - prodapp
   only:
-    - tags
+    - prodapp
 
 berygo_build_job:
   stage:  build
