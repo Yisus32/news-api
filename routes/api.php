@@ -29,7 +29,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
             "php"    =>  phpversion()
         ]);
     });
-
+    $router->get('/reporti/reservations', 'Reservation\ReservationController@report');
     /*
      *routes with report prefix
      * rutas con el prefijo report

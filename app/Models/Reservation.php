@@ -11,7 +11,8 @@ class Reservation extends CrudModel
 
     protected $table = 'reservations';
 
-    protected $fillable = ['teetime_id', 'hole_id','date', 'start_hour', 'end_hour', 'owner', 'partners', 'guests', 'status','created_at', 'updated_at'];
+    protected $fillable = ['teetime_id', 'hole_id','date', 'start_hour', 'end_hour', 'owner', 'partners', 'guests', 
+    'status','partners_name','owner_name','created_at', 'updated_at'];
 
     protected $hidden = [];
 

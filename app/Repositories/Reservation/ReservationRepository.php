@@ -7,6 +7,7 @@
 namespace App\Repositories\Reservation;
 
 use App\Core\CrudRepository;
+use App\Core\ReportService;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 
