@@ -94,7 +94,7 @@ qa_deploy_job:
   script:
     - docker stop qarubick2teetime-api || true
     - docker rm qarubick2teetime-api || true
-    - docker run -d --restart always --name qarubick2teetime-api -v qarubick2teetime-api-images:/var/www/html/public/images -v qarubick2teetime-api-images:/var/www/html/public/logos --network qaapp -p 8116:80  qarubick2teetime-api
+    - docker run -d --restart always --name qarubick2teetime-api --memory="512m" -v qarubick2teetime-api-images:/var/www/html/public/images -v qarubick2teetime-api-images:/var/www/html/public/logos --network qaapp -p 8116:80  qarubick2teetime-api
     - docker exec qarubick2teetime-api php artisan migrate
   when: on_success
   tags:
@@ -108,7 +108,7 @@ qa_rollback_job:
     - docker stop qarubick2teetime-api || true
     - docker rm qarubick2teetime-api || true
     - docker image tag qarubick2teetime-api:prev qarubick2teetime-api:latest || true
-    - docker run -d --restart always --name qarubick2teetime-api -v qarubick2teetime-api-images:/var/www/html/public/images -v qarubick2teetime-api-images:/var/www/html/public/logos --network qaapp -p 8116:80 qarubick2teetime-api
+    - docker run -d --restart always --name qarubick2teetime-api --memory="512m" -v qarubick2teetime-api-images:/var/www/html/public/images -v qarubick2teetime-api-images:/var/www/html/public/logos --network qaapp -p 8116:80 qarubick2teetime-api
   when: manual
   tags:
     - qaapp
@@ -149,7 +149,7 @@ prod_deploy_job:
   script:
     - docker stop rubick2teetime-api || true
     - docker rm rubick2teetime-api || true
-    - docker run -d --restart always --name rubick2teetime-api --network app -p 9020:80 rubick2teetime-api
+    - docker run -d --restart always --name rubick2teetime-api  --memory="512m" -v rubick2teetime-api-images:/var/www/html/public/images -v rubick2teetime-api-images:/var/www/html/public/logos --network app -p 9020:80 rubick2teetime-api
     - docker exec rubick2teetime-api php artisan migrate
   when: on_success
   tags:
@@ -163,7 +163,7 @@ prod_rollback_job:
     - docker stop rubick2teetime-api || true
     - docker rm rubick2teetime-api || true
     - docker image tag rubick2teetime-api:prev rubick2teetime-api:latest || true
-    - docker run -d --restart always --name rubick2teetime-api --network app -p 9020:80 rubick2teetime-api
+    - docker run -d --restart always --name rubick2teetime-api --memory="512m" -v rubick2teetime-api-images:/var/www/html/public/images -v rubick2teetime-api-images:/var/www/html/public/logos --network app -p 9020:80 rubick2teetime-api
   when: manual
   tags:
     - prodapp
@@ -195,11 +195,44 @@ berygo_deploy_job:
   script:
     - docker stop berygo-teetime-api || true
     - docker rm berygo-teetime-api || true
-    - docker run -d --restart always --name berygo-teetime-api --network app -p 9022:80 berygo-teetime-api
+    - docker run -d --restart always --name berygo-teetime-api --memory="512m" -v berygo-teetime-api-images:/var/www/html/public/images -v berygo-teetime-api-images:/var/www/html/public/logos --network app -p 9022:80 berygo-teetime-api
     - docker exec berygo-teetime-api php artisan migrate
   when: manual
   tags:
     - berygo
   only:
     - berygo
+
+aguaseo_build_job:
+  stage:  build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=rubick2aguaseo-teetime;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=rubick2aguaseo-teetime;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$AGUASEO_TEETIME_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=teetime.rubick.aguaseo.com;g" .env
+    - docker build -t aguaseo-teetime-api .
+  when: on_success
+  tags:
+    - qaapp
+  only:
+    - aguaseo
+
+aguaseo_deploy_job:
+  stage: deploy
+  script:
+    - docker stop aguaseo-teetime-api || true
+    - docker rm aguaseo-teetime-api || true
+    - docker run -d --restart always --name aguaseo-teetime-api --memory="512m" -v aguaseo-teetime-api-images:/var/www/html/public/images -v aguaseo-teetime-api-images:/var/www/html/public/logos --network app -p 9023:80 aguaseo-teetime-api
+    - docker exec aguaseo-teetime-api php artisan migrate
+  when: manual
+  tags:
+    - aguaseo
+  only:
+    - aguaseo
 
