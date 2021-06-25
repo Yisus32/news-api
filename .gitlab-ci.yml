@@ -88,7 +88,6 @@ qa_build_job:
   only :
     - qa
 
-
 qa_deploy_job:
   stage: deploy
   script:
@@ -219,7 +218,7 @@ aguaseo_build_job:
     - docker build -t aguaseo-teetime-api .
   when: on_success
   tags:
-    - qaapp
+    - aguaseo
   only:
     - aguaseo
 
