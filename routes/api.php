@@ -47,33 +47,36 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         });
     });
 
-    $router->get('holes', 'Hole\HoleController@_index');
+    
     $router->get('teetime_types', 'Teetime_type\Teetime_typeController@_index');
 
     $router->group(['middleware' => ['authorize']],function () use ($router) {
-        /** routes para Teetime_type **/ 
- 
-        
-        $router->get('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_show');
-        $router->post('teetime_types', 'Teetime_type\Teetime_typeController@_store');
-        $router->put('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_update');
-        $router->delete('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_delete');
-        
-        /** routes para Hole **/ 
-        
-        $router->get('holes/{id}', 'Hole\HoleController@_show');
-        $router->post('holes', 'Hole\HoleController@_store');
-        $router->put('holes/{id}', 'Hole\HoleController@_update');
-        $router->delete('holes/{id}', 'Hole\HoleController@_delete');
 
-        /** routes para Teetime **/ 
- 
-        $router->get('teetimes', 'Teetime\TeetimeController@_index');
-        $router->get('teetimes/{id}', 'Teetime\TeetimeController@_show');
-        $router->post('teetimes', 'Teetime\TeetimeController@_store');
-        $router->put('teetimes/{id}', 'Teetime\TeetimeController@_update');
-        $router->delete('teetimes/{id}', 'Teetime\TeetimeController@_delete');
     });
+
+    /** routes para Teetime_type **/ 
+
+
+    $router->get('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_show');
+    $router->post('teetime_types', 'Teetime_type\Teetime_typeController@_store');
+    $router->put('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_update');
+    $router->delete('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_delete');
+    
+    /** routes para Hole **/ 
+    
+    $router->get('holes', 'Hole\HoleController@_index');
+    $router->get('holes/{id}', 'Hole\HoleController@_show');
+    $router->post('holes', 'Hole\HoleController@_store');
+    $router->put('holes/{id}', 'Hole\HoleController@_update');
+    $router->delete('holes/{id}', 'Hole\HoleController@_delete');
+
+    /** routes para Teetime **/ 
+
+    $router->get('teetimes', 'Teetime\TeetimeController@_index');
+    $router->get('teetimes/{id}', 'Teetime\TeetimeController@_show');
+    $router->post('teetimes', 'Teetime\TeetimeController@_store');
+    $router->put('teetimes/{id}', 'Teetime\TeetimeController@_update');
+    $router->delete('teetimes/{id}', 'Teetime\TeetimeController@_delete');
 
     /** routes para Reservation **/ 
  

@@ -8,6 +8,7 @@ use App\Core\ReportService;
 use App\Models\Guest;
 use App\Models\Reservation;
 use App\Services\Reservation\ReservationService;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Validator;
 
 /** @property ReservationService $service */
@@ -59,8 +60,7 @@ class ReservationController extends CrudController
         
         $headers = ["Authorization" => $request->input('token')];
  
-        $user = $request->get('user')->value;
-        $user = $user->user;
+        $user = $this->getUser($request);
         foreach ($reservations as $reservation) {
 
             if (isset($reservation->guests)) {
@@ -72,8 +72,7 @@ class ReservationController extends CrudController
             'hora'=>'start_hour',
             'dueño'=>'owner_name',
             'socios'=>'partners_name',
-            'invitados'=>'guests',
-            'creado' => 'created_at',
+            'invitados'=>'guests'
         ];
         $info []=$reservations;
         $report = new ReportService();
@@ -103,5 +102,17 @@ class ReservationController extends CrudController
 
         return $guest_names;
 
+    }
+
+    public function getUser($request){
+        $client = new Client();
+
+        $user = $client->get(env('USERS_API') . 'get/user/' . $request->user_id);
+        if ($user->getStatusCode() == 200) {
+            $user = json_decode($user->getBody())->value;
+            
+            
+        }
+        return $user->user;
     }
 }
