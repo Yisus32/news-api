@@ -110,9 +110,9 @@ class UserService extends ServicesMesh
      * @param $id
      * @return array
      */
-    public function getUserById($id): array
+    public function getUserById($id)
     {
-        $uri = '/users?where=[{"op":"eq","field":"users.id","value":' . $id . '}]';
+        $uri = env('USERS_API') . 'get/user/' . $id ;
 
         try {
             $options = $this->getOptions($this->getHeaders($this->getRequest()));

@@ -46,6 +46,7 @@ class TeetimeRepository extends CrudRepository
             $holes_names = str_replace("}", '', $holes_names);
             $holes_names = explode(',', $holes_names);
             $teetime->holes_names = $holes_names;
+
         }
 
         return $teetimes;

@@ -7,7 +7,10 @@
 namespace App\Repositories\Reservation;
 
 use App\Core\CrudRepository;
+use App\Core\ReportService;
 use App\Models\Reservation;
+use App\Models\Teetime;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 /** @property Reservation $model */
@@ -17,6 +20,43 @@ class ReservationRepository extends CrudRepository
     public function __construct(Reservation $model)
     {
         parent::__construct($model);
+    }
+
+    public function _index($request = null, $user = null)
+    {
+        $reservations = parent::_index($request, $user);
+
+        foreach ($reservations as $reservation) {
+            $teetime = Teetime::find($reservation->teetime_id);
+
+            $date = $reservation->date . " " . $reservation->start_hour;
+            $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+            $reservation->available_time = $start->subHours($teetime->available);
+
+            $date = $reservation->date . " " . $reservation->start_hour;
+            $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+            $reservation->cancel_time = $start->subHours($teetime->cancel_time);
+        }
+
+        return $reservations;
+    }
+
+    public function _show($id)
+    {
+        $reservation = parent::_show($id);
+
+        $teetime = Teetime::find($reservation->teetime_id);
+
+        $date = $reservation->date . " " . $reservation->start_hour;
+        $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+        $reservation->available_time = $start->subHours($teetime->available);
+
+        $date = $reservation->date . " " . $reservation->start_hour;
+        $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+        $reservation->cancel_time = $start->subHours($teetime->cancel_time);
+
+        return $reservation;
+
     }
 
     public function _store(Request $data)

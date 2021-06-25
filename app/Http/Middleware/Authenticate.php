@@ -65,6 +65,8 @@ class Authenticate
            return response()->json(["error"=>true,"message"=>'unauthenticated '], 403);
         }
 
+        $request->attributes->add(['user' => $user]);
+
         return $next($request);
     }
 }

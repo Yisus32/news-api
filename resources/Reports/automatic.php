@@ -21,10 +21,10 @@
         font-size:12px ;
     }
 
-    tr:nth-child(even){background-color: #f2f2f2}
+    tr:nth-child(even){background-color: <?=$colors['secondary']?>;}
 
     th {
-        background-color: #E92610;
+        background-color: <?=$colors['primary']?>;
         color: white;
     }
     h1{
@@ -34,7 +34,7 @@
 </style>
 <body>
 <div>
-    <img  style="width: 100px;float: right;" src="<?php echo rtrim(app()->basePath('public/'."images/zipi.png"), '/'); ?>" alt="Logo">
+    <img  style="width: 100px;float: right;" src="<?php echo $logo ?>" alt="Logo">
     <div style="text-align: center;">
         <h2>Reporte <?= $title ?></h2>
     </div>
