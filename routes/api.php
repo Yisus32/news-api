@@ -110,3 +110,19 @@ $router->delete('break_times/{id}', 'Break_time\Break_timeController@_delete');
 
  
 
+ 
+/** routes para group **/ 
+ 
+$router->get('groups', 'group\groupController@_index');
+$router->get('groups/{id}', 'group\groupController@_show');
+$router->post('groups', 'group\groupController@_store');
+$router->put('groups/{id}', 'group\groupController@_update');
+$router->delete('groups/{id}', 'group\groupController@_destroy');
+ 
+/** routes para cars_golf **/ 
+ 
+$router->get('cars_golves', 'cars_golf\cars_golfController@_index');
+$router->get('cars_golves/{id}', 'cars_golf\cars_golfController@_show');
+$router->post('cars_golves', 'cars_golf\cars_golfController@_store');
+$router->put('cars_golves/{id}', 'cars_golf\cars_golfController@_update');
+$router->delete('cars_golves/{id}', 'cars_golf\cars_golfController@_destroy');
