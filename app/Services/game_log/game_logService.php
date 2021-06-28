@@ -28,7 +28,7 @@ class game_logService extends CrudService
 
     public function _show($id, $request = null)
     {
-        $id=Carbon::createFromFormat('d/m/Y',$id);
+        $id=strtotime($id);
         $fill=game_log::where('fecha',$id);
         $id=$fill;
         return parent::_show($id);
