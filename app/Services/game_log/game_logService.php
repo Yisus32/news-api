@@ -24,9 +24,6 @@ class game_logService extends CrudService
         parent::__construct($repository);
     }
 
-    public function _index(Request $request)
-    {
-        $list = game_log::where();
-    }
+    
 
 }
