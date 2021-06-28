@@ -15,7 +15,7 @@ class game_logController extends CrudController
         $this->validateStore = [
             'user_id' => 'required',
             'car_id' => 'required',
-            'hol_can' => 'required',
+            'hol_id' => 'required',
             'gro_id' => 'required'
             ];
     
