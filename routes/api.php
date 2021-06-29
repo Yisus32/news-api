@@ -96,22 +96,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     $router->post('guests', 'Guest\GuestController@_store');
     $router->put('guests/{id}', 'Guest\GuestController@_update');
     $router->delete('guests/{id}', 'Guest\GuestController@_delete');
-    
-}); 
- 
-/** routes para Break_time **/ 
- 
-$router->get('break_times', 'Break_time\Break_timeController@_index');
-$router->get('break_times/{id}', 'Break_time\Break_timeController@_show');
-$router->post('break_times', 'Break_time\Break_timeController@_store');
-$router->put('break_times/{id}', 'Break_time\Break_timeController@_update');
-$router->delete('break_times/{id}', 'Break_time\Break_timeController@_delete');
- 
 
- 
-
- 
-/** routes para group **/ 
+    /** routes para group **/ 
  
 $router->get('groups', 'group\groupController@_index');
 $router->get('groups/{id}', 'group\groupController@_show');
@@ -142,3 +128,19 @@ $router->get('number_holes/{id}', 'number_holes\number_holesController@_show');
 $router->post('number_holes', 'number_holes\number_holesController@_store');
 $router->put('number_holes/{id}', 'number_holes\number_holesController@_update');
 $router->delete('number_holes/{id}', 'number_holes\number_holesController@_destroy');
+    
+}); 
+ 
+/** routes para Break_time **/ 
+ 
+$router->get('break_times', 'Break_time\Break_timeController@_index');
+$router->get('break_times/{id}', 'Break_time\Break_timeController@_show');
+$router->post('break_times', 'Break_time\Break_timeController@_store');
+$router->put('break_times/{id}', 'Break_time\Break_timeController@_update');
+$router->delete('break_times/{id}', 'Break_time\Break_timeController@_delete');
+ 
+
+ 
+
+ 
+
