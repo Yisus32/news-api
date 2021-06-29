@@ -99,37 +99,41 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
     /** routes para group **/ 
  
-    $router->get('groups', 'group\groupController@_index');
-    $router->get('groups/{id}', 'group\groupController@_show');
-    $router->post('groups', 'group\groupController@_store');
-    $router->put('groups/{id}', 'group\groupController@_update');
-    $router->delete('groups/{id}', 'group\groupController@_destroy');
-    
-    /** routes para cars_golf **/ 
-    
-    $router->get('cars_golves', 'cars_golf\cars_golfController@_index');
-    $router->get('cars_golves/{id}', 'cars_golf\cars_golfController@_show');
-    $router->post('cars_golves', 'cars_golf\cars_golfController@_store');
-    $router->put('cars_golves/{id}', 'cars_golf\cars_golfController@_update');
-    $router->delete('cars_golves/{id}', 'cars_golf\cars_golfController@_destroy');
-    
-    /** routes para game_log **/ 
-    
-    $router->get('game_logs', 'game_log\game_logController@_index');
-    $router->get('game_logs/{id}', 'game_log\game_logController@_show');
-    $router->post('game_logs', 'game_log\game_logController@_store');
-    $router->put('game_logs/{id}', 'game_log\game_logController@_update');
-    $router->delete('game_logs/{id}', 'game_log\game_logController@_destroy');
-    
-    /** routes para number_holes **/ 
-    
-    $router->get('number_holes', 'number_holes\number_holesController@_index');
-    $router->get('number_holes/{id}', 'number_holes\number_holesController@_show');
-    $router->post('number_holes', 'number_holes\number_holesController@_store');
-    $router->put('number_holes/{id}', 'number_holes\number_holesController@_update');
-    $router->delete('number_holes/{id}', 'number_holes\number_holesController@_destroy');
+$router->get('groups', 'group\groupController@_index');
+$router->get('groups/{id}', 'group\groupController@_show');
+$router->post('groups', 'group\groupController@_store');
+$router->put('groups/{id}', 'group\groupController@_update');
+$router->delete('groups/{id}', 'group\groupController@_destroy');
+ 
+/** routes para cars_golf **/ 
+ 
+$router->get('cars_golves', 'cars_golf\cars_golfController@_index');
+$router->get('cars_golves/{id}', 'cars_golf\cars_golfController@_show');
+$router->post('cars_golves', 'cars_golf\cars_golfController@_store');
+$router->put('cars_golves/{id}', 'cars_golf\cars_golfController@_update');
+$router->delete('cars_golves/{id}', 'cars_golf\cars_golfController@_destroy');
+ 
+
+/** routes para number_holes **/ 
+ 
+$router->get('number_holes', 'number_holes\number_holesController@_index');
+$router->get('number_holes/{id}', 'number_holes\number_holesController@_show');
+$router->post('number_holes', 'number_holes\number_holesController@_store');
+$router->put('number_holes/{id}', 'number_holes\number_holesController@_update');
+$router->delete('number_holes/{id}', 'number_holes\number_holesController@_destroy');
+
+/** routes para game_log **/ 
+ 
+$router->get('game_logs', 'game_log\game_logController@_index');
+$router->get('game_logs/{id}', 'game_log\game_logController@_show');
+$router->post('game_logs', 'game_log\game_logController@_store');
+$router->put('game_logs/{id}', 'game_log\game_logController@_update');
+$router->delete('game_logs/{id}', 'game_log\game_logController@_destroy');
+$router->post('game_logs/date/{fecha}','game_log\game_logController@filter_by_date');
+$router->get('game_logs/group', 'game_log\game_logController@list_by_group');
     
 }); 
+
  
 /** routes para Break_time **/ 
  
