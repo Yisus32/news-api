@@ -24,15 +24,6 @@ class game_logService extends CrudService
     {
         parent::__construct($repository);
     }
-     
-
-    public function _show($id, $request = null)
-    {
-        $id=strtotime($id);
-        $fill=game_log::where('fecha',$id);
-        $id=$fill;
-        return parent::_show($id);
-    }
     
 
 }

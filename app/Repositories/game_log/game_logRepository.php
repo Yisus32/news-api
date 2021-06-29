@@ -19,4 +19,5 @@ class game_logRepository extends CrudRepository
     }
 
 
+
 }

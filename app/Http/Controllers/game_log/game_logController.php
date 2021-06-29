@@ -5,6 +5,7 @@ namespace App\Http\Controllers\game_log;
 use Illuminate\Http\Request;
 use App\Core\CrudController;
 use App\Services\game_log\game_logService;
+use App\Models\game_log;
 /** @property game_logService $service */
 class game_logController extends CrudController
 {
@@ -23,4 +24,14 @@ class game_logController extends CrudController
             "required" => "El campo ' :attribute ' es requerido"
         ];
     }
+
+    public function filter_by_date($fecha)
+    {
+        $fec=date('Y-m-d',strtotime($fecha));
+        $fill=game_log::where('fecha',$fec)->get();
+        return response()->json($fill);
+    }
+     
+   
+    
 }
