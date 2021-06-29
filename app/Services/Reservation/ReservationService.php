@@ -8,6 +8,7 @@ namespace App\Services\Reservation;
 
 
 use App\Core\CrudService;
+use App\Models\Guest;
 use App\Models\Reservation;
 use App\Models\Teetime;
 use App\Repositories\Reservation\ReservationRepository;
@@ -96,6 +97,39 @@ class ReservationService extends CrudService
             return response()->json(["error" => true, "message" => "El número máximo de jugadores es $teetime->max_capacity"], 409);
         }elseif ($number_players < $teetime->min_capacity) {
             return response()->json(["error" => true, "message" => "El número mínimo de jugadores es $teetime->min_capacity"], 409);
+        }
+
+        // checar número de juegos en el mes de los invitados
+
+        foreach ($request->guests as $guest) {
+            $guest_exist = Guest::find($guest);
+            
+            if (!$guest_exist) {
+                return response()->json(["error" => true, "message" => "Un invitado ingresado no es valido"], 409);
+            }
+            // checar reinicio de mes
+            if ($guest_exist->games_number_month > 0) {
+                $now = Carbon::now();
+                $month = $now->month;
+                if ($guest_exist->month_last_game != $month) {
+                    $guest_exist->games_number_month = 0;
+                    $guest_exist->month_last_game = $month;
+                }
+            }
+
+            if ($guest_exist->games_number_month >= 2) {
+
+                return response()->json(["error" => true, "message" => "El invitado $guest->full_name ya ha superado el limite de juegos por mes"], 409);
+            }
+
+
+            $now = Carbon::now();
+            $guest_exist->month_last_game = $now->month;
+            $guest_exist->games_number = $guest_exist->games_number + 1;
+            $guest_exist->games_number_month = $guest_exist->games_number_month + 1;
+
+            $guest_exist->save();
+            
         }
 
         // comienza a guardar los datos
