@@ -124,13 +124,14 @@ $router->delete('number_holes/{id}', 'number_holes\number_holesController@_destr
 
 /** routes para game_log **/ 
  
+$router->get('game_logs/group', 'game_log\game_logController@list_by_group');
 $router->get('game_logs', 'game_log\game_logController@_index');
 $router->get('game_logs/{id}', 'game_log\game_logController@_show');
 $router->post('game_logs', 'game_log\game_logController@_store');
 $router->put('game_logs/{id}', 'game_log\game_logController@_update');
 $router->delete('game_logs/{id}', 'game_log\game_logController@_destroy');
 $router->post('game_logs/date/{fecha}','game_log\game_logController@filter_by_date');
-$router->get('game_logs/group', 'game_log\game_logController@list_by_group');
+
     
 }); 
 
