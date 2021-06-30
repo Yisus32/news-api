@@ -7,6 +7,7 @@
 namespace App\Repositories\Teetime;
 
 use App\Core\CrudRepository;
+use App\Models\Break_time;
 use App\Models\Reservation;
 use App\Models\Teetime;
 use Carbon\Carbon;
@@ -47,6 +48,8 @@ class TeetimeRepository extends CrudRepository
             $holes_names = explode(',', $holes_names);
             $teetime->holes_names = $holes_names;
 
+            $teetime->break_times = Break_time::where('teetime_id', '=', "$teetime->id")->get();
+
         }
 
         return $teetimes;
@@ -77,6 +80,8 @@ class TeetimeRepository extends CrudRepository
             $holes_names = str_replace("}", '', $holes_names);
             $holes_names = explode(',', $holes_names);
             $teetime->holes_names = $holes_names;
+
+            $teetime->break_times = Break_time::where('teetime_id', '=', "$teetime->id")->get();
 
             return $teetime;
         }
