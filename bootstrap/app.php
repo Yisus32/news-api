@@ -72,6 +72,11 @@ $app->routeMiddleware([
 $app->routeMiddleware([
     'authorize' => App\Http\Middleware\Authorize::class,
 ]);
+
+$app->routeMiddleware([
+    'cors' => \App\Http\Middleware\Cors::class, 
+]);
+
 $app->middleware([
 	'Nord\Lumen\Cors\CorsMiddleware',
 ]);
