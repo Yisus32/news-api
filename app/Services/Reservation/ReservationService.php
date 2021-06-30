@@ -53,6 +53,53 @@ class ReservationService extends CrudService
         return parent::_index($request);
     }
 
+    public function _store(Request $request)
+    {
+        $reservations = Reservation::where('status', '=', 'reservado')->get();
+        
+        if (count($reservations) > 0) {
+            $now = Carbon::now();
+
+            foreach ($reservations as $reservation) {
+
+                $check = Carbon::createFromFormat('Y-m-d H:i:s', $reservation->updated_at);
+                $check->addMinutes(5);
+
+                if ($now > $check) {
+                    $reservation->status = 'no reservado';
+                    $reservation->update();
+                }
+
+            }
+
+        }
+
+        $exist = Reservation::where('date', '=', "$request->date")->where('start_hour', '=', "$request->start_hour")->
+                            where('status', '=', "registrado")->first();
+
+        if ($exist) {
+            return response()->json(["error" => true, "message" => "La hora ingresada ya ha sido ocupada por otro jugador"], 409);
+        }
+
+        //checar tiempo de disponibilidad
+
+        $teetime = Teetime::find($request->teetime_id);
+
+        $date = $request->date . ' '. $request->start_hour;
+
+        $final = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+        $final->subHours($teetime->available_time);
+
+        $now = Carbon::now(env('APP_TIMEZONE'));
+
+        // verificar que se esta eliminando con el tiempo de anticipacion
+        if ($now->greaterThan($final)) {
+            return response()->json(["error" => true, "message" => "La fecha ingresada no cumple con el tiempo de disponibilidad"], 409);
+        }
+
+        return parent::_store($request);
+    }
+
     public function reservation_register($id, Request $request){
 
         $reservation = Reservation::find($id);

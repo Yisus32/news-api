@@ -102,9 +102,9 @@ class TeetimeRepository extends CrudRepository
 
         $teetime->break_times = $break_times;
 
-       $reservations = $this->create_reservations($teetime, $holes, $days);
+     //  $reservations = $this->create_reservations($teetime, $holes, $days);
 
-       $teetime->reservations()->createMany($reservations);
+       //$teetime->reservations()->createMany($reservations);
         
         return  $teetime;
     }
@@ -142,9 +142,9 @@ class TeetimeRepository extends CrudRepository
         $days = str_replace('}', '', $days);
         $days = explode(",", $days);
 
-        $reservations = $this->create_reservations($teetime, $holes, $days);
+    //    $reservations = $this->create_reservations($teetime, $holes, $days);
 
-        $teetime->reservations()->createMany($reservations);
+      //  $teetime->reservations()->createMany($reservations);
 
         return $teetime;
     }

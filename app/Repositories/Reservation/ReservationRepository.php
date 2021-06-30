@@ -61,15 +61,19 @@ class ReservationRepository extends CrudRepository
 
     public function _store(Request $data)
     {
-        if (isset($data["partners"])){
+     /*   if (isset($data["partners"])){
             $data["partners"] = $this->model->formatTypeArray($data["partners"]);
         }
         if (isset($data["guests"])){
             $data["guests"] = $this->model->formatTypeArray($data["guests"]);
+        }*/
+
+        if (!isset($data->status)) {
+            $data->status = "reservado";
         }
-        $reservation = parent::_store($data);
         
-        return  $reservation;
+        return parent::_store($data);
+
     }
 
     public function _update($id, $data)
