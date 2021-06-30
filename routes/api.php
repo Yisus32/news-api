@@ -54,85 +54,88 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
     });
 
-    /** routes para Teetime_type **/ 
+    $router->group(['middleware' => ['cors']],function () use ($router) {
+        /** routes para Teetime_type **/ 
 
+        $router->get('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_show');
+        $router->post('teetime_types', 'Teetime_type\Teetime_typeController@_store');
+        $router->put('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_update');
+        $router->delete('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_delete');
+        
+        /** routes para Hole **/ 
+        
+        $router->get('holes', 'Hole\HoleController@_index');
+        $router->get('holes/{id}', 'Hole\HoleController@_show');
+        $router->post('holes', 'Hole\HoleController@_store');
+        $router->put('holes/{id}', 'Hole\HoleController@_update');
+        $router->delete('holes/{id}', 'Hole\HoleController@_delete');
 
-    $router->get('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_show');
-    $router->post('teetime_types', 'Teetime_type\Teetime_typeController@_store');
-    $router->put('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_update');
-    $router->delete('teetime_types/{id}', 'Teetime_type\Teetime_typeController@_delete');
+        /** routes para Teetime **/ 
+
+        $router->get('teetimes', 'Teetime\TeetimeController@_index');
+        $router->get('teetimes/{id}', 'Teetime\TeetimeController@_show');
+        $router->post('teetimes', 'Teetime\TeetimeController@_store');
+        $router->put('teetimes/{id}', 'Teetime\TeetimeController@_update');
+        $router->delete('teetimes/{id}', 'Teetime\TeetimeController@_delete');
+
+        /** routes para Reservation **/ 
     
-    /** routes para Hole **/ 
+        $router->get('reservations', 'Reservation\ReservationController@_index');
+        $router->get('reservations/{id}', 'Reservation\ReservationController@_show');
+    // $router->post('reservations', 'Reservation\ReservationController@_store');
+        $router->put('reservations/{id}', 'Reservation\ReservationController@_update');
+        $router->delete('reservations/{id}', 'Reservation\ReservationController@_delete');
+
+        $router->post('reservations/take/{id}', 'Reservation\ReservationController@take');
+        $router->post('reservations/register/{id}', 'Reservation\ReservationController@reservation_register');
+
+        /** routes para Guest **/ 
     
-    $router->get('holes', 'Hole\HoleController@_index');
-    $router->get('holes/{id}', 'Hole\HoleController@_show');
-    $router->post('holes', 'Hole\HoleController@_store');
-    $router->put('holes/{id}', 'Hole\HoleController@_update');
-    $router->delete('holes/{id}', 'Hole\HoleController@_delete');
+        $router->get('guests', 'Guest\GuestController@_index');
+        $router->get('guests/{id}', 'Guest\GuestController@_show');
+        $router->post('guests', 'Guest\GuestController@_store');
+        $router->put('guests/{id}', 'Guest\GuestController@_update');
+        $router->delete('guests/{id}', 'Guest\GuestController@_delete');
 
-    /** routes para Teetime **/ 
+            /** routes para group **/ 
+        
+        $router->get('groups', 'group\groupController@_index');
+        $router->get('groups/{id}', 'group\groupController@_show');
+        $router->post('groups', 'group\groupController@_store');
+        $router->put('groups/{id}', 'group\groupController@_update');
+        $router->delete('groups/{id}', 'group\groupController@_destroy');
+        
+        /** routes para cars_golf **/ 
+        
+        $router->get('cars_golves', 'cars_golf\cars_golfController@_index');
+        $router->get('cars_golves/{id}', 'cars_golf\cars_golfController@_show');
+        $router->post('cars_golves', 'cars_golf\cars_golfController@_store');
+        $router->put('cars_golves/{id}', 'cars_golf\cars_golfController@_update');
+        $router->delete('cars_golves/{id}', 'cars_golf\cars_golfController@_destroy');
+        
 
-    $router->get('teetimes', 'Teetime\TeetimeController@_index');
-    $router->get('teetimes/{id}', 'Teetime\TeetimeController@_show');
-    $router->post('teetimes', 'Teetime\TeetimeController@_store');
-    $router->put('teetimes/{id}', 'Teetime\TeetimeController@_update');
-    $router->delete('teetimes/{id}', 'Teetime\TeetimeController@_delete');
+        /** routes para number_holes **/ 
+        
+        $router->get('number_holes', 'number_holes\number_holesController@_index');
+        $router->get('number_holes/{id}', 'number_holes\number_holesController@_show');
+        $router->post('number_holes', 'number_holes\number_holesController@_store');
+        $router->put('number_holes/{id}', 'number_holes\number_holesController@_update');
+        $router->delete('number_holes/{id}', 'number_holes\number_holesController@_destroy');
 
-    /** routes para Reservation **/ 
- 
-    $router->get('reservations', 'Reservation\ReservationController@_index');
-    $router->get('reservations/{id}', 'Reservation\ReservationController@_show');
-   // $router->post('reservations', 'Reservation\ReservationController@_store');
-    $router->put('reservations/{id}', 'Reservation\ReservationController@_update');
-    $router->delete('reservations/{id}', 'Reservation\ReservationController@_delete');
-
-    $router->post('reservations/take/{id}', 'Reservation\ReservationController@take');
-    $router->post('reservations/register/{id}', 'Reservation\ReservationController@reservation_register');
-
-    /** routes para Guest **/ 
- 
-    $router->get('guests', 'Guest\GuestController@_index');
-    $router->get('guests/{id}', 'Guest\GuestController@_show');
-    $router->post('guests', 'Guest\GuestController@_store');
-    $router->put('guests/{id}', 'Guest\GuestController@_update');
-    $router->delete('guests/{id}', 'Guest\GuestController@_delete');
-
-    /** routes para group **/ 
- 
-$router->get('groups', 'group\groupController@_index');
-$router->get('groups/{id}', 'group\groupController@_show');
-$router->post('groups', 'group\groupController@_store');
-$router->put('groups/{id}', 'group\groupController@_update');
-$router->delete('groups/{id}', 'group\groupController@_destroy');
- 
-/** routes para cars_golf **/ 
- 
-$router->get('cars_golves', 'cars_golf\cars_golfController@_index');
-$router->get('cars_golves/{id}', 'cars_golf\cars_golfController@_show');
-$router->post('cars_golves', 'cars_golf\cars_golfController@_store');
-$router->put('cars_golves/{id}', 'cars_golf\cars_golfController@_update');
-$router->delete('cars_golves/{id}', 'cars_golf\cars_golfController@_destroy');
- 
-
-/** routes para number_holes **/ 
- 
-$router->get('number_holes', 'number_holes\number_holesController@_index');
-$router->get('number_holes/{id}', 'number_holes\number_holesController@_show');
-$router->post('number_holes', 'number_holes\number_holesController@_store');
-$router->put('number_holes/{id}', 'number_holes\number_holesController@_update');
-$router->delete('number_holes/{id}', 'number_holes\number_holesController@_destroy');
-
-/** routes para game_log **/ 
- 
-$router->get('game_logs/group', 'game_log\game_logController@list_by_group');
-$router->get('game_logs', 'game_log\game_logController@_index');
-$router->get('game_logs/{id}', 'game_log\game_logController@_show');
-$router->post('game_logs', 'game_log\game_logController@_store');
-$router->put('game_logs/{id}', 'game_log\game_logController@_update');
-$router->delete('game_logs/{id}', 'game_log\game_logController@_destroy');
-$router->post('game_logs/date/{fecha}','game_log\game_logController@filter_by_date');
+        /** routes para game_log **/ 
+        
+        $router->get('game_logs/group', 'game_log\game_logController@list_by_group');
+        $router->get('game_logs', 'game_log\game_logController@_index');
+        $router->get('game_logs/{id}', 'game_log\game_logController@_show');
+        $router->post('game_logs', 'game_log\game_logController@_store');
+        $router->put('game_logs/{id}', 'game_log\game_logController@_update');
+        $router->delete('game_logs/{id}', 'game_log\game_logController@_destroy');
+        $router->post('game_logs/date/{fecha}','game_log\game_logController@filter_by_date');
+    });
 
     
+
+        
 }); 
 
  
