@@ -24,8 +24,8 @@ class ReservationController extends CrudController
         $this->validateStore = [
             'teetime_id' => 'required', 
             'hole_id' => 'required',
- //           'date' => 'required',
-   //         'start_hour' => 'required',
+            'date' => 'required',
+            'start_hour' => 'required',
      //       'end_hour' => 'required',
             'owner' => 'required'
         ];
