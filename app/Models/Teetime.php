@@ -16,6 +16,20 @@ class Teetime extends CrudModel
 
     protected $hidden = [];
 
+       /**
+     * @return HasMany
+     */
+    public function break_times(){
+        return $this->hasMany(Break_time::class,'teetime_id','id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function reservations(){
+        return $this->hasMany(Reservation::class,'teetime_id','id');
+    }
+
 
     /**
      * @named Funcion para convertir a string (Estandarizada)
@@ -40,17 +54,5 @@ class Teetime extends CrudModel
         return '{}';
     }
 
-    /**
-     * @return HasMany
-     */
-    public function break_times(){
-        return $this->hasMany(Break_time::class,'teetime_id','id');
-    }
-
-    /**
-     * @return HasMany
-     */
-    public function reservations(){
-        return $this->hasMany(Reservation::class,'teetime_id','id');
-    }
+ 
 }
