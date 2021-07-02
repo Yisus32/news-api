@@ -45,15 +45,19 @@ class ReservationRepository extends CrudRepository
     {
         $reservation = parent::_show($id);
 
-        $teetime = Teetime::find($reservation->teetime_id);
+        if ($reservation) {
+            
+            $teetime = Teetime::find($reservation->teetime_id);
 
-        $date = $reservation->date . " " . $reservation->start_hour;
-        $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-        $reservation->available_time = $start->subHours($teetime->available);
+            $date = $reservation->date . " " . $reservation->start_hour;
+            $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+            $reservation->available_time = $start->subHours($teetime->available);
 
-        $date = $reservation->date . " " . $reservation->start_hour;
-        $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-        $reservation->cancel_time = $start->subHours($teetime->cancel_time);
+            $date = $reservation->date . " " . $reservation->start_hour;
+            $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+            $reservation->cancel_time = $start->subHours($teetime->cancel_time);
+
+        }
 
         return $reservation;
 

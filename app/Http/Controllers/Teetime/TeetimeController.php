@@ -29,4 +29,38 @@ class TeetimeController extends CrudController
             "required" => "El campo ' :attribute ' es requerido"
         ];
     }
+
+    public function _store(Request $request)
+    {
+        if (isset($request->target)) {
+            if (!is_array($request->target)) {
+                return response()->json(["error" => true, "message" => "la variable target debe ser array"], 400);
+            }
+        }
+
+        if (isset($request->days)) {
+            if (!is_array($request->days)) {
+                return response()->json(["error" => true, "message" => "la variable days debe ser array"], 400);
+            }
+        }
+
+        return parent::_store($request);
+    }
+
+    public function _update($id, Request $request)
+    {
+        if (isset($request->target)) {
+            if (!is_array($request->target)) {
+                return response()->json(["error" => true, "message" => "la variable target debe ser array"], 400);
+            }
+        }
+
+        if (isset($request->days)) {
+            if (!is_array($request->days)) {
+                return response()->json(["error" => true, "message" => "la variable days debe ser array"], 400);
+            }
+        }
+
+        return parent::_update($id, $request);
+    }
 }
