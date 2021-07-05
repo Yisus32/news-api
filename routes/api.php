@@ -162,3 +162,19 @@ $router->delete('break_times/{id}', 'Break_time\Break_timeController@_delete');
 
  
 
+ 
+/** routes para toalla **/ 
+ 
+$router->get('toallas', 'toalla\toallaController@_index');
+$router->get('toallas/{id}', 'toalla\toallaController@_show');
+$router->post('toallas', 'toalla\toallaController@_store');
+$router->put('toallas/{id}', 'toalla\toallaController@_update');
+$router->delete('toallas/{id}', 'toalla\toallaController@_destroy');
+ 
+/** routes para asig_toalla **/ 
+ 
+$router->get('asig_toallas', 'asig_toalla\asig_toallaController@_index');
+$router->get('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_show');
+$router->post('asig_toallas', 'asig_toalla\asig_toallaController@_store');
+$router->put('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_update');
+$router->delete('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_destroy');

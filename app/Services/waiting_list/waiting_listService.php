@@ -29,21 +29,23 @@ class waiting_listService extends CrudService
 
     public function _store(Request $request)
     {
-        $data=json_decode($request);
-
-
-        $teetime_exist=Teetime::find($data[3]);
-
-        $fec=DB::table('teetimes')->select('start_date','end_date')->where('id',$data[3])->get();
-        
-        foreach ($fec as $i)
+        $date=$request->all();
+        foreach($date as $e)
         {
-            $inter=waiting_list::whereBetween('date',[$fec['start_date'],$fec[1]])->get();
-            return response()->json($inter);
-        }
-           
+            $r=$e[0];
+            $w=settype($r,'integer');
+            $fec=DB::table('teetimes')->select('start_date','end_date')->where('id',$w)->get()->toArray();
+
+        //de aqui ya no funciona
+            $inter=waiting_list::whereBetween('date',[$fec[0]->start_date, $fec[0]->end_date])->get();
+            if($inter->count()==0)
+            {
+                return response()->json(['error' => true, 'message' => "No existe un teetime en el intervalo de fechas"],400);
+            }
         
-     
+        }
+    
+            
         
         
        
