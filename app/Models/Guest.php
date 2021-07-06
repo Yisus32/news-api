@@ -17,8 +17,8 @@ class Guest extends CrudModel
     protected $hidden = [];
 
     /**
-     * @return HasMany
-     */
+     * @return HasMany  
+     */ 
     public function documents(){
         return $this->hasMany(Document::class,'guest_id','id');
     }
