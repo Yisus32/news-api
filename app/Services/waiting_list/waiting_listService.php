@@ -31,14 +31,15 @@ class waiting_listService extends CrudService
     {
         $date=$request->all();
         foreach($date as $e)
-        {
+        { 
             $r=$e[0];
             $w=settype($r,'integer');
             $fec=DB::table('teetimes')->select('start_date','end_date')->where('id',$w)->get()->toArray();
 
-        //de aqui ya no funciona
-            $inter=waiting_list::whereBetween('date',[$fec[0]->start_date, $fec[0]->end_date])->get();
-            if($inter->count()==0)
+            $inter=teeTime::whereBetween('start_date',[$fec[0]->start_date,$date['date']])->get();
+            $endint=teeTime::whereBetween('end_date',[$fec[0]->end_date,$date['date']])->get();
+
+            if($inter->count()==0 or $endint->count()==0 )
             {
                 return response()->json(['error' => true, 'message' => "No existe un teetime en el intervalo de fechas"],400);
             }
