@@ -103,7 +103,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('groups/{id}', 'group\groupController@_show');
         $router->post('groups', 'group\groupController@_store');
         $router->put('groups/{id}', 'group\groupController@_update');
-        $router->delete('groups/{id}', 'group\groupController@_destroy');
+        $router->delete('groups/{id}', 'group\groupController@_delete');
         
         /** routes para cars_golf **/ 
         
@@ -111,7 +111,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('cars_golves/{id}', 'cars_golf\cars_golfController@_show');
         $router->post('cars_golves', 'cars_golf\cars_golfController@_store');
         $router->put('cars_golves/{id}', 'cars_golf\cars_golfController@_update');
-        $router->delete('cars_golves/{id}', 'cars_golf\cars_golfController@_destroy');
+        $router->delete('cars_golves/{id}', 'cars_golf\cars_golfController@_delete');
         
 
         /** routes para number_holes **/ 
@@ -120,7 +120,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('number_holes/{id}', 'number_holes\number_holesController@_show');
         $router->post('number_holes', 'number_holes\number_holesController@_store');
         $router->put('number_holes/{id}', 'number_holes\number_holesController@_update');
-        $router->delete('number_holes/{id}', 'number_holes\number_holesController@_destroy');
+        $router->delete('number_holes/{id}', 'number_holes\number_holesController@_delete');
 
         /** routes para game_log **/ 
         
@@ -129,8 +129,16 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('game_logs/{id}', 'game_log\game_logController@_show');
         $router->post('game_logs', 'game_log\game_logController@_store');
         $router->put('game_logs/{id}', 'game_log\game_logController@_update');
-        $router->delete('game_logs/{id}', 'game_log\game_logController@_destroy');
+        $router->delete('game_logs/{id}', 'game_log\game_logController@_delete');
         $router->post('game_logs/date/{fecha}','game_log\game_logController@filter_by_date');
+
+        /** routes para waiting_list **/ 
+ 
+        $router->get('waiting_lists', 'waiting_list\waiting_listController@_index');
+        $router->get('waiting_lists/{id}', 'waiting_list\waiting_listController@_show');
+        $router->post('waiting_lists', 'waiting_list\waiting_listController@_store');
+        $router->put('waiting_lists/{id}', 'waiting_list\waiting_listController@_update');
+        $router->delete('waiting_lists/{id}', 'waiting_list\waiting_listController@_delete');
     });
 
     
@@ -152,3 +160,21 @@ $router->delete('break_times/{id}', 'Break_time\Break_timeController@_delete');
 
  
 
+ 
+
+ 
+/** routes para toalla **/ 
+ 
+$router->get('toallas', 'toalla\toallaController@_index');
+$router->get('toallas/{id}', 'toalla\toallaController@_show');
+$router->post('toallas', 'toalla\toallaController@_store');
+$router->put('toallas/{id}', 'toalla\toallaController@_update');
+$router->delete('toallas/{id}', 'toalla\toallaController@_destroy');
+ 
+/** routes para asig_toalla **/ 
+ 
+$router->get('asig_toallas', 'asig_toalla\asig_toallaController@_index');
+$router->get('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_show');
+$router->post('asig_toallas', 'asig_toalla\asig_toallaController@_store');
+$router->put('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_update');
+$router->delete('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_destroy');
