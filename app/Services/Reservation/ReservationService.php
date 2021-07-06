@@ -75,7 +75,8 @@ class ReservationService extends CrudService
         }
 
         $exist = Reservation::where('date', '=', "$request->date")->where('start_hour', '=', "$request->start_hour")->
-                            where('status', '=', "registrado")->first();
+                            where('hole_id', '=', "$request->hole_id")
+                            ->where('status', '=', "registrado")->first();
 
         if ($exist) {
             return response()->json(["error" => true, "message" => "La hora ingresada ya ha sido ocupada por otro jugador"], 409);
