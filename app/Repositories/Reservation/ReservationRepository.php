@@ -24,10 +24,13 @@ class ReservationRepository extends CrudRepository
 
     public function _index($request = null, $user = null)
     {
-        $reservations = Reservation::select(['reservations.*', 'holes.name as hole_name'])
+        $reservations = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 'teetimes.min_capacity'])
                         ->join('holes', 'holes.id', '=', 'reservations.hole_id')
+                        ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
                         ->groupBy('reservations.id')
                         ->groupBy('holes.name')
+                        ->groupBy('teetimes.max_capacity')
+                        ->groupBy('teetimes.min_capacity')
                         ->get();
 
         foreach ($reservations as $reservation) {
@@ -50,10 +53,13 @@ class ReservationRepository extends CrudRepository
     public function _show($id)
     {
 
-        $reservation = Reservation::select(['reservations.*', 'holes.name as hole_name'])
+        $reservation = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 'teetimes.min_capacity'])
                         ->join('holes', 'holes.id', '=', 'reservations.hole_id')
+                        ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
                         ->groupBy('reservations.id')
                         ->groupBy('holes.name')
+                        ->groupBy('teetimes.max_capacity')
+                        ->groupBy('teetimes.min_capacity')
                         ->where('reservations.id', '=', "$id")
                         ->first();
 
