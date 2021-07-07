@@ -50,8 +50,9 @@ class ReservationService extends CrudService
             }
 
         }
-        
+
         return parent::_index($request);
+
     }
 
     public function _store(Request $request)

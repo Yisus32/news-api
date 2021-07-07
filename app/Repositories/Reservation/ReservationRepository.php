@@ -24,18 +24,24 @@ class ReservationRepository extends CrudRepository
 
     public function _index($request = null, $user = null)
     {
-        $reservations = parent::_index($request, $user);
+        $reservations = Reservation::select(['reservations.*', 'holes.name as hole_name'])
+                        ->join('holes', 'holes.id', '=', 'reservations.hole_id')
+                        ->groupBy('reservations.id')
+                        ->groupBy('holes.name')
+                        ->get();
 
         foreach ($reservations as $reservation) {
             $teetime = Teetime::find($reservation->teetime_id);
 
             $date = $reservation->date . " " . $reservation->start_hour;
             $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-            $reservation->available_time = $start->subHours($teetime->available);
+            $reservation->available_time = $start->subHours($teetime->available)->format('Y-m-d H:i:s');
 
             $date = $reservation->date . " " . $reservation->start_hour;
             $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-            $reservation->cancel_time = $start->subHours($teetime->cancel_time);
+            $reservation->cancel_time = $start->subHours($teetime->cancel_time)->format('Y-m-d H:i:s');
+
+           
         }
 
         return $reservations;
@@ -43,7 +49,13 @@ class ReservationRepository extends CrudRepository
 
     public function _show($id)
     {
-        $reservation = parent::_show($id);
+
+        $reservation = Reservation::select(['reservations.*', 'holes.name as hole_name'])
+                        ->join('holes', 'holes.id', '=', 'reservations.hole_id')
+                        ->groupBy('reservations.id')
+                        ->groupBy('holes.name')
+                        ->where('reservations.id', '=', "$id")
+                        ->first();
 
         if ($reservation) {
             
@@ -51,11 +63,11 @@ class ReservationRepository extends CrudRepository
 
             $date = $reservation->date . " " . $reservation->start_hour;
             $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-            $reservation->available_time = $start->subHours($teetime->available);
+            $reservation->available_time = $start->subHours($teetime->available)->format('Y-m-d H:i:s');
 
             $date = $reservation->date . " " . $reservation->start_hour;
             $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-            $reservation->cancel_time = $start->subHours($teetime->cancel_time);
+            $reservation->cancel_time = $start->subHours($teetime->cancel_time)->format('Y-m-d H:i:s');
 
         }
 
