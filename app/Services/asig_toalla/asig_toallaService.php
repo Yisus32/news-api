@@ -30,7 +30,7 @@ class asig_toallaService extends CrudService
     {
         $date=$request->all();
         $toalla=toalla::where('id',$date['id_toalla'])->first();
-        $toalla->fec=$date['fec_fin'];
+        $toalla->fec=$date['fec_ini'];
         $toalla->user_id=$date['user_id'];
         $toalla->save();
         

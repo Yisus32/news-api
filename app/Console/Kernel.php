@@ -2,9 +2,11 @@
 
 namespace App\Console;
 
+use App\Models\asig_toalla;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
-
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 class Kernel extends ConsoleKernel
 {
     /**
@@ -24,6 +26,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //
+        $schedule->call(function () {
+            $fec=asig_toalla::where('fec_fin',null)->get();
+            $now = Carbon::now();
+            
+        })->daily();
     }
 }
