@@ -113,6 +113,10 @@ class ReservationService extends CrudService
 
         $reservation = Reservation::find($id);
 
+        if (!$reservation) {
+            return response()->json(["error" => true, "message" => "Reservacion no encontrada"], 404); 
+        }
+
         $teetime = Teetime::find($reservation->teetime_id);
 
         //checar que no se haya excedido los 5 minutos
