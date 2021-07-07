@@ -24,11 +24,14 @@ class asig_toallaService extends CrudService
         parent::__construct($repository);
     }
      
+
+    
     public function _store(Request $request)
     {
         $date=$request->all();
         $toalla=toalla::where('id',$date['id_toalla'])->first();
         $toalla->fec=$date['fec_fin'];
+        $toalla->user_id=$date['user_id'];
         $toalla->save();
         
         
