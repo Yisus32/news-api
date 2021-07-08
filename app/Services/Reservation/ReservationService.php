@@ -95,8 +95,8 @@ class ReservationService extends CrudService
         $now = Carbon::now(env('APP_TIMEZONE'));
 
         // verificar que se esta eliminando con el tiempo de anticipacion
-        if ($now->greaterThan($final)) {
-            return response()->json(["error" => true, "message" => "La fecha ingresada no cumple con el tiempo de disponibilidad"], 409);
+        if ($final->greaterThan($now)) {
+            return response()->json(["error" => true, "message" => "Debe reservar máximo $teetime->available horas antes"], 409);
         }
 
         //checar que el hoyo exista 
