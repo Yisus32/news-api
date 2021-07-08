@@ -256,7 +256,7 @@ class TeetimeRepository extends CrudRepository
                     $date_start_time = explode(' ', $start);
                     $date_start_time = $date_start_time[0] . ' ' . $request->start_hour;
                     $start = Carbon::createFromFormat('Y-m-d H:i:s', $date_start_time, env('APP_TIMEZONE'));
-                    $i++;
+                    
                 }
                 
                 
