@@ -9,7 +9,6 @@ namespace App\Repositories\asig_toalla;
 use App\Core\CrudRepository;
 use App\Models\asig_toalla;
 use App\Models\toalla;
-use Carbon\Carbon;
 use DateTime;
 
 /** @property asig_toalla $model */
@@ -37,16 +36,32 @@ class asig_toallaRepository extends CrudRepository
     public function _show($id)
     {
         $fec=asig_toalla::where('fec_fin',null)->get()->toarray();
-        $now = Carbon::now();
-        foreach ($fec as $i)
-        {
-            $d=new DateTime($fec[0]['fec_ini']);
-            if($d->diffInHours($now)=='48')
+            $now= new DateTime('now');
+            $f=asig_toalla::where('fec_fin',null)->count();
+            $x=0;
+            foreach ($fec as $i)
             {
-               dd('holis');
+                while($x!=$f)
+                {
+                    $con=$fec[$x]['fec_ini'];
+                    $id=$fec[$x]['id_toalla'];
+                    $fed=new DateTime($con);
+                    $dife=$now->diff($fed);
+                    if($dife->h >= 1)
+                    {
+                        $cam=toalla::where('id',$id)->first();
+                        $cam->status='perdida';
+                        $cam->save();
+
+                    }
+                  
+                    $x++;
+                }
+                    
             }
+           return parent::_show($id);
             //dd($fec[0]['fec_ini']);
-        }
+        
     }
 
 }
