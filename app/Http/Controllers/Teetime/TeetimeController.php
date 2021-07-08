@@ -63,4 +63,9 @@ class TeetimeController extends CrudController
 
         return parent::_update($id, $request);
     }
+
+    public function available($id, Request $request){
+
+        return $this->service->available($id,$request);
+    }
 }

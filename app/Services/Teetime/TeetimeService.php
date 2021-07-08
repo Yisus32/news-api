@@ -74,5 +74,12 @@ class TeetimeService extends CrudService
 
         return parent::_delete($id);
     }
+    
+    public function available($id, Request $request){
+
+        $teetime = $this->repository->available($id,$request);
+
+        return response()->json([$teetime], 200);
+    }
 
 }

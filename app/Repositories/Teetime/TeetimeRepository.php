@@ -154,6 +154,29 @@ class TeetimeRepository extends CrudRepository
         return $teetime;
     }
 
+    //devuelve espacios disponibles en un teetime
+
+    public function available($id, Request $request){
+
+        $teetime = Teetime::find($id);
+
+        $days = $teetime->days;
+
+        $days = str_replace('{', '', $days);
+        $days = str_replace('}', '', $days);
+        $days = explode(",", $days);
+
+        $holes = $teetime->target;
+
+        $holes = str_replace('{', '', $holes);
+        $holes = str_replace('}', '', $holes);
+        $holes = explode(",", $holes);
+
+        $teetime->slot = $this->create_reservations($teetime, $holes, $days);
+
+        return $teetime;
+    }
+
     //funcion para crear las reservaciones sin reservar de un teetime
     private function create_reservations(Teetime $request, $holes, $days){
         $reservation = array();
@@ -182,11 +205,23 @@ class TeetimeRepository extends CrudRepository
                 do {
                     //se crea una reservacion
                     $date_save = explode(' ', $start);
-            
-                    $reservation[$i]["hole_id"] = $hole;
-                    $reservation[$i]["date"] = $date_save[0];
-                    $reservation[$i]["start_hour"] = $date_save[1];
 
+                    $reservation_exist = Reservation::where('hole_id', '=', "$hole")
+                                                    ->where('date', '=', "$date_save[0]")
+                                                    ->where('start_hour', '=', "$date_save[1]")
+                                                    ->where('status', '=', 'registrado')
+                                                    ->orWhere('status', '=', 'registrado')
+                                                    ->where('hole_id', '=', "$hole")
+                                                    ->where('date', '=', "$date_save[0]")
+                                                    ->where('start_hour', '=', "$date_save[1]")
+                                                    ->first();
+
+                    if (!$reservation_exist) {
+                        $reservation[$i]["hole_id"] = $hole;
+                        $reservation[$i]["date"] = $date_save[0];
+                        $reservation[$i]["start_hour"] = $date_save[1];
+                    }
+            
                     //se le añaden los minutos del intervalo en cada recorrido
                     $start->addMinutes($request->time_interval);
                     $i++;

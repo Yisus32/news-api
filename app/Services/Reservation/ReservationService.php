@@ -77,8 +77,10 @@ class ReservationService extends CrudService
         }
 
         $exist = Reservation::where('date', '=', "$request->date")->where('start_hour', '=', "$request->start_hour")->
-                            where('hole_id', '=', "$request->hole_id")
-                            ->where('status', '=', "registrado")->first();
+                            where('hole_id', '=', "$request->hole_id")->
+                            where('status', '=', "registrado")->
+                            orWhere('status', '=', 'reservado')->
+                            first();
 
         if ($exist) {
             return response()->json(["error" => true, "message" => "La hora ingresada ya ha sido ocupada por otro jugador"], 409);
@@ -195,7 +197,7 @@ class ReservationService extends CrudService
     
                 if ($guest_exist->games_number_month >= 2) {
     
-                    return response()->json(["error" => true, "message" => "El invitado $guest->full_name ya ha superado el limite de juegos por mes"], 409);
+                    return response()->json(["error" => true, "message" => "El invitado $guest_exist->full_name ya ha superado el limite de juegos por mes"], 409);
                 }
     
     
