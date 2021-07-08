@@ -180,10 +180,10 @@ class TeetimeRepository extends CrudRepository
     //funcion para crear las reservaciones sin reservar de un teetime
     private function create_reservations(Teetime $request, $holes, $days){
         $reservation = array();
-        $day_name = array("Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+        $day_name = array("Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday");
         //ciclo para dejar los dias que no hay servicio
         foreach ($days as $day) {
-            $day_name[($day - 1)] = "";
+            $day_name[$day] = "";
         }
 
         $i = 0;
