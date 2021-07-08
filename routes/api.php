@@ -77,6 +77,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('teetimes', 'Teetime\TeetimeController@_store');
         $router->put('teetimes/{id}', 'Teetime\TeetimeController@_update');
         $router->delete('teetimes/{id}', 'Teetime\TeetimeController@_delete');
+        $router->get('teetimes/available/{id}', 'Teetime\TeetimeController@available');
 
         /** routes para Reservation **/ 
     
