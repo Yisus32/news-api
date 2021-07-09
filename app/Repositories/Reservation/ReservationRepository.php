@@ -92,6 +92,7 @@ class ReservationRepository extends CrudRepository
 
         if (!isset($data->status)) {
             $data->status = "reservado";
+            $data["status"] = "reservado";
         }
         
         return parent::_store($data);

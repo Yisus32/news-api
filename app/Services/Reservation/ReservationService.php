@@ -8,6 +8,7 @@ namespace App\Services\Reservation;
 
 
 use App\Core\CrudService;
+use App\Http\Mesh\AccountService;
 use App\Models\Guest;
 use App\Models\Hole;
 use App\Models\Reservation;
@@ -80,6 +81,8 @@ class ReservationService extends CrudService
                             where('hole_id', '=', "$request->hole_id")->
                             where('status', '=', "registrado")->
                             orWhere('status', '=', 'reservado')->
+                            where('date', '=', "$request->date")->where('start_hour', '=', "$request->start_hour")->
+                            where('hole_id', '=', "$request->hole_id")->
                             first();
 
         if ($exist) {
@@ -92,9 +95,19 @@ class ReservationService extends CrudService
 
         $date = $request->date . ' '. $request->start_hour;
         $final = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+        if ($teetime->available >= 24) {
+            $sub_day = floor($teetime->available / 24);
+            $final->subDays($sub_day);
+        }
         $final->subHours($teetime->available_time);
+
+        $account = new AccountService();
+        $account = $account->getAccount();
+        if (!isset($account->time_zone)) {
+            return response()->json(["error" => true, "message" => "Error en la zona horaria del sistema"], 400);
+        }
         
-        $now = Carbon::now(env('APP_TIMEZONE'));
+        $now = Carbon::now($account->time_zone);
 
         // verificar que se esta eliminando con el tiempo de anticipacion
         if ($final->greaterThan($now)) {
