@@ -8,7 +8,9 @@ namespace App\Services\asig_toalla;
 
 
 use App\Core\CrudService;
+use App\Models\toalla;
 use App\Repositories\asig_toalla\asig_toallaRepository;
+use Illuminate\Http\Request;
 
 /** @property asig_toallaRepository $repository */
 class asig_toallaService extends CrudService
@@ -21,5 +23,18 @@ class asig_toallaService extends CrudService
     {
         parent::__construct($repository);
     }
+     
 
+    
+    public function _store(Request $request)
+    {
+        $date=$request->all();
+        $toalla=toalla::where('id',$date['id_toalla'])->first();
+        $toalla->fec=$date['fec_ini'];
+        $toalla->user_id=$date['user_id'];
+        $toalla->save();
+        
+        
+        return parent::_store($request);
+    }
 }

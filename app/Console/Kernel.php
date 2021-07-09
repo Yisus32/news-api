@@ -2,9 +2,12 @@
 
 namespace App\Console;
 
+use App\Models\asig_toalla;
+use App\Models\toalla;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
-
+use Illuminate\Support\Facades\DB;
+use DateTime;
 class Kernel extends ConsoleKernel
 {
     /**
@@ -13,7 +16,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\GeneratorCommand::class,
+        Commands\GeneratorCommand::class,Commands\testtoalla::class,
     ];
 
     /**
@@ -24,6 +27,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //
+       $schedule->command('statoalla')->everyMinute();
     }
 }

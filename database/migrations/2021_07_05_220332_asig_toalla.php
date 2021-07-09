@@ -17,8 +17,8 @@ class AsigToalla extends Migration
             $table->id();
             $table->integer('id_toalla');
             $table->integer('user_id');
-            $table->date('fec_ini');
-            $table->date('fec_fin');
+            $table->dateTime('fec_ini');
+            $table->datetime('fec_fin')->nullable();
             $table->timestamps();
             $table->foreign('id_toalla')->references('id')->on('toalla')->onDelete('restrict');
         });
