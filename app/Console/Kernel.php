@@ -27,6 +27,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-       $schedule->command('testtoalla')->everyMinute();
+       $schedule->command('statoalla')->everyMinute();
     }
 }

@@ -33,7 +33,7 @@ class asig_toallaRepository extends CrudRepository
         return parent::_show($id);
     }*/
 
-    public function _show($id)
+   /* public function _show($id)
     {
         $fec=asig_toalla::where('fec_fin',null)->get()->toarray();
             $now= new DateTime('now');
@@ -62,6 +62,6 @@ class asig_toallaRepository extends CrudRepository
            return parent::_show($id);
             //dd($fec[0]['fec_ini']);
         
-    }
+    }*/
 
 }
