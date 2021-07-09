@@ -234,11 +234,13 @@ class TeetimeRepository extends CrudRepository
                             $reservation[$i]["hole_id"] = $hole;
                             $reservation[$i]["date"] = $date_save[0];
                             $reservation[$i]["start_hour"] = $date_save[1];
+
+                            $i++;
                         }
                 
                         //se le añaden los minutos del intervalo en cada recorrido
                         $start->addMinutes($request->time_interval);
-                        $i++;
+                        
 
                         if (isset($request->break_times)) {
                             $check = explode(' ', $start);
