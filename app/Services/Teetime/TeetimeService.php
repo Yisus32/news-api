@@ -14,6 +14,7 @@ use App\Models\Teetime;
 use App\Repositories\Teetime\TeetimeRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 /** @property TeetimeRepository $repository */
 class TeetimeService extends CrudService
@@ -77,9 +78,29 @@ class TeetimeService extends CrudService
     
     public function available($id, Request $request){
 
-        $teetime = $this->repository->available($id,$request);
+        
 
-        return response()->json([$teetime], 200);
+        try{
+
+            $teetime = $this->repository->available($id,$request);
+
+            if(!$teetime)
+            {
+                return response()->json([
+                    "status" => 404,
+                    'message'=>$this->name. ' no existe'
+                ], 404);
+            }
+
+            Log::info('Encontrado');
+
+            return response()->json([$teetime], 200);
+
+        }catch (\Exception $e){
+            return $this->errorException($e);
+        }
+
+        
     }
 
 }
