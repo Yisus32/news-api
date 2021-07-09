@@ -12,6 +12,7 @@ use App\Models\Reservation;
 use App\Models\Teetime;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 /** @property Teetime $model */
@@ -186,6 +187,8 @@ class TeetimeRepository extends CrudRepository
             $day_name[$day] = "0";
         }
 
+        $day_name = implode(",", $day_name);
+
         $i = 0;
 
         // crear reservaciones para cada hoyo
@@ -201,9 +204,10 @@ class TeetimeRepository extends CrudRepository
                 $name_day = $start->format('l');
 
                 //checar para no añadir los dias no laborables del teetime
-                $check_day = array_search("$name_day", $day_name);
+                $check_day = str_contains($day_name, $name_day);
+                //$check_day = array_search("$name_day", $day_name);
 
-                if ($check_day > 0 ) {
+                if ($check_day == true ) {
                     $start = $start->addDay();
                 }
 
@@ -211,12 +215,13 @@ class TeetimeRepository extends CrudRepository
                     break;
                 }
                 
-                if ($check_day == 0) {
+                if ($check_day == false) {
                     // se crea la hora final del dia para la comprobacion en el segundo do while
                     $date_time = explode(' ', $start);
                     $date_end_time = $date_time[0] . ' ' . $request->end_hour;
                     $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $date_end_time, env('APP_TIMEZONE'));
                     do {
+
                         //se crea una reservacion
                         $date_save = explode(' ', $start);
 
@@ -254,6 +259,7 @@ class TeetimeRepository extends CrudRepository
                     } while ($start <= $end_time);
 
                     // se le sube un dia al inicio para recorrer el while y se se crea la fecha de nuevo para reiniciar la hora
+                    
                     $start = $start->addDay();
                     $date_start_time = explode(' ', $start);
                     $date_start_time = $date_start_time[0] . ' ' . $request->start_hour;
