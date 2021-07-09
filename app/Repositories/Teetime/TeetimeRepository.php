@@ -158,7 +158,7 @@ class TeetimeRepository extends CrudRepository
 
     public function available($id, Request $request){
 
-        $teetime = Teetime::find($id);
+        $teetime = Teetime::findOrfail($id);
 
         $days = $teetime->days;
 
