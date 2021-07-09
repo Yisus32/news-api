@@ -15,7 +15,6 @@ class Toalla extends Migration
     {
         Schema::create('toalla', function (Blueprint $table) {
             $table->id();
-            //$table->string('cod')->uniqid()->index();
             $table->string('description');
             $table->string('status');
             $table->datetime('fec');
