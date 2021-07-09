@@ -8,4 +8,6 @@ use App\Core\CrudModel;
 class toalla extends CrudModel
 {
     protected $guarded = ['id'];
+    protected $table='toalla';
+    protected $fillable=['description','status','fec','user_id'];
 }
