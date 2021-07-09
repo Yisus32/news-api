@@ -72,6 +72,8 @@ class TeetimeController extends CrudController
     }
 
     public function day(Request $request){
+        return Carbon::today(env('APP_TIMEZONE'));
+
         $end = Carbon::createFromFormat('Y-m-d H:i:s', "2021-09-01 08:00:00", env('APP_TIMEZONE'));
 
         $day_name = array("Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday");

@@ -41,8 +41,22 @@ class TeetimeService extends CrudService
             if (!$hole_exist) {
                 return response()->json(['error' => true, 'message' => "El hoyo con id $hole no existe"],400);
             }
+
+            //checar que no exista teetime encima de otro
+
+            $teetime = Teetime::whereBetween('start_date', array($request->start_date, $request->end_date))
+                                ->whereRaw("$hole = ANY(target)")
+                                ->OrwhereBetween('end_date', array($request->start_date, $request->end_date))
+                                ->whereRaw("$hole = ANY(target)")
+                                ->get();
+
+            if (count($teetime) > 0) {
+                return response()->json(['error' => true, 'message' => "El hoyo $hole_exist->name esta apartado para otra programación"],400);
+            }
+            
         }
 
+        
 
         return parent::_store($request);
     }
