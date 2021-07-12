@@ -77,11 +77,13 @@ class ReservationService extends CrudService
 
         }
 
-        $exist = Reservation::where('date', '=', "$request->date")->where('start_hour', '=', "$request->start_hour")->
+        $exist = Reservation::where('status', '=', "registrado")->
+                            where('start_hour', '=', "$request->start_hour")->
                             where('hole_id', '=', "$request->hole_id")->
-                            where('status', '=', "registrado")->
+                            where('date', '=', "$request->date")->
                             orWhere('status', '=', 'reservado')->
-                            where('date', '=', "$request->date")->where('start_hour', '=', "$request->start_hour")->
+                            where('date', '=', "$request->date")->
+                            where('start_hour', '=', "$request->start_hour")->
                             where('hole_id', '=', "$request->hole_id")->
                             first();
 
@@ -149,22 +151,6 @@ class ReservationService extends CrudService
 
             return response()->json(["error" => true, "message" => "Se excedieron los 5 minutos para registrar la reservación"], 409);    
         }
-
-        //checar tiempo de disponibilidad para registrar una reservacion
-
-        $now = Carbon::now(env('APP_TIMEZONE'));
-         
-        $date = $reservation->date . ' '. $reservation->start_hour;
-        
-        $final = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-
-        $final->subHours($teetime->available);
-
-        //se usa para comprobar que se esta haciendo la reservacion con el tiempo previo de disponibilidad de la programacion
-        if ($now->greaterThan($final)) {
-            return response()->json(["error" => true, "message" => "La fecha ingresada no cumple con el tiempo de disponibilidad"], 409);
-        }
-
 
         //checar numero de jugadores
         $number_players = 1;
