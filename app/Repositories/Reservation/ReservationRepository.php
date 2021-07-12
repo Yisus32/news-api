@@ -44,6 +44,17 @@ class ReservationRepository extends CrudRepository
             $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
             $reservation->cancel_time = $start->subHours($teetime->cancel_time)->format('Y-m-d H:i:s');
 
+            $partners = $reservation->partners;
+            $partners = str_replace("{", '', $partners);
+            $partners = str_replace("}", '', $partners);
+            $partners = explode(',', $partners);
+            $reservation->partners = $partners;
+
+            $guests = $reservation->guests;
+            $guests = str_replace("{", '', $guests);
+            $guests = str_replace("}", '', $guests);
+            $guests = explode(',', $guests);
+            $reservation->guests = $guests;
            
         }
 
@@ -75,6 +86,17 @@ class ReservationRepository extends CrudRepository
             $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
             $reservation->cancel_time = $start->subHours($teetime->cancel_time)->format('Y-m-d H:i:s');
 
+            $partners = $reservation->partners;
+            $partners = str_replace("{", '', $partners);
+            $partners = str_replace("}", '', $partners);
+            $partners = explode(',', $partners);
+            $reservation->partners = $partners;
+
+            $guests = $reservation->guests;
+            $guests = str_replace("{", '', $guests);
+            $guests = str_replace("}", '', $guests);
+            $guests = explode(',', $guests);
+            $reservation->guests = $guests;
         }
 
         return $reservation;
