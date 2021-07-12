@@ -23,8 +23,12 @@ class GuestRepository extends CrudRepository
 
     public function _index($request = null, $user = null)
     {
-        $guests = Guest::all();
-        
+        if (isset($request->email)){
+            return Guest::whereraw("lower(email) like lower('%{$request->email}%')")->get();
+        }else{
+            $guests = Guest::all();
+        }
+         
         foreach ($guests as $guest) {
             $guest->documents = $guest->documents()->get();
         }
