@@ -72,12 +72,12 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
         /** routes para Teetime **/ 
 
+        $router->get('teetimes/available', 'Teetime\TeetimeController@available');
         $router->get('teetimes', 'Teetime\TeetimeController@_index');
         $router->get('teetimes/{id}', 'Teetime\TeetimeController@_show');
         $router->post('teetimes', 'Teetime\TeetimeController@_store');
         $router->put('teetimes/{id}', 'Teetime\TeetimeController@_update');
         $router->delete('teetimes/{id}', 'Teetime\TeetimeController@_delete');
-        $router->get('teetimes/available/{id}', 'Teetime\TeetimeController@available');
         $router->get('teetim/day', 'Teetime\TeetimeController@day');
 
         /** routes para Reservation **/ 
