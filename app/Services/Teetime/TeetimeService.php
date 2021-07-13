@@ -8,6 +8,7 @@ namespace App\Services\Teetime;
 
 
 use App\Core\CrudService;
+use App\Http\Mesh\AccountService;
 use App\Models\Hole;
 use App\Models\Reservation;
 use App\Models\Teetime;
@@ -56,6 +57,14 @@ class TeetimeService extends CrudService
             
         }
 
+        $account = new AccountService();
+        $account = $account->getAccount();
+        if (!isset($account->time_zone)) {
+            return response()->json(["error" => true, "message" => "Error en la zona horaria del sistema"], 400);
+        }
+
+        $request->created_at = $account->time_zone;
+        $request["created_at"] = $account->time_zone;
         
 
         return parent::_store($request);
@@ -90,13 +99,13 @@ class TeetimeService extends CrudService
         return parent::_delete($id);
     }
     
-    public function available($id, Request $request){
+    public function available(Request $request){
 
         
 
         try{
 
-            $teetime = $this->repository->available($id,$request);
+            $teetime = $this->repository->available($request);
 
             if(!$teetime)
             {

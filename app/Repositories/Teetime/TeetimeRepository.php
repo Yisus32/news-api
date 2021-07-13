@@ -157,25 +157,46 @@ class TeetimeRepository extends CrudRepository
 
     //devuelve espacios disponibles en un teetime
 
-    public function available($id, Request $request){
+    public function available(Request $request){
 
-        $teetime = Teetime::findOrfail($id);
+        if (isset($request->start_day) and isset($request->end_day)) {
+            $teetimes = Teetime::whereBetween('start_date', array($request->start_day, $request->end_day))
+                                ->OrwhereBetween('end_date', array($request->start_day, $request->end_day))
+                                ->Orwhere('start_date', '<', "$request->start_day")
+                                ->where('end_date', '>', "$request->start_day")
+                                ->Orwhere('start_date', '<', "$request->end_day")
+                                ->where('end_date', '>', "$request->end_day")
+                                ->get();
 
-        $days = $teetime->days;
+            foreach ($teetimes as $teetime) {
+                if ($teetime->start_date < $request->start_day) {
+                    $teetime->start_date = $request->start_day;
+                }
 
-        $days = str_replace('{', '', $days);
-        $days = str_replace('}', '', $days);
-        $days = explode(",", $days);
+                if ($teetime->end_date > $request->end_day) {
+                    $teetime->end_date = $request->end_day;
+                }
 
-        $holes = $teetime->target;
+                $days = $teetime->days;
 
-        $holes = str_replace('{', '', $holes);
-        $holes = str_replace('}', '', $holes);
-        $holes = explode(",", $holes);
+                $days = str_replace('{', '', $days);
+                $days = str_replace('}', '', $days);
+                $days = explode(",", $days);
 
-        $teetime->slot = $this->create_reservations($teetime, $holes, $days);
+                $holes = $teetime->target;
 
-        return $teetime;
+                $holes = str_replace('{', '', $holes);
+                $holes = str_replace('}', '', $holes);
+                $holes = explode(",", $holes);
+
+                $teetime->slot = $this->create_reservations($teetime, $holes, $days);
+            }
+
+            return $teetimes;
+        }
+
+        return Response()->json(["error" => true, "message" => "Los parametros dia inicial y final son requeridos"], 400);
+       
     }
 
     //funcion para crear las reservaciones sin reservar de un teetime
