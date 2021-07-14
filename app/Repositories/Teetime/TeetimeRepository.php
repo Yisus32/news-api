@@ -198,6 +198,8 @@ class TeetimeRepository extends CrudRepository
                 $teetime->holes_name = $array;
 
                 $teetime->slot = $this->create_reservations($teetime, $holes, $days);
+
+                $teetime->break_times = $teetime->break_times()->get();
             }
 
             return $teetimes;
@@ -251,6 +253,16 @@ class TeetimeRepository extends CrudRepository
                     $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $date_end_time, env('APP_TIMEZONE'));
                     do {
 
+                        if (isset($request->break_times)) {
+                            $check = explode(' ', $start);
+                            foreach ($request->break_times as $break) {
+                                if($check[1] >= $break["start_hour"] and $check[1] <= $break["end_hour"] ){
+                                    $after_break = $check[0] . " " . $break["end_hour"];
+                                    $start = Carbon::createFromFormat('Y-m-d H:i:s', $after_break, env('APP_TIMEZONE'));
+                                }
+                            }
+                        }
+
                         //se crea una reservacion
                         $date_save = explode(' ', $start);
 
@@ -264,6 +276,8 @@ class TeetimeRepository extends CrudRepository
                                                         ->where('start_hour', '=', "$date_save[1]")
                                                         ->first();
 
+                        
+
                         if (!$reservation_exist) {
                             $reservation[$i]["hole_id"] = $hole;
                             $reservation[$i]["date"] = $date_save[0];
@@ -276,15 +290,7 @@ class TeetimeRepository extends CrudRepository
                         $start->addMinutes($request->time_interval);
                         
 
-                        if (isset($request->break_times)) {
-                            $check = explode(' ', $start);
-                            foreach ($request->break_times as $break) {
-                                if($check[1] >= $break["start_hour"] and $check[1] <= $break["end_hour"] ){
-                                    $after_break = $check[0] . " " . $break["end_hour"];
-                                    $start = $start = Carbon::createFromFormat('Y-m-d H:i:s', $after_break, env('APP_TIMEZONE'));
-                                }
-                            }
-                        }
+                        
                     } while ($start <= $end_time);
 
                     // se le sube un dia al inicio para recorrer el while y se se crea la fecha de nuevo para reiniciar la hora
