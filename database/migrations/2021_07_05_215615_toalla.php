@@ -17,7 +17,7 @@ class Toalla extends Migration
             $table->id();
             $table->string('description');
             $table->string('status');
-            $table->date('fec');
+            $table->datetime('fec');
             $table->integer('user_id');
             $table->timestamps();
         });

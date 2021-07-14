@@ -27,6 +27,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-       $schedule->command('statoalla')->everyMinute();
+       $schedule->command('statoalla')->daily();
     }
 }
