@@ -9,5 +9,5 @@ class cars_golf extends CrudModel
 {
     protected $guarded = ['id'];
     protected $table='cars_golf';
-    protected $fillable=['id','price'];
+    protected $fillable=['id','cod','price'];
 }

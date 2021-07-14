@@ -15,6 +15,7 @@ class Group extends Migration
     {
         Schema::create('group', function (Blueprint $table) {
             $table->id();
+            $table->string('cod');
             $table->string('description')->nullable();
             $table->timestamps();
         });

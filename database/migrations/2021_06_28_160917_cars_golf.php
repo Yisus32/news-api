@@ -15,6 +15,7 @@ class CarsGolf extends Migration
     {
         Schema::create('cars_golf', function (Blueprint $table) {
             $table->id();
+            $table->string('cod');
             $table->integer('price')->nullable();
             $table->timestamps();
         });
