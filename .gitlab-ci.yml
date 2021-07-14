@@ -175,28 +175,28 @@ berygo_build_job:
     - cp .env.example .env
     - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
     - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
-    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=rubick2berygo-teetime;g" .env
-    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=rubick2berygo-teetime;g" .env
-    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$BERYGO_TEETIME_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=teetimerubick2berygo;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=teetimerubick2berygo;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$TEETIME_BERYGO_DB_PASS;g" .env
     - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
-    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=qarubick2teetime.zippyttech.com;g" .env
-    - docker build -t berygo-teetime-api .
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=teetime-berygo.zippyttech.com;g" .env
+    - docker build -t teetime-api .
   when: on_success
   tags:
-    - qaapp
+    - berygo
   only:
     - berygo
 
 berygo_deploy_job:
   stage: deploy
   script:
-    - docker stop berygo-teetime-api || true
-    - docker rm berygo-teetime-api || true
-    - docker run -d --restart always --name berygo-teetime-api --memory="512m" -v berygo-teetime-api-images:/var/www/html/public/images -v berygo-teetime-api-images:/var/www/html/public/logos --network app -p 9022:80 berygo-teetime-api
-    - docker exec berygo-teetime-api php artisan migrate
-  when: manual
+    - docker stop teetime-api || true
+    - docker rm teetime-api || true
+    - docker run -d --restart always --name teetime-api --memory="512m" -v teetime-api-images:/var/www/html/public/images -v teetime-api-images:/var/www/html/public/logos --network app -p 9023:80 teetime-api
+    - docker exec teetime-api php artisan migrate
+  when: on_success
   tags:
     - berygo
   only:
@@ -214,7 +214,7 @@ aguaseo_build_job:
     - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
-    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=teetime.rubick.aguaseo.com;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=teetime-aguaseo.zippyttech.com;g" .env
     - docker build -t aguaseo-teetime-api .
   when: on_success
   tags:

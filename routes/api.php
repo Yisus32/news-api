@@ -109,11 +109,11 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         
         /** routes para cars_golf **/ 
         
-        $router->get('cars_golves', 'cars_golf\cars_golfController@_index');
-        $router->get('cars_golves/{id}', 'cars_golf\cars_golfController@_show');
-        $router->post('cars_golves', 'cars_golf\cars_golfController@_store');
-        $router->put('cars_golves/{id}', 'cars_golf\cars_golfController@_update');
-        $router->delete('cars_golves/{id}', 'cars_golf\cars_golfController@_delete');
+        $router->get('cars_golfs', 'cars_golf\cars_golfController@_index');
+        $router->get('cars_golfs/{id}', 'cars_golf\cars_golfController@_show');
+        $router->post('cars_golfs', 'cars_golf\cars_golfController@_store');
+        $router->put('cars_golfs/{id}', 'cars_golf\cars_golfController@_update');
+        $router->delete('cars_golfs/{id}', 'cars_golf\cars_golfController@_delete');
         
 
         /** routes para number_holes **/ 
