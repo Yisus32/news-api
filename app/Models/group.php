@@ -9,5 +9,5 @@ class group extends CrudModel
 {
     protected $guarded = ['id'];
     protected $table='group';
-    protected $fillable=['id','description'];
+    protected $fillable=['id','cod','description'];
 }
