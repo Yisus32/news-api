@@ -40,6 +40,15 @@ class ReservationController extends CrudController
         ];
     }
 
+    public function _store(Request $request)
+    {
+        if ($request->hasHeader("role") and $request->header('role') == "admin") {
+            return $this->service->store_admin($request);
+        }
+
+        return parent::_store($request);
+    }
+
     public function take($id,Request $request){
 
         return $this->service->take($id, $request);
@@ -51,6 +60,7 @@ class ReservationController extends CrudController
         if ($validator->fails()) {
             return response()->json(["error"=>true,"message"=>$this->parseMessageBag($validator->getMessageBag())],422);
         }
+
         return $this->service->reservation_register($id, $request);
     }
 
