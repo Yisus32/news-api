@@ -25,7 +25,7 @@ class AddGroup extends Migration
      */
     public function down()
     {
-        Schema::table('cars_golf', function (Blueprint $table) {
+        Schema::table('group', function (Blueprint $table) {
             $table->dropColumn('cod');
         });
     }
