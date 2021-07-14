@@ -26,7 +26,7 @@ class AddCars extends Migration
     public function down()
     {
         Schema::table('cars_golf', function (Blueprint $table) {
-            //
+             $table->dropColumn('cod');
         });
     }
 }
