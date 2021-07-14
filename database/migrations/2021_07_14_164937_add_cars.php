@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CarsGolf extends Migration
+class AddCars extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CarsGolf extends Migration
      */
     public function up()
     {
-        Schema::create('cars_golf', function (Blueprint $table) {
-            $table->id();
-            
-            $table->integer('price')->nullable();
-            $table->timestamps();
+        Schema::table('cars_golf', function (Blueprint $table) {
+            $table->string('cod');
         });
     }
 
@@ -28,6 +25,8 @@ class CarsGolf extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cars_golf');
+        Schema::table('cars_golf', function (Blueprint $table) {
+            //
+        });
     }
 }
