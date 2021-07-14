@@ -127,6 +127,52 @@ class ReservationService extends CrudService
         return parent::_store($request);
     }
 
+    public function store_admin(Request $request)
+    {
+        $reservations = Reservation::where('status', '=', 'reservado')->get();
+        
+        if (count($reservations) > 0) {
+            $now = Carbon::now();
+
+            foreach ($reservations as $reservation) {
+
+                $check = Carbon::createFromFormat('Y-m-d H:i:s', $reservation->updated_at);
+                $check->addMinutes(5);
+
+                if ($now > $check) {
+                    $reservation->status = 'no reservado';
+                    $reservation->update();
+                }
+
+            }
+
+        }
+
+        $exist = Reservation::where('status', '=', "registrado")->
+                            where('start_hour', '=', "$request->start_hour")->
+                            where('hole_id', '=', "$request->hole_id")->
+                            where('date', '=', "$request->date")->
+                            orWhere('status', '=', 'reservado')->
+                            where('date', '=', "$request->date")->
+                            where('start_hour', '=', "$request->start_hour")->
+                            where('hole_id', '=', "$request->hole_id")->
+                            first();
+
+        if ($exist) {
+            return response()->json(["error" => true, "message" => "La hora ingresada ya ha sido ocupada por otro jugador"], 409);
+        }
+
+        //checar que el hoyo exista 
+
+        $hole_exist = Hole::find($request->hole_id);
+
+        if (!$hole_exist) {
+            return response()->json(["error" => true, "message" => "El hoyo ingresado no es valido"], 409);
+        }
+
+        return parent::_store($request);
+    }
+
     public function reservation_register($id, Request $request){
 
         $reservation = Reservation::find($id);
@@ -143,7 +189,7 @@ class ReservationService extends CrudService
         $check = Carbon::createFromFormat('Y-m-d H:i:s', $reservation->updated_at);
         $check->addMinutes(5);
 
-        if ($now > $check) {
+        if ($now > $check and $request->header('role') != "admin") {
 
             $reservation->status = 'no reservado';
 
@@ -209,7 +255,6 @@ class ReservationService extends CrudService
                 
             }
         }
-
         
 
         // comienza a guardar los datos
