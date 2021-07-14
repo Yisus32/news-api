@@ -14,7 +14,7 @@ class AddGroup extends Migration
     public function up()
     {
         Schema::table ('group', function (Blueprint $table) {
-            $table->string('cod');
+            $table->string('cod')->uniqid();
         });
     }
 
