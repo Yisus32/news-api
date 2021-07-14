@@ -190,13 +190,12 @@ class TeetimeRepository extends CrudRepository
                 $holes = str_replace('}', '', $holes);
                 $holes = explode(",", $holes);
 
-                $array["holes_name"] = array();
                 foreach ($holes as $hole) {
                     $hol = Hole::find($hole);
-                   
-                    array_push($array["holes_name"], $hol->name);
+                    $array[$hole] = $hol->name;
+
                 }
-                $teetime->holes_name = $array["holes_name"];
+                $teetime->holes_name = $array;
 
                 $teetime->slot = $this->create_reservations($teetime, $holes, $days);
             }
