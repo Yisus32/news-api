@@ -14,7 +14,7 @@ class AddCars extends Migration
     public function up()
     {
         Schema::table('cars_golf', function (Blueprint $table) {
-            $table->string('cod');
+            $table->string('cod')->uniqid();
         });
     }
 
