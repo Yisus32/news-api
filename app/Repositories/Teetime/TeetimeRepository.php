@@ -8,6 +8,7 @@ namespace App\Repositories\Teetime;
 
 use App\Core\CrudRepository;
 use App\Models\Break_time;
+use App\Models\Hole;
 use App\Models\Reservation;
 use App\Models\Teetime;
 use Carbon\Carbon;
@@ -188,6 +189,14 @@ class TeetimeRepository extends CrudRepository
                 $holes = str_replace('{', '', $holes);
                 $holes = str_replace('}', '', $holes);
                 $holes = explode(",", $holes);
+
+                $array["holes_name"] = array();
+                foreach ($holes as $hole) {
+                    $hol = Hole::find($hole);
+                   
+                    array_push($array["holes_name"], $hol->name);
+                }
+                $teetime->holes_name = $array["holes_name"];
 
                 $teetime->slot = $this->create_reservations($teetime, $holes, $days);
             }
