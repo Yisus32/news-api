@@ -158,7 +158,15 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_update');
         $router->delete('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_delete');
 
-        });
+        /** routes para Document **/ 
+ 
+        $router->get('documents', 'Document\DocumentController@_index');
+        $router->get('documents/{id}', 'Document\DocumentController@_show');
+        $router->post('documents', 'Document\DocumentController@_store');
+        $router->put('documents/{id}', 'Document\DocumentController@_update');
+        $router->delete('documents/{id}', 'Document\DocumentController@_destroy');
+
+    });
 
     
 
@@ -173,6 +181,8 @@ $router->get('break_times/{id}', 'Break_time\Break_timeController@_show');
 $router->post('break_times', 'Break_time\Break_timeController@_store');
 $router->put('break_times/{id}', 'Break_time\Break_timeController@_update');
 $router->delete('break_times/{id}', 'Break_time\Break_timeController@_delete');
+ 
+
  
 
  
