@@ -190,6 +190,7 @@ class TeetimeRepository extends CrudRepository
                 $holes = str_replace('}', '', $holes);
                 $holes = explode(",", $holes);
 
+                $array = [];
                 foreach ($holes as $hole) {
                     $hol = Hole::find($hole);
                     $array[$hole] = $hol->name;
