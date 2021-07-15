@@ -21,5 +21,13 @@ class cars_golfService extends CrudService
     {
         parent::__construct($repository);
     }
-
+    
+    public function _store(Request $request)
+    {
+        $cod_exist=cars_golf::where('cod',$request->cod)->first();
+        if($cod_exist)
+        {
+            return response()->json(["error"=>true,"message"=> "El carrito de golf ya existe"],422);
+        }
+    }
 }
