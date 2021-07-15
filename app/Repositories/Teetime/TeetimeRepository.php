@@ -196,7 +196,7 @@ class TeetimeRepository extends CrudRepository
 
                 }
                 $teetime->holes_name = $array;
-
+                
                 $teetime->slot = $this->create_reservations($teetime, $holes, $days);
 
                 $teetime->break_times = $teetime->break_times()->get();
@@ -208,6 +208,7 @@ class TeetimeRepository extends CrudRepository
         return Response()->json(["error" => true, "message" => "Los parametros dia inicial y final son requeridos"], 400);
        
     }
+
 
     //funcion para crear las reservaciones sin reservar de un teetime
     private function create_reservations(Teetime $request, $holes, $days){
@@ -223,7 +224,7 @@ class TeetimeRepository extends CrudRepository
         $i = 0;
 
         // crear reservaciones para cada hoyo
-        foreach ($holes as $hole) {
+        
             
             // se crea la fecha inicial y final para crear reservaciones
             $date = $request->start_date . " " . $request->start_hour;
@@ -252,6 +253,7 @@ class TeetimeRepository extends CrudRepository
                     $date_end_time = $date_time[0] . ' ' . $request->end_hour;
                     $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $date_end_time, env('APP_TIMEZONE'));
                     do {
+                        
 
                         if (isset($request->break_times)) {
                             $check = explode(' ', $start);
@@ -266,7 +268,8 @@ class TeetimeRepository extends CrudRepository
                         //se crea una reservacion
                         $date_save = explode(' ', $start);
 
-                        $reservation_exist = Reservation::where('hole_id', '=', "$hole")
+                        foreach ($holes as $hole) {
+                            $reservation_exist = Reservation::where('hole_id', '=', "$hole")
                                                         ->where('date', '=', "$date_save[0]")
                                                         ->where('start_hour', '=', "$date_save[1]")
                                                         ->where('status', '=', 'registrado')
@@ -278,13 +281,15 @@ class TeetimeRepository extends CrudRepository
 
                         
 
-                        if (!$reservation_exist) {
-                            $reservation[$i]["hole_id"] = $hole;
-                            $reservation[$i]["date"] = $date_save[0];
-                            $reservation[$i]["start_hour"] = $date_save[1];
+                            if (!$reservation_exist) {
+                                $reservation[$i]["hole_id"] = $hole;
+                                $reservation[$i]["date"] = $date_save[0];
+                                $reservation[$i]["start_hour"] = $date_save[1];
 
-                            $i++;
+                                $i++;
+                            }
                         }
+                        
                 
                         //se le añaden los minutos del intervalo en cada recorrido
                         $start->addMinutes($request->time_interval);
@@ -305,7 +310,7 @@ class TeetimeRepository extends CrudRepository
                 
             } while ($start <= $end);
             
-        }
+        
         return $reservation;
     }
 
