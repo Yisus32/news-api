@@ -116,13 +116,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->delete('cars_golfs/{id}', 'cars_golf\cars_golfController@_delete');
         
 
-        /** routes para number_holes **/ 
-        
-        $router->get('number_holes', 'number_holes\number_holesController@_index');
-        $router->get('number_holes/{id}', 'number_holes\number_holesController@_show');
-        $router->post('number_holes', 'number_holes\number_holesController@_store');
-        $router->put('number_holes/{id}', 'number_holes\number_holesController@_update');
-        $router->delete('number_holes/{id}', 'number_holes\number_holesController@_delete');
+       
 
         /** routes para game_log **/ 
         
