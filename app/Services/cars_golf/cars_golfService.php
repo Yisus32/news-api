@@ -9,6 +9,8 @@ namespace App\Services\cars_golf;
 
 use App\Core\CrudService;
 use App\Repositories\cars_golf\cars_golfRepository;
+use App\Models\cars_golf;
+use Illuminate\Http\Request;
 
 /** @property cars_golfRepository $repository */
 class cars_golfService extends CrudService
