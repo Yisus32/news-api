@@ -162,9 +162,10 @@ class TeetimeRepository extends CrudRepository
 
         $start_day = Carbon::now(env('APP_TIMEZONE'))->format('Y-m-d');
  
-        $end_day = Teetime::max('end_date');
-        
-
+        $end_day = Teetime::max("end_date");
+        $teetime = Teetime::orderBy('end_date', 'desc')->first();
+       
+        $end_day = $teetime->end_date;
         
             $teetimes = Teetime::whereBetween('start_date', array($start_day, $end_day))
                                 ->OrwhereBetween('end_date', array($start_day, $end_day))
