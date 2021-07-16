@@ -275,6 +275,7 @@ class TeetimeRepository extends CrudRepository
                         //se crea una reservacion
                         $date_save = explode(' ', $start);
 
+                        //se hace el chequeo de la disponibilidad de cada hoyo en la fecha a mostrar
                         foreach ($holes as $hole) {
                             $reservation_exist = Reservation::where('hole_id', '=', "$hole")
                                                         ->where('date', '=', "$date_save[0]")
