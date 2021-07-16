@@ -162,10 +162,9 @@ class TeetimeRepository extends CrudRepository
 
         $start_day = Carbon::now(env('APP_TIMEZONE'))->format('Y-m-d');
  
-        $end_day = Teetime::max('end_date');
-        
+        $end_day = Teetime::max("end_date");
 
-        
+        if (isset($start_day) and isset($end_day)) {
             $teetimes = Teetime::whereBetween('start_date', array($start_day, $end_day))
                                 ->OrwhereBetween('end_date', array($start_day, $end_day))
                                 ->Orwhere('start_date', '<', "$start_day")
@@ -210,8 +209,10 @@ class TeetimeRepository extends CrudRepository
             }
 
             return $teetimes;
+        }
+            
         
-
+        return Response()->json(["error"=>true, "message"=>"no existen registros de teetime"], 404);
         
        
     }
