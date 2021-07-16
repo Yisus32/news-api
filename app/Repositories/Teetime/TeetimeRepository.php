@@ -160,22 +160,28 @@ class TeetimeRepository extends CrudRepository
 
     public function available(Request $request){
 
-        if (isset($request->start_day) and isset($request->end_day)) {
-            $teetimes = Teetime::whereBetween('start_date', array($request->start_day, $request->end_day))
-                                ->OrwhereBetween('end_date', array($request->start_day, $request->end_day))
-                                ->Orwhere('start_date', '<', "$request->start_day")
-                                ->where('end_date', '>', "$request->start_day")
-                                ->Orwhere('start_date', '<', "$request->end_day")
-                                ->where('end_date', '>', "$request->end_day")
+        $start_day = Carbon::now()->format('Y-m-d');
+ 
+        $end_day = Teetime::max('end_date');
+        
+
+        if (isset($start_day) and isset($end_day)) {
+            $teetimes = Teetime::whereBetween('start_date', array($start_day, $end_day))
+                                ->OrwhereBetween('end_date', array($start_day, $end_day))
+                                ->Orwhere('start_date', '<', "$start_day")
+                                ->where('end_date', '>', "$start_day")
+                                ->Orwhere('start_date', '<', "$end_day")
+                                ->where('end_date', '>', "$end_day")
+                                ->orderBy('start_date')
                                 ->get();
 
             foreach ($teetimes as $teetime) {
-                if ($teetime->start_date < $request->start_day) {
-                    $teetime->start_date = $request->start_day;
+                if ($teetime->start_date < $start_day) {
+                    $teetime->start_date = $start_day;
                 }
 
-                if ($teetime->end_date > $request->end_day) {
-                    $teetime->end_date = $request->end_day;
+                if ($teetime->end_date > $end_day) {
+                    $teetime->end_date = $end_day;
                 }
 
                 $days = $teetime->days;
@@ -269,6 +275,7 @@ class TeetimeRepository extends CrudRepository
                         //se crea una reservacion
                         $date_save = explode(' ', $start);
 
+                        //se hace el chequeo de la disponibilidad de cada hoyo en la fecha a mostrar
                         foreach ($holes as $hole) {
                             $reservation_exist = Reservation::where('hole_id', '=', "$hole")
                                                         ->where('date', '=', "$date_save[0]")

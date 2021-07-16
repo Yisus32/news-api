@@ -12,7 +12,7 @@ class Guest extends CrudModel
     protected $table = 'guests';
 
     protected $fillable = ["full_name", "email", "identifier", "status","host_id", "host_name", "games_number", "games_number_month",
-     "created_at", "updated_at"];
+     "host_number","created_at", "updated_at"];
 
     protected $hidden = [];
 
