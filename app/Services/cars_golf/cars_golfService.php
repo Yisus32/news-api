@@ -31,5 +31,6 @@ class cars_golfService extends CrudService
         {
             return response()->json(["error"=>true,"message"=> "El carrito de golf ya existe"],422);
         }
+        return parent::_store($request);
     }
 }
