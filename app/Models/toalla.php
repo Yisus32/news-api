@@ -9,5 +9,5 @@ class toalla extends CrudModel
 {
     protected $guarded = ['id'];
     protected $table='toalla';
-    protected $fillable=['description','status','fec','user_id'];
+    protected $fillable=['num','description','status','fec','user_id'];
 }

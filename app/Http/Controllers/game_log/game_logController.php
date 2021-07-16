@@ -7,6 +7,7 @@ use App\Core\CrudController;
 use App\Services\game_log\game_logService;
 use App\Models\game_log;
 use Illuminate\Support\Facades\DB;
+use DateTime;
 /** @property game_logService $service */
 class game_logController extends CrudController
 {
@@ -35,9 +36,11 @@ class game_logController extends CrudController
      
     public function list_by_group()
     {
-        $group=DB::table('game_log')->groupBy('gro_id','id')->get();
+        
+        $now= new DateTime('now');
+        $now=$now->format('Y-m-d');
+        $group=DB::table('game_log')->where('fecha',$now)->groupBy('gro_id','id')->get();
         return response()->json($group);
     }
-   
     
 }

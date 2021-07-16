@@ -31,5 +31,6 @@ class groupService extends CrudService
         {
             return response()->json(["error"=>true,"message"=> "El grupo ya existe"],422);
         }
+        return parent::_store($request);
     }
 }
