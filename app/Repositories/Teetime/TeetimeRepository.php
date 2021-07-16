@@ -160,12 +160,12 @@ class TeetimeRepository extends CrudRepository
 
     public function available(Request $request){
 
-        $start_day = Carbon::now()->format('Y-m-d');
+        $start_day = Carbon::now(env('APP_TIMEZONE'))->format('Y-m-d');
  
         $end_day = Teetime::max('end_date');
         
 
-        if (isset($start_day) and isset($end_day)) {
+        
             $teetimes = Teetime::whereBetween('start_date', array($start_day, $end_day))
                                 ->OrwhereBetween('end_date', array($start_day, $end_day))
                                 ->Orwhere('start_date', '<', "$start_day")
@@ -210,9 +210,9 @@ class TeetimeRepository extends CrudRepository
             }
 
             return $teetimes;
-        }
+        
 
-        return Response()->json(["error" => true, "message" => "Los parametros dia inicial y final son requeridos"], 400);
+        
        
     }
 
