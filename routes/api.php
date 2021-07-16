@@ -114,7 +114,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('cars_golfs', 'cars_golf\cars_golfController@_store');
         $router->put('cars_golfs/{id}', 'cars_golf\cars_golfController@_update');
         $router->delete('cars_golfs/{id}', 'cars_golf\cars_golfController@_delete');
-        
+        $router->get('cars_golfs/psearch/{id}','cars_golf\cars_golfController@psearch');
 
        
 
