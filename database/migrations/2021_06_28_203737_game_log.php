@@ -25,7 +25,7 @@ class GameLog extends Migration
             $table->timestamps();
             $table->foreign('car_id')->references('id')->on('cars_golf')->onDelete('restrict');
             $table->foreign('gro_id')->references('id')->on('group')->onDelete('restrict');
-            $table->foreign('car_id')->references('id')->on('cars_golf')->onDelete('restrict');
+            $table->foreign('id_hole')->references('id')->on('holes')->onDelete('restrict');
         });
     }
 
