@@ -15,6 +15,7 @@ class AddToalla extends Migration
     {
         Schema::table('toalla', function (Blueprint $table) {
             $table->string('user_id')->nullable();
+            $table->datetime('fec')->nullable();
         });
     }
 
