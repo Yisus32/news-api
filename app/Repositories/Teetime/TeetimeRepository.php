@@ -173,8 +173,10 @@ class TeetimeRepository extends CrudRepository
                                 ->where('end_date', '>', "$end_day")
                                 ->orderBy('start_date')
                                 ->get();
+                                
 
             foreach ($teetimes as $teetime) {
+              //  $teetime = Teetime::find(17);
                 if ($teetime->start_date < $start_day) {
                     $teetime->start_date = $start_day;
                 }
@@ -202,10 +204,17 @@ class TeetimeRepository extends CrudRepository
 
                 }
                 $teetime->holes_name = $array;
-                
-                $teetime->slot = $this->create_reservations($teetime, $holes, $days);
 
-                $teetime->break_times = $teetime->break_times()->get();
+                if ($request->header('role') != "admin") {
+                    $end = Carbon::now($request->header("timezone"));
+                    $end->addHours($teetime->available);
+                    
+                    $teetime->slot = $this->create_reservations($teetime, $holes, $days, $end);
+                }else{
+                    $teetime->slot = $this->create_reservations($teetime, $holes, $days);
+                }
+             //   return $teetime;
+
             }
 
             return $teetimes;
@@ -219,7 +228,7 @@ class TeetimeRepository extends CrudRepository
 
 
     //funcion para crear las reservaciones sin reservar de un teetime
-    private function create_reservations(Teetime $request, $holes, $days){
+    private function create_reservations(Teetime $request, $holes, $days, $limit = null){
         $reservation = array();
         $day_name = array(0 => "Sunday", 1 => "Monday", 2 => "Tuesday", 3 => "Wednesday", 4 => "Thursday", 5 => "Friday", 6 => "Saturday");
         //ciclo para dejar los dias que no hay servicio
@@ -234,90 +243,94 @@ class TeetimeRepository extends CrudRepository
         // crear reservaciones para cada hoyo
         
             
-            // se crea la fecha inicial y final para crear reservaciones
-            $date = $request->start_date . " " . $request->start_hour;
-            $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-            $end_date = $request->end_date . " " . $request->end_hour;
-            $end = Carbon::createFromFormat('Y-m-d H:i:s', $end_date, env('APP_TIMEZONE'));
-            do {
+        // se crea la fecha inicial y final para crear reservaciones
+        $date = $request->start_date . " " . $request->start_hour;
+        $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+        $end_date = $request->end_date . " " . $request->end_hour;
+        $end = Carbon::createFromFormat('Y-m-d H:i:s', $end_date, env('APP_TIMEZONE'));
+        do {
 
-                $name_day = $start->format('l');
+            $name_day = $start->format('l');
 
-                //checar para no añadir los dias no laborables del teetime
-                $check_day = str_contains($day_name, $name_day);
-                //$check_day = array_search("$name_day", $day_name);
+            //checar para no añadir los dias no laborables del teetime
+            $check_day = str_contains($day_name, $name_day);
+            //$check_day = array_search("$name_day", $day_name);
 
-                if ($check_day == true ) {
-                    $start = $start->addDay();
-                }
+            if ($check_day == true ) {
+                $start = $start->addDay();
+            }
 
-                if ($start > $end) {
-                    break;
-                }
-                
-                if ($check_day == false) {
-                    // se crea la hora final del dia para la comprobacion en el segundo do while
-                    $date_time = explode(' ', $start);
-                    $date_end_time = $date_time[0] . ' ' . $request->end_hour;
-                    $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $date_end_time, env('APP_TIMEZONE'));
-                    do {
+            if ($start > $end) {
+                break;
+            }
+            
+            if ($check_day == false) {
+                // se crea la hora final del dia para la comprobacion en el segundo do while
+                $date_time = explode(' ', $start);
+                $date_end_time = $date_time[0] . ' ' . $request->end_hour;
+                $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $date_end_time, env('APP_TIMEZONE'));
+                do {
+                    
+
+                    if (isset($request->break_times)) {
+                        $check = explode(' ', $start);
+                        foreach ($request->break_times as $break) {
+                            if($check[1] >= $break["start_hour"] and $check[1] <= $break["end_hour"] ){
+                                $after_break = $check[0] . " " . $break["end_hour"];
+                                $start = Carbon::createFromFormat('Y-m-d H:i:s', $after_break, env('APP_TIMEZONE'));
                         
-
-                        if (isset($request->break_times)) {
-                            $check = explode(' ', $start);
-                            foreach ($request->break_times as $break) {
-                                if($check[1] >= $break["start_hour"] and $check[1] <= $break["end_hour"] ){
-                                    $after_break = $check[0] . " " . $break["end_hour"];
-                                    $start = Carbon::createFromFormat('Y-m-d H:i:s', $after_break, env('APP_TIMEZONE'));
-                                }
                             }
                         }
+                    }
+                    if ($limit != null and $start > $limit) {
+                        break;
+                    }
+        
+                    //se crea una reservacion
+                    $date_save = explode(' ', $start);
 
-                        //se crea una reservacion
-                        $date_save = explode(' ', $start);
-
-                        //se hace el chequeo de la disponibilidad de cada hoyo en la fecha a mostrar
-                        foreach ($holes as $hole) {
-                            $reservation_exist = Reservation::where('hole_id', '=', "$hole")
-                                                        ->where('date', '=', "$date_save[0]")
-                                                        ->where('start_hour', '=', "$date_save[1]")
-                                                        ->where('status', '=', 'registrado')
-                                                        ->orWhere('status', '=', 'registrado')
-                                                        ->where('hole_id', '=', "$hole")
-                                                        ->where('date', '=', "$date_save[0]")
-                                                        ->where('start_hour', '=', "$date_save[1]")
-                                                        ->first();
+                    //se hace el chequeo de la disponibilidad de cada hoyo en la fecha a mostrar
+                    foreach ($holes as $hole) {
+                        $reservation_exist = Reservation::where('hole_id', '=', "$hole")
+                                                    ->where('date', '=', "$date_save[0]")
+                                                    ->where('start_hour', '=', "$date_save[1]")
+                                                    ->where('status', '=', 'registrado')
+                                                    ->orWhere('status', '=', 'reservado')
+                                                    ->where('hole_id', '=', "$hole")
+                                                    ->where('date', '=', "$date_save[0]")
+                                                    ->where('start_hour', '=', "$date_save[1]")
+                                                    ->first();
 
                         
 
-                            if (!$reservation_exist) {
-                                $reservation[$i]["hole_id"] = $hole;
-                                $reservation[$i]["date"] = $date_save[0];
-                                $reservation[$i]["start_hour"] = $date_save[1];
+                        if (!$reservation_exist) {
+                            $reservation[$i]["hole_id"] = $hole;
+                            $reservation[$i]["date"] = $date_save[0];
+                            $reservation[$i]["start_hour"] = $date_save[1];
 
-                                $i++;
-                            }
+                            $i++;
                         }
-                        
-                
-                        //se le añaden los minutos del intervalo en cada recorrido
-                        $start->addMinutes($request->time_interval);
-                        
-
-                        
-                    } while ($start <= $end_time);
-
-                    // se le sube un dia al inicio para recorrer el while y se se crea la fecha de nuevo para reiniciar la hora
+                    }
                     
-                    $start = $start->addDay();
-                    $date_start_time = explode(' ', $start);
-                    $date_start_time = $date_start_time[0] . ' ' . $request->start_hour;
-                    $start = Carbon::createFromFormat('Y-m-d H:i:s', $date_start_time, env('APP_TIMEZONE'));
+            
+                    //se le añaden los minutos del intervalo en cada recorrido
+                    $start->addMinutes($request->time_interval);
                     
-                }
+
+                    
+                } while ($start <= $end_time);
+
+                // se le sube un dia al inicio para recorrer el while y se se crea la fecha de nuevo para reiniciar la hora
                 
+                $start = $start->addDay();
+                $date_start_time = explode(' ', $start);
+                $date_start_time = $date_start_time[0] . ' ' . $request->start_hour;
+                $start = Carbon::createFromFormat('Y-m-d H:i:s', $date_start_time, env('APP_TIMEZONE'));
                 
-            } while ($start <= $end);
+            }
+            
+            
+        } while ($start <= $end);
             
         
         return $reservation;
