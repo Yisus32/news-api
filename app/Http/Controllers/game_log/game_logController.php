@@ -42,5 +42,20 @@ class game_logController extends CrudController
         $group=DB::table('game_log')->where('fecha',$now)->groupBy('gro_id','id')->get();
         return response()->json($group);
     }
+
+    public function indexfull()
+    {
+        $game=DB::table('game_log')
+        ->join('group','group.id','=','game_log.gro_id')
+        ->select('group.cod','game_log.id','game_log.user_id','game_log.auser_id','game_log.car_id','game_log.hol_id','game_log.gro_id','game_log.id_hole')
+        ->get();  
+        
+        $gam=DB::table('game_log')
+        ->join('cars_golf','cars_golf.id','=','game_log.car_id')
+        ->select('cars_golf.cod')
+        ->get(); 
+
+        return response()->json($game);
+    }
     
 }
