@@ -144,6 +144,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('toallas', 'toalla\toallaController@_store');
         $router->put('toallas/{id}', 'toalla\toallaController@_update');
         $router->delete('toallas/{id}', 'toalla\toallaController@_delete');
+        $router->post('toallas/{id}', 'toalla\toallaController@upsta');
         
         /** routes para asig_toalla **/ 
         
