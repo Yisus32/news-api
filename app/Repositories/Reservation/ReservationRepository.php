@@ -8,10 +8,15 @@ namespace App\Repositories\Reservation;
 
 use App\Core\CrudRepository;
 use App\Core\ReportService;
+use App\Jobs\GuestEmail;
 use App\Models\Reservation;
 use App\Models\Teetime;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Queue;
+
+//use Illuminate\Queue\Queue;
+//use Illuminate\Support\Facades\Queue as FacadesQueue;
 
 /** @property Reservation $model */
 class ReservationRepository extends CrudRepository
@@ -157,10 +162,17 @@ class ReservationRepository extends CrudRepository
         $reservation = Reservation::findOrFail($id);
         $data = $request->all();
         $reservation->update($data);
-        if($reservation)
+        if($reservation){
+            if ($request->guests_email != null) {
+                Queue::push(new GuestEmail($request->guests_email, $id));
+               
+            }
+            
             return $reservation;
-        else
+        }else{
             return null;
+        }
+            
     }
 
 }
