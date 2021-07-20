@@ -16,13 +16,5 @@ class asig_toallaController extends CrudController
         parent::__construct($service);
     }
 
-    public function upsta(Request $request , $id)
-    {
-        $cam=toalla::where('id',$id)->first();
-        $cam->status=$request->sta;
-        $cam->save();
-        $fec=new DateTime('now');
-        $cfe=asig_toalla::where();
-
-    }
+    
 }
