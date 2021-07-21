@@ -29,7 +29,8 @@ class ReservationRepository extends CrudRepository
 
     public function _index($request = null, $user = null)
     {
-        $reservations = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 'teetimes.min_capacity'])
+        if ($request->header('role') == "admin") {
+            $reservations = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 'teetimes.min_capacity'])
                         ->join('holes', 'holes.id', '=', 'reservations.hole_id')
                         ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
                         ->groupBy('reservations.id')
@@ -37,32 +38,49 @@ class ReservationRepository extends CrudRepository
                         ->groupBy('teetimes.max_capacity')
                         ->groupBy('teetimes.min_capacity')
                         ->get();
-
-        foreach ($reservations as $reservation) {
-            $teetime = Teetime::find($reservation->teetime_id);
-
-            $date = $reservation->date . " " . $reservation->start_hour;
-            $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-            $reservation->available_time = $start->subHours($teetime->available)->format('Y-m-d H:i:s');
-
-            $date = $reservation->date . " " . $reservation->start_hour;
-            $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-            $reservation->cancel_time = $start->subHours($teetime->cancel_time)->format('Y-m-d H:i:s');
-
-            $partners = $reservation->partners;
-            $partners = str_replace("{", '', $partners);
-            $partners = str_replace("}", '', $partners);
-            $partners = explode(',', $partners);
-            $reservation->partners = $partners;
-
-            $guests = $reservation->guests;
-            $guests = str_replace("{", '', $guests);
-            $guests = str_replace("}", '', $guests);
-            $guests = explode(',', $guests);
-            $reservation->guests = $guests;
-           
+        }else{
+            if (!isset($request->owner)) {
+                abort(400, "el id del usuario es requerido");
+            }
+            $reservations = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 'teetimes.min_capacity'])
+                        ->join('holes', 'holes.id', '=', 'reservations.hole_id')
+                        ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
+                        ->groupBy('reservations.id')
+                        ->groupBy('holes.name')
+                        ->groupBy('teetimes.max_capacity')
+                        ->groupBy('teetimes.min_capacity')
+                        ->where('owner', '=', "$request->owner")
+                        ->get();
         }
-
+        
+        if (count($reservations) > 0) {
+            foreach ($reservations as $reservation) {
+                $teetime = Teetime::find($reservation->teetime_id);
+    
+                $date = $reservation->date . " " . $reservation->start_hour;
+                $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+                $reservation->available_time = $start->subHours($teetime->available)->format('Y-m-d H:i:s');
+    
+                $date = $reservation->date . " " . $reservation->start_hour;
+                $start = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+                $reservation->cancel_time = $start->subHours($teetime->cancel_time)->format('Y-m-d H:i:s');
+    
+                $partners = $reservation->partners;
+                $partners = str_replace("{", '', $partners);
+                $partners = str_replace("}", '', $partners);
+                $partners = explode(',', $partners);
+                $reservation->partners = $partners;
+    
+                $guests = $reservation->guests;
+                $guests = str_replace("{", '', $guests);
+                $guests = str_replace("}", '', $guests);
+                $guests = explode(',', $guests);
+                $reservation->guests = $guests;
+               
+            }
+    
+        }
+        
         return $reservations;
     }
 
