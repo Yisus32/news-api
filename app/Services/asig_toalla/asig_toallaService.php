@@ -28,12 +28,21 @@ class asig_toallaService extends CrudService
     
     public function _store(Request $request)
     {
+         $tosta=toalla::where('id',$request->id_toalla)->get();
+       
+        if($tosta[0]->status=="En uso")
+        {
+            return response()->json(["error"=>true,"message"=> "esta toalla ya esta en uso"],422);
+        }
+        else
+        {
         $date=$request->all();
         $toalla=toalla::where('id',$date['id_toalla'])->first();
         $toalla->fec=$date['fec_ini'];
         $toalla->user_id=$date['user_id'];
         $toalla->status='En uso';
         $toalla->save();
+        }
         
         
         return parent::_store($request);
