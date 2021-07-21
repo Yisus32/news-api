@@ -14,9 +14,10 @@ class groupController extends CrudController
         parent::__construct($service);
     }
 
-    public function psearch($id)
+    public function psearch(Request $request)
     {
-        $bus=group::whereRaw('cod like ?',"%{$id}%")->get();
+        $r=$request->get('cod');
+        $bus=group::whereRaw('cod like ?',"%{$r}%")->get();
         return response()->json($bus);
     }
 }

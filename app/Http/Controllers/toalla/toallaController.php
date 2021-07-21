@@ -4,6 +4,7 @@ namespace App\Http\Controllers\toalla;
 
 use Illuminate\Http\Request;
 use App\Core\CrudController;
+use App\Models\toalla;
 use App\Services\toalla\toallaService;
 /** @property toallaService $service */
 class toallaController extends CrudController
@@ -11,5 +12,13 @@ class toallaController extends CrudController
     public function __construct(toallaService $service)
     {
         parent::__construct($service);
+    }
+
+    public function psearch(Request $request)
+    {
+        $r=$request->get('num');
+      
+        $bus=toalla::where('num',$r)->get();
+       return response()->json($bus);
     }
 }
