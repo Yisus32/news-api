@@ -14,9 +14,10 @@ class cars_golfController extends CrudController
         parent::__construct($service);
     }
 
-    public function psearch($id)
+    public function psearch(Request $request)
     {
-        $bus=cars_golf::whereRaw('cod like ?',"%{$id}%")->get();
+        $r=$request->get('cod');
+        $bus=cars_golf::whereRaw('cod like ?',"%{$r}%")->get();
         return response()->json($bus);
     }
 }
