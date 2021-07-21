@@ -91,39 +91,6 @@ class ReservationService extends CrudService
             return response()->json(["error" => true, "message" => "La hora ingresada ya ha sido ocupada por otro jugador"], 409);
         }
 
-        //checar tiempo de disponibilidad
-
-        $teetime = Teetime::find($request->teetime_id);
-
-        $date = $request->date . ' '. $request->start_hour;
-        $final = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-        if ($teetime->available >= 24) {
-            $sub_day = floor($teetime->available / 24);
-            $final->subDays($sub_day);
-        }
-        $final->subHours($teetime->available_time);
-
-        $account = new AccountService();
-        $account = $account->getAccount();
-        if (!isset($account->time_zone)) {
-            return response()->json(["error" => true, "message" => "Error en la zona horaria del sistema"], 400);
-        }
-        
-        $now = Carbon::now($account->time_zone);
-
-        // verificar que se esta eliminando con el tiempo de anticipacion
-        if ($final->greaterThan($now)) {
-            return response()->json(["error" => true, "message" => "Debe reservar máximo $teetime->available horas antes"], 409);
-        }
-
-        //checar que el hoyo exista 
-
-        $hole_exist = Hole::find($request->hole_id);
-
-        if (!$hole_exist) {
-            return response()->json(["error" => true, "message" => "El hoyo ingresado no es valido"], 409);
-        }
-
         return parent::_store($request);
     }
 
@@ -160,14 +127,6 @@ class ReservationService extends CrudService
 
         if ($exist) {
             return response()->json(["error" => true, "message" => "La hora ingresada ya ha sido ocupada por otro jugador"], 409);
-        }
-
-        //checar que el hoyo exista 
-
-        $hole_exist = Hole::find($request->hole_id);
-
-        if (!$hole_exist) {
-            return response()->json(["error" => true, "message" => "El hoyo ingresado no es valido"], 409);
         }
 
         return parent::_store($request);
