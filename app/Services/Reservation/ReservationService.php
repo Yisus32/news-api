@@ -168,7 +168,7 @@ class ReservationService extends CrudService
             $number_players = $number_players + $this->countPlayers($request->guests);
         }
 
-        if (isset($request->guests_email)) {
+        if (isset($request->guests_email) and $request->guests_email != null and $request->guests_email != "") {
             $guests_email = explode(',', $request->guests_email);
             $number_players = $number_players + $this->countPlayers($guests_email);
         }
