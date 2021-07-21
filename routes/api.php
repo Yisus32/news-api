@@ -109,13 +109,13 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         
         
         /** routes para cars_golf **/ 
-        
+        $router->get('cars_golfs/psearch','cars_golf\cars_golfController@psearch');
         $router->get('cars_golfs', 'cars_golf\cars_golfController@_index');
         $router->get('cars_golfs/{id}', 'cars_golf\cars_golfController@_show');
         $router->post('cars_golfs', 'cars_golf\cars_golfController@_store');
         $router->put('cars_golfs/{id}', 'cars_golf\cars_golfController@_update');
         $router->delete('cars_golfs/{id}', 'cars_golf\cars_golfController@_delete');
-        $router->get('cars_golfs/psearch','cars_golf\cars_golfController@psearch');
+        
 
        
 
@@ -139,14 +139,14 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->delete('waiting_lists/{id}', 'waiting_list\waiting_listController@_delete');
 
         /** routes para toalla **/ 
- 
+        $router->get('toallas/search', 'toalla\toallaController@psearch');
         $router->get('toallas', 'toalla\toallaController@_index');
         $router->get('toallas/{id}', 'toalla\toallaController@_show');
         $router->post('toallas', 'toalla\toallaController@_store');
         $router->put('toallas/{id}', 'toalla\toallaController@_update');
         $router->delete('toallas/{id}', 'toalla\toallaController@_delete');
         $router->post('toallas/{id}', 'toalla\toallaController@upsta');
-        $router->get('toallas/search', 'toalla\toallaController@psearch');
+        
         
         /** routes para asig_toalla **/ 
         
