@@ -30,13 +30,28 @@ class GuestEmail extends Job
         $reservation = Reservation::find($this->reservation);
 
         $email_receptor = explode(",",$this->emails);
-        $receipt_url = 'https://qarubick2.zippyttech.com/';
-        $subject = "Invitación Teetime";
-        $message = "Club de Golf Panama le informa que usted ha sido invitado a participar en el teetime 
-        Nº$reservation->id que inicia a las $reservation->start_hour del dia $reservation->date auspiciado por $reservation->owner_name. <br>
-        para poder asistir al evento necesita registrarse en el sistema. <br> <br> <a href='".$receipt_url."' target='_blank'>Haga click para registrar sus datos</a></p>";
-        $mailer = new NotificationService;
-        return $mailer->sendEmail($email_receptor,$subject,$message,6,"notificaciones@zippyttech.com");
+        $guests = explode(",", $reservation->guests_name);
+        $i = 0;
+        
+        foreach ($email_receptor as $email) {
+            
+            $receipt_url = 'https://qarubick2.zippyttech.com/';
+            $subject = "Invitación Teetime";
+            if (isset($guests[$i]) and $guests[$i] != null) {
+                $name = $guests[$i];
+            }else{
+                $name = "invitado";
+            }
+            
+           
+            $message = "Estimado $name el socio $reservation->owner_name lo ha invitado al <b>Club de Golf Panamá</b>
+            para que forme parte del teetime. Para poder aceptar la solicitud necesita llenar sus datos en el siguiente enlace
+            <br> <br> <a href='".$receipt_url."' target='_blank'>Haga click para registrar sus datos</a>";
+            $mailer = new NotificationService;
+            $mailer->sendEmail($email,$subject,$message,6,"notificaciones@zippyttech.com");
+            $i++;
+        }
+        
         return true;
     }
 }
