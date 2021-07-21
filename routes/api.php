@@ -106,6 +106,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('groups', 'group\groupController@_store');
         $router->put('groups/{id}', 'group\groupController@_update');
         $router->delete('groups/{id}', 'group\groupController@_delete');
+        $router->get('groups/psearch/{id}', 'group\groupController@psearch');
         
         /** routes para cars_golf **/ 
         
