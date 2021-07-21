@@ -25,6 +25,16 @@ class toallaService extends CrudService
         parent::__construct($repository);
     }
 
+    public function _store(Request $request)
+    {
+        $cod_exist=toalla::where('num',$request->num)->first();
+        if($cod_exist)
+        {
+            return response()->json(["error"=>true,"message"=> "La toalla ya existe"],422);
+        }
+        return parent::_store($request);
+    }
+
     public function _update($id, Request $request)
     {
         
