@@ -303,6 +303,8 @@ class ReservationService extends CrudService
 
         if ($guests != null) {
             $number = count($guests);
+        }else{
+            $number = 0;
         }
 
         return $number;

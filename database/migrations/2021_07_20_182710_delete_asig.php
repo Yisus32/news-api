@@ -14,7 +14,7 @@ class DeleteAsig extends Migration
     public function up()
     {
         Schema::table('asig_toalla', function (Blueprint $table) {
-            $table->dropColumn('user_id');
+            //$table->dropColumn('user_id');
         });
     }
 
