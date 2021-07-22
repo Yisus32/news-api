@@ -19,6 +19,12 @@ class Reservation extends CrudModel
     public function teetime(){
         return $this->belongsTo(Teetime::class, 'id', 'teetime_id');
     }
+    /**
+     * @return HasMany
+     */
+    public function invitations(){
+        return $this->hasMany(Invitation::class,'reservation_id','id');
+    }
 
     /**
      * @named Funcion para convertir a string (Estandarizada)
