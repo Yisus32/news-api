@@ -60,6 +60,10 @@ class ReservationService extends CrudService
     {
         $reservations = Reservation::where('status', '=', 'reservado')->get();
         
+        $hole_exist = Hole::find($request->hole_id);
+        if (!$hole_exist) {
+            return response()->json(['error' => true, 'message' => "El hoyo con id $request->hole_id no existe"],400);
+        }
         if (count($reservations) > 0) {
             $now = Carbon::now();
 
@@ -98,6 +102,10 @@ class ReservationService extends CrudService
     {
         $reservations = Reservation::where('status', '=', 'reservado')->get();
         
+        $hole_exist = Hole::find($request->hole_id);
+        if (!$hole_exist) {
+            return response()->json(['error' => true, 'message' => "El hoyo con id $request->hole_id no existe"],400);
+        }
         if (count($reservations) > 0) {
             $now = Carbon::now();
 
@@ -136,6 +144,12 @@ class ReservationService extends CrudService
 
         $reservation = Reservation::find($id);
 
+        if (isset($request->hole_id)) {
+            $hole_exist = Hole::find($request->hole_id);
+            if (!$hole_exist) {
+                return response()->json(['error' => true, 'message' => "El hoyo con id $request->hole_id no existe"],400);
+            }
+        }
         if (!$reservation) {
             return response()->json(["error" => true, "message" => "Reservacion no encontrada"], 404); 
         }
