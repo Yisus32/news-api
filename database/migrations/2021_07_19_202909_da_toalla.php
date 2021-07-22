@@ -14,7 +14,7 @@ class DaToalla extends Migration
     public function up()
     {
         Schema::table('toalla', function (Blueprint $table) {
-            $table->datetime('fec')->nullable();
+    //        $table->datetime('fec')->nullable();
         });
     }
 
