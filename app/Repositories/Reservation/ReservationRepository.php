@@ -9,10 +9,12 @@ namespace App\Repositories\Reservation;
 use App\Core\CrudRepository;
 use App\Core\ReportService;
 use App\Jobs\GuestEmail;
+use App\Models\Invitation;
 use App\Models\Reservation;
 use App\Models\Teetime;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 
 //use Illuminate\Queue\Queue;
@@ -29,30 +31,26 @@ class ReservationRepository extends CrudRepository
 
     public function _index($request = null, $user = null)
     {
+        $query = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 
+                    'teetimes.min_capacity', 'teetimes.start_date as teetime_date_start', 'teetimes.end_date as teetime_date_end',
+                    'teetimes.start_hour as teetime_hour_start', 'teetimes.end_hour as teetime_hour_end',
+                    DB::raw('array_agg(guests.full_name) as guests_fullname')])
+                ->join('holes', 'holes.id', '=', 'reservations.hole_id')
+                ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
+                ->Leftjoin('guests', 'guests.id', '=', DB::raw("ANY(reservations.guests)"))
+                ->groupBy('reservations.id')
+                ->groupBy('holes.name')        
+                ->groupBy('teetimes.id');
+
         if ($request->header('role') == "admin") {
-            $reservations = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 
-                            'teetimes.min_capacity', 'teetimes.start_date as teetime_date_start', 'teetimes.end_date as teetime_date_end',
-                            'teetimes.start_hour as teetime_hour_start', 'teetimes.end_hour as teetime_hour_end'])
-                        ->join('holes', 'holes.id', '=', 'reservations.hole_id')
-                        ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
-                        ->groupBy('reservations.id')
-                        ->groupBy('holes.name')        
-                        ->groupBy('teetimes.id')
-                        ->get();
+            $reservations = $query->get();
+                   
         }else{
             if (!isset($request->owner)) {
                 abort(400, "el id del usuario es requerido");
             }
-            $reservations = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 
-            'teetimes.min_capacity', 'teetimes.start_date as teetime_date_start', 'teetimes.end_date as teetime_date_end',
-                            'teetimes.start_hour as teetime_hour_start', 'teetimes.end_hour as teetime_hour_end'])
-                        ->join('holes', 'holes.id', '=', 'reservations.hole_id')
-                        ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
-                        ->groupBy('reservations.id')
-                        ->groupBy('holes.name')
-                        ->groupBy('teetimes.id')
-                        ->where('owner', '=', "$request->owner")
-                        ->get();
+            $reservations = $query->where('owner', '=', "$request->owner")
+                            ->get();
         }
         
         if (count($reservations) > 0) {
@@ -78,6 +76,12 @@ class ReservationRepository extends CrudRepository
                 $guests = str_replace("}", '', $guests);
                 $guests = explode(',', $guests);
                 $reservation->guests = $guests;
+
+                $guests_fullname = $reservation->guests_fullname;
+                $guests_fullname = str_replace("{", '', $guests_fullname);
+                $guests_fullname = str_replace("}", '', $guests_fullname);
+                $guests_fullname = explode(',', $guests_fullname);
+                $reservation->guests_fullname = $guests_fullname;
 
                 $reservation->teetime_start = $reservation->teetime_date_start . ' '. $reservation->teetime_hour_start;
                 $reservation->teetime_end = $reservation->teetime_date_end . ' '. $reservation->teetime_hour_end;
@@ -178,18 +182,32 @@ class ReservationRepository extends CrudRepository
 
     public function reservation_register($id, Request $request){
 
+        $reservation = Reservation::findOrFail($id);
         if (isset($request["partners"])){
+         /*   if (!empty($request["partners"])) {
+                
+                foreach ($request["partners"] as $partner) {
+                    $invitation = new Invitation();
+                    $invitation->reservation_id = $id;
+                    $invitation->partner = $partner;
+                    $invitation->save();
+                }
+            }*/
+   
             $request["partners"] = $this->model->formatTypeArray($request["partners"]);
         }
         if (isset($request["guests"])){
+            $guest = $request["guests"];
             $request["guests"] = $this->model->formatTypeArray($request["guests"]);
         }
+        if (isset($request["guests_email"])) {
+            $guest_email = explode(",", $request["guests_email"]);
+        }
 
-        $reservation = Reservation::findOrFail($id);
         $data = $request->all();
         $reservation->update($data);
         if($reservation){
-            if ($request->guests_email != null) {
+            if (!empty($request->guests_email)) {
                 Queue::push(new GuestEmail($request->guests_email, $id));
                
             }
