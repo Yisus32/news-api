@@ -30,25 +30,27 @@ class ReservationRepository extends CrudRepository
     public function _index($request = null, $user = null)
     {
         if ($request->header('role') == "admin") {
-            $reservations = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 'teetimes.min_capacity'])
+            $reservations = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 
+                            'teetimes.min_capacity', 'teetimes.start_date as teetime_date_start', 'teetimes.end_date as teetime_date_end',
+                            'teetimes.start_hour as teetime_hour_start', 'teetimes.end_hour as teetime_hour_end'])
                         ->join('holes', 'holes.id', '=', 'reservations.hole_id')
                         ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
                         ->groupBy('reservations.id')
-                        ->groupBy('holes.name')
-                        ->groupBy('teetimes.max_capacity')
-                        ->groupBy('teetimes.min_capacity')
+                        ->groupBy('holes.name')        
+                        ->groupBy('teetimes.id')
                         ->get();
         }else{
             if (!isset($request->owner)) {
                 abort(400, "el id del usuario es requerido");
             }
-            $reservations = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 'teetimes.min_capacity'])
+            $reservations = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 
+            'teetimes.min_capacity', 'teetimes.start_date as teetime_date_start', 'teetimes.end_date as teetime_date_end',
+                            'teetimes.start_hour as teetime_hour_start', 'teetimes.end_hour as teetime_hour_end'])
                         ->join('holes', 'holes.id', '=', 'reservations.hole_id')
                         ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
                         ->groupBy('reservations.id')
                         ->groupBy('holes.name')
-                        ->groupBy('teetimes.max_capacity')
-                        ->groupBy('teetimes.min_capacity')
+                        ->groupBy('teetimes.id')
                         ->where('owner', '=', "$request->owner")
                         ->get();
         }
@@ -76,7 +78,10 @@ class ReservationRepository extends CrudRepository
                 $guests = str_replace("}", '', $guests);
                 $guests = explode(',', $guests);
                 $reservation->guests = $guests;
-               
+
+                $reservation->teetime_start = $reservation->teetime_date_start . ' '. $reservation->teetime_hour_start;
+                $reservation->teetime_end = $reservation->teetime_date_end . ' '. $reservation->teetime_hour_end;
+                    
             }
     
         }
@@ -87,13 +92,13 @@ class ReservationRepository extends CrudRepository
     public function _show($id)
     {
 
-        $reservation = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 'teetimes.min_capacity'])
+        $reservation = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 
+                        'teetimes.min_capacity','teetimes.start_date', 'teetimes.end_date', 'teetimes.start_hour', 'teetimes.end_hour'])
                         ->join('holes', 'holes.id', '=', 'reservations.hole_id')
                         ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
                         ->groupBy('reservations.id')
                         ->groupBy('holes.name')
-                        ->groupBy('teetimes.max_capacity')
-                        ->groupBy('teetimes.min_capacity')
+                        ->groupBy('teetimes.id')
                         ->where('reservations.id', '=', "$id")
                         ->first();
 
@@ -120,6 +125,9 @@ class ReservationRepository extends CrudRepository
             $guests = str_replace("}", '', $guests);
             $guests = explode(',', $guests);
             $reservation->guests = $guests;
+
+            $reservation->teetime_start = $reservation->teetime_date_start . ' '. $reservation->teetime_hour_start;
+            $reservation->teetime_end = $reservation->teetime_date_end . ' '. $reservation->teetime_hour_end;
         }
 
         return $reservation;
