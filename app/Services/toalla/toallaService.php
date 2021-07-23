@@ -37,16 +37,26 @@ class toallaService extends CrudService
 
     public function _update($id, Request $request)
     {
+        $veri=asig_toalla::where('id_toalla',$id)->count();
+    
+
+        if($veri>0)
+        {
+            $fec=new DateTime('now');
+            $oasi=asig_toalla::where('id_toalla',$id)->orderby('created_at','DESC')->take(1)->get();
+            $ida=$oasi[0]->id;
+    
+            $cfe=asig_toalla::where('id',$ida)->first();
+            $cfe->fec_fin=$fec;
+            $cfe->save();
+        }
         
-        $fec=new DateTime('now');
-        $oasi=asig_toalla::where('id_toalla',$id)->orderby('created_at','DESC')->take(1)->get();
-        $ida=$oasi[0]->id;
+        else{
+            return parent::_update($id,$request);
+        }
+        
 
-        $cfe=asig_toalla::where('id',$ida)->first();
-        $cfe->fec_fin=$fec;
-        $cfe->save();
-
-        return parent::_update($id,$request);
+        
     }
 
 }
