@@ -20,6 +20,15 @@ class asig_toallaRepository extends CrudRepository
     {
         parent::__construct($model);
     }
+
+    public function _index($request = null, $user = null)
+    {
+        $game=DB::table('asig_toalla')
+        ->join('toalla','toalla.id','=','asig_toalla.id_toalla')
+        ->select('asig_toalla.id','toalla.num as num_toalla','asig_toalla.id_toalla','asig_toalla.fec_ini','asig_toalla.fec_fin','asig_toalla.created_at','asig_toalla.updated_at')->get();  
+   
+        return $game;
+    }
   
    public function _show($id)
    {
@@ -29,7 +38,7 @@ class asig_toallaRepository extends CrudRepository
         $game=DB::table('asig_toalla')->where('asig_toalla.id',$id)
         ->join('toalla','toalla.id','=','asig_toalla.id_toalla')
         ->select('asig_toalla.id','toalla.num as num_toalla','asig_toalla.id_toalla','asig_toalla.fec_ini','asig_toalla.fec_fin','asig_toalla.created_at','asig_toalla.updated_at')->get();  
-        return response()->json($game);
+        return $game;
      }
 
      else
