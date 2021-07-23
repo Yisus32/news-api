@@ -27,7 +27,7 @@ class toallaController extends CrudController
     {
         $r=$request->get('num');
       
-        $bus=toalla::where('num',$r)->get();
+       $bus=toalla::whereRaw('num like ?',"%{$r}%")->get();
        return response()->json($bus);
     }
 }
