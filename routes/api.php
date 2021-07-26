@@ -120,7 +120,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
        
 
         /** routes para game_log **/ 
-        $router->get('game_logs/date','game_log\game_logController@filter_by_date');
+        $router->get('game_logs/date/hour','game_log\game_logController@filter_by_date');
         $router->get('game_logs/group', 'game_log\game_logController@list_by_group');
         $router->get('game_logs', 'game_log\game_logController@_index');
         $router->get('game_logs/{id}', 'game_log\game_logController@_show');
