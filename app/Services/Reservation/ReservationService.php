@@ -56,13 +56,6 @@ class ReservationService extends CrudService
 
     }
 
-    public function _show($id, $request = null)
-    {
-        $reservation = Reservation::find($id);
-
-        return $reservation;
-    }
-
     public function _store(Request $request)
     {
         $reservations = Reservation::where('status', '=', 'reservado')->get();
