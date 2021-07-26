@@ -8,6 +8,7 @@ namespace App\Services\asig_toalla;
 
 
 use App\Core\CrudService;
+use App\Models\bitatoalla;
 use App\Models\toalla;
 use App\Repositories\asig_toalla\asig_toallaRepository;
 use Illuminate\Http\Request;
@@ -49,6 +50,14 @@ class asig_toallaService extends CrudService
         $toalla->status='En uso';
         $toalla->user_name=$date['user_name'];
         $toalla->save();
+
+        $bit= new bitatoalla;
+        $bit->fec_asig=$date['fec_ini'];
+        $bit->id_toalla=$date['id_toalla'];
+        $bit->sta='En uso';
+        $bit->user_id=$date['user_id'];
+        $bit->user_name=$date['user_name'];
+        $bit->save();
         }
         
         
