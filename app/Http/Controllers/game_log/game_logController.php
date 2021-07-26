@@ -8,6 +8,8 @@ use App\Services\game_log\game_logService;
 use App\Models\game_log;
 use Illuminate\Support\Facades\DB;
 use DateTime;
+use SebastianBergmann\CodeCoverage\Report\Xml\Totals;
+
 /** @property game_logService $service */
 class game_logController extends CrudController
 {
