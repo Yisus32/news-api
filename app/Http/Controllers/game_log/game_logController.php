@@ -27,10 +27,11 @@ class game_logController extends CrudController
         ];
     }
 
-    public function filter_by_date($fecha)
+    public function filter_by_date(Request $request)
     {
-        $fec=date('Y-m-d',strtotime($fecha));
-        $fill=game_log::where('fecha',$fec)->get();
+        $r=$request->get('fecha');
+        
+        $fill=game_log::where('created_at',$r)->get();
         return response()->json($fill);
     }
      

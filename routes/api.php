@@ -127,7 +127,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('game_logs', 'game_log\game_logController@_store');
         $router->put('game_logs/{id}', 'game_log\game_logController@_update');
         $router->delete('game_logs/{id}', 'game_log\game_logController@_delete');
-        $router->get('game_logs/date/{fecha}','game_log\game_logController@filter_by_date');
+        $router->get('game_logs/date','game_log\game_logController@filter_by_date');
         $router->get('game_logs/full/index', 'game_log\game_logController@indexfull');
 
         /** routes para waiting_list **/ 
