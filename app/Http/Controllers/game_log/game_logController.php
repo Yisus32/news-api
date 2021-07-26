@@ -35,7 +35,7 @@ class game_logController extends CrudController
         $f=$request->get('fin');
         if($r==0 or $f==0)
         {
-            return response()->json([]);
+            return ["list"=>[],'total'=>0];
         }
         else
         {
