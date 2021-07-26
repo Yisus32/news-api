@@ -31,7 +31,7 @@ class game_logController extends CrudController
     {
         $r=$request->get('fecha');
         
-        $fill=game_log::where('created_at',$r)->get();
+        $fill=game_log::whereRaw('DATE(created_at)',$r)->get();
         return response()->json($fill);
     }
      
@@ -39,8 +39,8 @@ class game_logController extends CrudController
     {
         
         $now= new DateTime('now');
-        $now=$now->format('Y-m-d');
-        $group=DB::table('game_log')->where('fecha',$now)->groupBy('gro_id','id')->get();
+        $now=$now->format('Y-m-d H:i:s');
+        $group=DB::table('game_log')->whereRaw('DATE(created_at)',$now)->groupBy('gro_id','id')->get();
         return response()->json($group);
     }
 
