@@ -153,6 +153,14 @@ class ReservationRepository extends CrudRepository
             $data->status = "reservado";
             $data["status"] = "reservado";
         }
+
+        if (isset($data->id)) {
+            $reservation = Reservation::find($data->id);
+            $data = $data->all();
+            $data["created_at"] = Carbon::now();
+            $reservation->update($data);
+            return $reservation;
+        }
         
         return parent::_store($data);
 

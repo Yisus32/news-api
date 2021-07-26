@@ -91,7 +91,7 @@ class ReservationService extends CrudService
                             where('hole_id', '=', "$request->hole_id")->
                             first();
 
-        if ($exist) {
+        if ($exist and $exist->id != $request->id) {
             return response()->json(["error" => true, "message" => "La hora ingresada ya ha sido ocupada por otro jugador"], 409);
         }
 
