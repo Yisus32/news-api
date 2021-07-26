@@ -47,6 +47,7 @@ class asig_toallaService extends CrudService
         $toalla->fec=$date['fec_ini'];
         $toalla->user_id=$date['user_id'];
         $toalla->status='En uso';
+        $toalla->user_name=$date['user_name'];
         $toalla->save();
         }
         

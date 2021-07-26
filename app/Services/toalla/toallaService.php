@@ -49,6 +49,7 @@ class toallaService extends CrudService
             $cfe=asig_toalla::where('id',$ida)->first();
             $cfe->fec_fin=$fec;
             $cfe->save();
+            return parent::_update($id,$request);
         }
         
         else{
