@@ -8,6 +8,8 @@ use App\Services\game_log\game_logService;
 use App\Models\game_log;
 use Illuminate\Support\Facades\DB;
 use DateTime;
+use SebastianBergmann\CodeCoverage\Report\Xml\Totals;
+
 /** @property game_logService $service */
 class game_logController extends CrudController
 {
@@ -33,7 +35,7 @@ class game_logController extends CrudController
         $f=$request->get('fin');
         if($r==0 or $f==0)
         {
-            return response()->json(["error"=>true,"message"=> "No se envio una fecha valida"],400);
+            return response()->json([]);
         }
         else
         {
