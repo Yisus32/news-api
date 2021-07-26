@@ -31,9 +31,16 @@ class game_logController extends CrudController
     {
         $r=$request->get('fecha');
         $f=$request->get('fin');
-        
-        $fill=game_log::whereBetween(DB::Raw('cast(created_at as date)'), array($r, $f))->get();
-        return response()->json($fill);
+        if($r==0 or $f==0)
+        {
+            return response()->json(["error"=>true,"message"=> "No se envio una fecha valida"],400);
+        }
+        else
+        {
+            $fill=game_log::whereBetween(DB::Raw('cast(created_at as date)'), array($r, $f))->get();
+            return response()->json($fill);
+        }
+       
     }
      
     public function list_by_group()
