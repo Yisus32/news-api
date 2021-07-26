@@ -33,7 +33,7 @@ class game_logController extends CrudController
         $f=$request->get('fin');
         if($r==0 or $f==0)
         {
-            return response()->json(["error"=>true,"message"=> "No se envio una fecha valida"],400);
+            return response()->json([]);
         }
         else
         {
