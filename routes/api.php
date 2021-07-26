@@ -164,6 +164,14 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('documents/{id}', 'Document\DocumentController@_update');
         $router->delete('documents/{id}', 'Document\DocumentController@_delete');
 
+        /** routes para bitatoalla **/ 
+ 
+        $router->get('bitatoallas', 'bitatoalla\bitatoallaController@_index');
+        $router->get('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_show');
+        $router->post('bitatoallas', 'bitatoalla\bitatoallaController@_store');
+        $router->put('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_update');
+        $router->delete('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_delete');
+
     });
 
     
@@ -199,3 +207,5 @@ $router->get('invitations/{id}', 'Invitation\InvitationController@_show');
 $router->post('invitations', 'Invitation\InvitationController@_store');
 $router->put('invitations/{id}', 'Invitation\InvitationController@_update');
 $router->delete('invitations/{id}', 'Invitation\InvitationController@_destroy');
+ 
+
