@@ -30,8 +30,9 @@ class game_logController extends CrudController
     public function filter_by_date(Request $request)
     {
         $r=$request->get('fecha');
+        $f=$request->get('fin');
         
-        $fill=game_log::whereDate('created_at',$r)->get();
+        $fill=game_log::whereBetween(DB::Raw('cast(created_at as date)'), array($r, $f))->get();
         return response()->json($fill);
     }
      
