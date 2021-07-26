@@ -27,9 +27,15 @@ class TeetimeRepository extends CrudRepository
 
     public function _index($request = null, $user = null)
     {
-        $teetimes = DB::select('SELECT t.id, t.start_date, t.end_date, t.min_capacity,t.max_capacity,t.time_interval,t.available,
+      /*  $teetimes = DB::select('SELECT t.id, t.start_date, t.end_date, t.min_capacity,t.max_capacity,t.time_interval,t.available,
         t.cancel_time,t.start_hour,t.end_hour,t.target,t.days,t.user_id,t.user_name,t.created_at,t.updated_at,array_agg(h.name) holes_names 
-        FROM teetimes t JOIN holes h ON h.id = ANY(t.target) GROUP BY t.id');
+        FROM teetimes t JOIN holes h ON h.id = ANY(t.target) GROUP BY t.id');*/
+
+        $teetimes = Teetime::select(['teetimes.*', DB::raw('array_agg(holes.name) as holes_names')])
+        ->join('holes', 'holes.id', '=', DB::raw('ANY(teetimes.target)'))
+        ->groupBy('teetimes.id')
+        ->orderBy('teetimes.start_date')
+        ->get();
 
         foreach ($teetimes as $teetime) {
             $days = $teetime->days;
@@ -59,12 +65,16 @@ class TeetimeRepository extends CrudRepository
 
     public function _show($id)
     {
-        $teetime = DB::select("SELECT t.id, t.start_date, t.end_date, t.min_capacity,t.max_capacity,t.time_interval,t.available,t.cancel_time,
+ /*       $teetime = DB::select("SELECT t.id, t.start_date, t.end_date, t.min_capacity,t.max_capacity,t.time_interval,t.available,t.cancel_time,
         t.start_hour,t.end_hour,t.target,t.days,t.user_id,t.user_name,t.created_at,t.updated_at,array_agg(h.name) holes_names 
-        FROM teetimes t JOIN holes h ON h.id = ANY(t.target) WHERE t.id = $id GROUP BY t.id");
+        FROM teetimes t JOIN holes h ON h.id = ANY(t.target) WHERE t.id = $id GROUP BY t.id");*/
 
+        $teetime = Teetime::select(['teetimes.*', DB::raw('array_agg(holes.name) as holes_names')])
+        ->join('holes', 'holes.id', '=', DB::raw('ANY(teetimes.target)'))
+        ->groupBy('teetimes.id')
+        ->find($id);
+   
         if ($teetime) {
-            $teetime = $teetime[0];
             $days = $teetime->days;
             $days = str_replace("{", '', $days);
             $days = str_replace("}", '', $days);
@@ -172,7 +182,7 @@ class TeetimeRepository extends CrudRepository
                                 ->Orwhere('start_date', '<', "$end_day")
                                 ->where('end_date', '>', "$end_day")
                                 ->orderBy('start_date')
-                                ->get();      
+                                ->get();
 
             foreach ($teetimes as $teetime) {
               //  $teetime = Teetime::find(17);
