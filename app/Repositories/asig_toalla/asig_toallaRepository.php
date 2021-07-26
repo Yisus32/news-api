@@ -10,6 +10,7 @@ use App\Core\CrudRepository;
 use App\Models\asig_toalla;
 use App\Models\toalla;
 use DateTime;
+use Illuminate\Support\Facades\DB;
 
 /** @property asig_toalla $model */
 class asig_toallaRepository extends CrudRepository
@@ -20,48 +21,31 @@ class asig_toallaRepository extends CrudRepository
         parent::__construct($model);
     }
 
-   /* public function _show($id)
+    public function _index($request = null, $user = null)
     {
-        $fec=asig_toalla::where('id',$id)->get();
-        $fi=$fec[0]->fec_ini;
-        $ff=$fec[0]->fec_fin;
-        $ff=new DateTime($ff);
-        $fi=new DateTime($fi);
-        $dif=date_diff($fi,$ff)->format('%R%a');
-        $dif=intval($dif);
-        dd($dif);
+        $game=DB::table('asig_toalla')
+        ->join('toalla','toalla.id','=','asig_toalla.id_toalla')
+        ->select('asig_toalla.id','toalla.num as num_toalla','asig_toalla.id_toalla','asig_toalla.fec_ini','asig_toalla.fec_fin','asig_toalla.created_at','asig_toalla.updated_at','toalla.user_name as usname')->get();  
+   
+        return $game;
+    }
+  
+   public function _show($id)
+   {
+     $veri=asig_toalla::where('id',$id)->count();
+     if($veri>0)
+     {
+        $game=DB::table('asig_toalla')->where('asig_toalla.id',$id)
+        ->join('toalla','toalla.id','=','asig_toalla.id_toalla')
+        ->select('asig_toalla.id','toalla.num as num_toalla','asig_toalla.id_toalla','asig_toalla.fec_ini','asig_toalla.fec_fin','asig_toalla.created_at','asig_toalla.updated_at','toalla.user_name as usname')->get();  
+        return $game;
+     }
+
+     else
+     {
         return parent::_show($id);
-    }*/
-
-   /* public function _show($id)
-    {
-        $fec=asig_toalla::where('fec_fin',null)->get()->toarray();
-            $now= new DateTime('now');
-            $f=asig_toalla::where('fec_fin',null)->count();
-            $x=0;
-            foreach ($fec as $i)
-            {
-                while($x!=$f)
-                {
-                    $con=$fec[$x]['fec_ini'];
-                    $id=$fec[$x]['id_toalla'];
-                    $fed=new DateTime($con);
-                    $dife=$now->diff($fed);
-                    if($dife->h >= 1)
-                    {
-                        $cam=toalla::where('id',$id)->first();
-                        $cam->status='perdida';
-                        $cam->save();
-
-                    }
-                  
-                    $x++;
-                }
-                    
-            }
-           return parent::_show($id);
-            //dd($fec[0]['fec_ini']);
-        
-    }*/
+     }
+     return parent::_show($id);
+   }
 
 }

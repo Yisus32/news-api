@@ -8,6 +8,8 @@ use App\Services\game_log\game_logService;
 use App\Models\game_log;
 use Illuminate\Support\Facades\DB;
 use DateTime;
+use SebastianBergmann\CodeCoverage\Report\Xml\Totals;
+
 /** @property game_logService $service */
 class game_logController extends CrudController
 {
@@ -27,19 +29,28 @@ class game_logController extends CrudController
         ];
     }
 
-    public function filter_by_date($fecha)
+    public function filter_by_date(Request $request)
     {
-        $fec=date('Y-m-d',strtotime($fecha));
-        $fill=game_log::where('fecha',$fec)->get();
-        return response()->json($fill);
+        $r=$request->get('fecha');
+        $f=$request->get('fin');
+        if($r==0 or $f==0)
+        {
+            return response()->json([]);
+        }
+        else
+        {
+            $fill=game_log::whereBetween(DB::Raw('cast(created_at as date)'), array($r, $f))->get();
+            return response()->json($fill);
+        }
+       
     }
      
     public function list_by_group()
     {
         
         $now= new DateTime('now');
-        $now=$now->format('Y-m-d');
-        $group=DB::table('game_log')->where('fecha',$now)->groupBy('gro_id','id')->get();
+        $now=$now->format('Y-m-d H:i:s');
+        $group=DB::table('game_log')->whereDate('created_at',$now)->groupBy('gro_id','id')->get();
         return response()->json($group);
     }
 

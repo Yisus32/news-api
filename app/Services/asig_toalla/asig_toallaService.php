@@ -34,6 +34,12 @@ class asig_toallaService extends CrudService
         {
             return response()->json(["error"=>true,"message"=> "esta toalla ya esta en uso"],422);
         }
+
+        elseif($tosta[0]->status=="Perdida")
+        {
+            return response()->json(["error"=>true,"message"=> "esta toalla se encuentra perdida y no puede ser asignada"],422);
+        }
+
         else
         {
         $date=$request->all();

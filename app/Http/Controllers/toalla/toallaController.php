@@ -12,13 +12,22 @@ class toallaController extends CrudController
     public function __construct(toallaService $service)
     {
         parent::__construct($service);
+        $this->validateStore = [
+            'num' => 'required',
+            'description' => 'required',
+
+            ];
+    
+        $this->messages = [
+            "required" => "El campo ' :attribute ' es requerido"
+        ];
     }
 
     public function psearch(Request $request)
     {
         $r=$request->get('num');
       
-        $bus=toalla::where('num',$r)->get();
+       $bus=toalla::whereRaw('num like ?',"%{$r}%")->get();
        return response()->json($bus);
     }
 }

@@ -14,6 +14,15 @@ class asig_toallaController extends CrudController
     public function __construct(asig_toallaService $service)
     {
         parent::__construct($service);
+        $this->validateStore = [
+            'id_toalla' => 'required',
+            'user_id' => 'required'
+
+            ];
+    
+        $this->messages = [
+            "required" => "El campo ' :attribute ' es requerido"
+        ];
     }
 
     
