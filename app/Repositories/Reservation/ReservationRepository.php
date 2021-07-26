@@ -97,14 +97,16 @@ class ReservationRepository extends CrudRepository
     {
 
         $reservation = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 
-                        'teetimes.min_capacity','teetimes.start_date', 'teetimes.end_date', 'teetimes.start_hour', 'teetimes.end_hour'])
-                        ->join('holes', 'holes.id', '=', 'reservations.hole_id')
-                        ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
-                        ->groupBy('reservations.id')
-                        ->groupBy('holes.name')
-                        ->groupBy('teetimes.id')
-                        ->where('reservations.id', '=', "$id")
-                        ->first();
+        'teetimes.min_capacity', 'teetimes.start_date as teetime_date_start', 'teetimes.end_date as teetime_date_end',
+        'teetimes.start_hour as teetime_hour_start', 'teetimes.end_hour as teetime_hour_end',
+        DB::raw('array_agg(guests.full_name) as guests_fullname')])
+        ->join('holes', 'holes.id', '=', 'reservations.hole_id')
+        ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
+        ->Leftjoin('guests', 'guests.id', '=', DB::raw("ANY(reservations.guests)"))
+        ->groupBy('reservations.id')
+        ->groupBy('holes.name')        
+        ->groupBy('teetimes.id')
+        ->find($id);
 
         if ($reservation) {
             
