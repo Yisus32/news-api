@@ -95,6 +95,15 @@ class ReservationService extends CrudService
             return response()->json(["error" => true, "message" => "La hora ingresada ya ha sido ocupada por otro jugador"], 409);
         }
 
+        if (!empty($request->id)) {
+            $reservation = $this->repository->_store($request);
+            return response()->json([
+                'status' => 200,
+                'message'=>$this->name. ' Modificado',
+                $this->name=> $request->all()
+            ], 200)->setStatusCode(200, "Registro Actualizado");
+        }
+
         return parent::_store($request);
     }
 
