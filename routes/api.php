@@ -96,6 +96,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('guests', 'Guest\GuestController@_index');
         $router->get('guests/{id}', 'Guest\GuestController@_show');
         $router->post('guests', 'Guest\GuestController@_store');
+        $router->post('guests/email', 'Guest\GuestController@email');
         $router->put('guests/{id}', 'Guest\GuestController@_update');
         $router->delete('guests/{id}', 'Guest\GuestController@_delete');
 
@@ -107,7 +108,6 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('groups/{id}', 'group\groupController@_update');
         $router->delete('groups/{id}', 'group\groupController@_delete');
         
-        
         /** routes para cars_golf **/ 
         $router->get('cars_golfs/psearch','cars_golf\cars_golfController@psearch');
         $router->get('cars_golfs', 'cars_golf\cars_golfController@_index');
@@ -116,9 +116,6 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('cars_golfs/{id}', 'cars_golf\cars_golfController@_update');
         $router->delete('cars_golfs/{id}', 'cars_golf\cars_golfController@_delete');
         
-
-       
-
         /** routes para game_log **/ 
         $router->get('game_logs/group', 'game_log\game_logController@list_by_group');
         $router->get('game_logs', 'game_log\game_logController@_index');
@@ -146,7 +143,6 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('toallas/{id}', 'toalla\toallaController@_update');
         $router->delete('toallas/{id}', 'toalla\toallaController@_delete');
         $router->post('toallas/{id}', 'toalla\toallaController@upsta');
-        
         
         /** routes para asig_toalla **/ 
         

@@ -8,9 +8,11 @@ namespace App\Services\Guest;
 
 
 use App\Core\CrudService;
+use App\Models\game_log;
 use App\Repositories\Guest\GuestRepository;
 use Illuminate\Http\Request;
 use App\Models\Guest;
+use GameLog;
 
 /** @property GuestRepository $repository */
 class GuestService extends CrudService
@@ -60,6 +62,18 @@ class GuestService extends CrudService
         }
 
         return parent::_update($id, $request);
+    }
+
+    public function _delete($id)
+    {
+        $game_exist = game_log::where('inv_id', '=', "$id")->first();
+
+        if ($game_exist) {
+            return response()->json(["error"=>true,"message"=> "El invitado tiene juegos registrados"],422);
+        }
+
+        return parent::_delete($id);
+
     }
 
 }
