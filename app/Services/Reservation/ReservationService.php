@@ -290,16 +290,28 @@ class ReservationService extends CrudService
 
         $date = $reservation->date . ' '. $reservation->start_hour;
 
-        $final = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+        $account = new AccountService();
+        $account = $account->getAccount();
+        if (!isset($account->time_zone)) {
+            return response()->json(["error" => true, "message" => "Error en la zona horaria del sistema"], 400);
+        }
+        $time_zone = $account->time_zone;
+
+
+        $final = Carbon::createFromFormat('Y-m-d H:i:s', $date);
         $final->subHours($teetime->cancel_time);
 
-        $now = Carbon::now(env('APP_TIMEZONE'));
+        $now = Carbon::now($time_zone);
 
         // verificar que se esta eliminando con el tiempo de anticipacion
         if ($now->greaterThan($final)) {
             return response()->json(["error" => true, "message" => "El tiempo para cancelar expiro"], 409);
         }
         
+        return parent::_delete($id);
+    }
+
+    public function delete_admin($id){
         return parent::_delete($id);
     }
 
