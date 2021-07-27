@@ -61,35 +61,40 @@ class GuestEmail extends Job
         
         //enviar email a invitados registrados para que acepten el teetime
         if (!empty($reservation->guests)) {
+            
             $array_guest = $reservation->guests;
-            $array_guest = str_replace("{", '', $array_guest);
-            $array_guest = str_replace("}", '', $array_guest);
-            $array_guest = explode(',', $array_guest);
-           // abort(200, "error 200 ok");
-            foreach ($array_guest as $guest){
-                $invitation = new Invitation();
-                $invitation->reservation_id = $this->reservation;
-                $invitation->guest = $guest;
-                $invitation->save();
+            
+            if (strlen($array_guest) > 2) {
+                $array_guest = str_replace("{", '', $array_guest);
+                $array_guest = str_replace("}", '', $array_guest);
+                $array_guest = explode(',', $array_guest);
                 
-                $receipt_url = 'https://qarubick2teetime.zippyttech.com/accept/invitation/' . $invitation->id;
-                $subject = "Invitación Teetime";
-                
-                $object_guest = Guest::find($guest);
-                $name =  $object_guest->full_name;
-                $email = $object_guest->email;
-                $email = filter_var($email,FILTER_VALIDATE_EMAIL);
-
-                $message = "Estimado $name el socio $reservation->owner_name lo ha invitado al <b>Club de Golf Panamá</b>
-                para que forme parte del teetime. Para aceptar la solicitud solo debe hacer click al siguiente enlace
-                <br> <br> <a href='".$receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
-                if (filter_var($email,FILTER_VALIDATE_EMAIL)) {
-                    $mailer = new NotificationService;
-                    $mailer->sendEmail($email,$subject,$message,6,"notificaciones@zippyttech.com");
+                foreach ($array_guest as $guest){
+                    $invitation = new Invitation();
+                    $invitation->reservation_id = $this->reservation;
+                    $invitation->guest = $guest;
+                    $invitation->save();
+                    
+                    $receipt_url = 'https://qarubick2teetime.zippyttech.com/accept/invitation/' . $invitation->id;
+                    $subject = "Invitación Teetime";
+                    
+                    $object_guest = Guest::find($guest);
+                    $name =  $object_guest->full_name;
+                    $email = $object_guest->email;
+                    $email = filter_var($email,FILTER_VALIDATE_EMAIL);
+    
+                    $message = "Estimado $name el socio $reservation->owner_name lo ha invitado al <b>Club de Golf Panamá</b>
+                    para que forme parte del teetime. Para aceptar la solicitud solo debe hacer click al siguiente enlace
+                    <br> <br> <a href='".$receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
+                    if (filter_var($email,FILTER_VALIDATE_EMAIL)) {
+                        $mailer = new NotificationService;
+                        $mailer->sendEmail($email,$subject,$message,6,"notificaciones@zippyttech.com");
+                    }
+                    
+                    $i++;
                 }
-                
-                $i++;
             }
+            
         }
 
          //enviar email a socios para que acepten el teetime (queda por terminar)
