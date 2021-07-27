@@ -40,7 +40,8 @@ class ReservationRepository extends CrudRepository
                 ->Leftjoin('guests', 'guests.id', '=', DB::raw("ANY(reservations.guests)"))
                 ->groupBy('reservations.id')
                 ->groupBy('holes.name')        
-                ->groupBy('teetimes.id');
+                ->groupBy('teetimes.id')
+                ->orderBy('reservations.id');
 
         if ($request->header('role') == "admin") {
             $reservations = $query->get();
