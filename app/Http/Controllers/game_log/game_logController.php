@@ -43,8 +43,8 @@ class game_logController extends CrudController
         }
         else
         {
-            $fill=game_log::whereBetween(DB::Raw('cast(created_at as date)'), array($r, $f))->get();
-            return response()->json($fill);
+            $fill=game_log::whereBetween(DB::Raw('cast(game_log.created_at as date)'), array($r, $f))->join('group','group.id','=','game_log.gro_id') ->join('cars_golf','cars_golf.id','=','game_log.car_id')->join('holes','holes.id','=','game_log.id_hole')->select('group.cod as codegroup','game_log.id','game_log.user_id','game_log.auser_id','game_log.car_id','game_log.hol_id','game_log.gro_id','game_log.id_hole','cars_golf.cod as numcar','game_log.user_name','game_log.created_at as fecha','holes.name as namehole')->get();
+            return  ["list"=>$fill,'total'=>count($fill)];
         }
        
     }

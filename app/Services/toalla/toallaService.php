@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use App\Models\toalla;
 use DateTime;
 use App\Models\asig_toalla;
+use App\Models\bitatoalla;
+
 /** @property toallaRepository $repository */
 class toallaService extends CrudService
 {
@@ -49,10 +51,35 @@ class toallaService extends CrudService
             $cfe=asig_toalla::where('id',$ida)->first();
             $cfe->fec_fin=$fec;
             $cfe->save();
+            
+            //modificar fecha ultima de bitacora
+            $up=bitatoalla::where('id_toalla',$id)->first();
+            $up->fec_ult=$fec;
+            $up->save();
+
+            //segumiento de toalla
+            $bit= new bitatoalla;
+            $bit->fec_asig=$fec;
+            $bit->id_toalla=$id;
+            $bit->sta=$request->status;
+            $bit->user_id=$request->user_id;
+            $bit->user_name=$request->user_name;
+            $bit->save();
             return parent::_update($id,$request);
         }
         
-        else{
+        else
+        {
+            $fec=new DateTime('now');
+            //segumiento de toalla
+            $bit= new bitatoalla;
+            $bit->fec_asig=$fec;
+            $bit->id_toalla=$id;
+            $bit->sta=$request->status;
+            $bit->user_id=$request->user_id;
+            $bit->user_name=$request->user_name;
+            $bit->fec_ult=$fec;
+            $bit->save();
             return parent::_update($id,$request);
         }
         

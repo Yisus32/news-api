@@ -165,7 +165,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->delete('documents/{id}', 'Document\DocumentController@_delete');
 
         /** routes para bitatoalla **/ 
- 
+        $router->get('bitatoallas/toalla', 'bitatoalla\bitatoallaController@bita');
         $router->get('bitatoallas', 'bitatoalla\bitatoallaController@_index');
         $router->get('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_show');
         $router->post('bitatoallas', 'bitatoalla\bitatoallaController@_store');

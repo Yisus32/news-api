@@ -25,7 +25,7 @@ class asig_toallaRepository extends CrudRepository
     {
         $game=DB::table('asig_toalla')
         ->join('toalla','toalla.id','=','asig_toalla.id_toalla')
-        ->select('asig_toalla.id','toalla.num as num_toalla','asig_toalla.id_toalla','asig_toalla.fec_ini','asig_toalla.fec_fin','asig_toalla.created_at','asig_toalla.updated_at','asig_toalla.user_name')->get();  
+        ->select('asig_toalla.id','toalla.num as num_toalla','asig_toalla.id_toalla','asig_toalla.fec_ini','asig_toalla.fec_fin','asig_toalla.created_at','asig_toalla.updated_at','asig_toalla.user_name','asig_toalla.user_id')->get();  
    
         return $game;
     }
@@ -37,7 +37,7 @@ class asig_toallaRepository extends CrudRepository
      {
         $game=DB::table('asig_toalla')->where('asig_toalla.id',$id)
         ->join('toalla','toalla.id','=','asig_toalla.id_toalla')
-        ->select('asig_toalla.id','toalla.num as num_toalla','asig_toalla.id_toalla','asig_toalla.fec_ini','asig_toalla.fec_fin','asig_toalla.created_at','asig_toalla.updated_at','asig_toalla.user_name')->get();  
+        ->select('asig_toalla.id','toalla.num as num_toalla','asig_toalla.id_toalla','asig_toalla.fec_ini','asig_toalla.fec_fin','asig_toalla.created_at','asig_toalla.updated_at','asig_toalla.user_name','asig_toalla.user_id')->get();  
         return $game;
      }
 
