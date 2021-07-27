@@ -30,8 +30,7 @@ class GuestEmail extends Job
     public function handle()
     {
         $reservation = Reservation::find($this->reservation);
-
-        
+      
         $guests = explode(",", $reservation->guests_name);
         $i = 0;
 
@@ -63,7 +62,7 @@ class GuestEmail extends Job
         if (!empty($reservation->guests)) {
             
             $array_guest = $reservation->guests;
-            
+            // checa que si se hayan registrado invitados en la reservacion
             if (strlen($array_guest) > 2) {
                 $array_guest = str_replace("{", '', $array_guest);
                 $array_guest = str_replace("}", '', $array_guest);

@@ -22,16 +22,16 @@ class UserService extends ServicesMesh
     {
         try {
             $client = new Client();
-            $response = $client->get(env('USERS_API').'ac/list/');
+            $response = $client->get(env('USERS_API').'get/user/' . $id);
 
             if ($response->getStatusCode() !== 200){
                 Log::critical($response->getStatusCode() . ":   " .  $response->getBody());
                 return [];
             }
 
-            $account = json_decode($response->getBody())->value;
+            $user = json_decode($response->getBody())->value;
 
-            return $account[0] ?? [];
+            return $user ?? [];
 
         }catch (Exception $exception){
             Log::critical($exception->getMessage());

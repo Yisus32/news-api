@@ -172,6 +172,10 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_update');
         $router->delete('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_delete');
 
+        // invitation
+
+        $router->get('accept/invitation/{id}', 'Invitation\InvitationController@accept_invitation');
+
     });
 
     

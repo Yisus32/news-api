@@ -49,6 +49,15 @@ class ReservationController extends CrudController
         return parent::_store($request);
     }
 
+    public function _delete($id, Request $request)
+    {
+        if ($request->header('role') == "admin") {
+            return $this->service->delete_admin($id);
+        }
+    
+        return parent::_delete($id, $request);
+    }
+
     public function take($id,Request $request){
 
         return $this->service->take($id, $request);
