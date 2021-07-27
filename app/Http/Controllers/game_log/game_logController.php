@@ -44,7 +44,7 @@ class game_logController extends CrudController
         else
         {
             $fill=game_log::whereBetween(DB::Raw('cast(created_at as date)'), array($r, $f))->get();
-            return response()->json($fill);
+            return  ["list"=>$fill,'total'=>count($fill)];
         }
        
     }
