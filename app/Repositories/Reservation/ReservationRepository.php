@@ -213,17 +213,14 @@ class ReservationRepository extends CrudRepository
             $guest = $request["guests"];
             $request["guests"] = $this->model->formatTypeArray($request["guests"]);
         }
-        if (isset($request["guests_email"])) {
-            $guest_email = explode(",", $request["guests_email"]);
-        }
 
         $data = $request->all();
         $reservation->update($data);
         if($reservation){
-            if (!empty($request->guests_email)) {
-                Queue::push(new GuestEmail($request->guests_email, $id));
+         
+            Queue::push(new GuestEmail($id));
                
-            }
+            
             
             return $reservation;
         }else{
