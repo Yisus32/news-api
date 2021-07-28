@@ -35,6 +35,11 @@ class game_logService extends CrudService
             return response()->json(["error" => true, "message" => "No se puede crear un juego sin un socio o un invitado"], 400);
         }
 
+        else
+        {
+            return parent::_store($request);
+        }
+
     }
 
 }
