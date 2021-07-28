@@ -4,9 +4,11 @@ namespace App\Http\Controllers\bitatoalla;
 
 use Illuminate\Http\Request;
 use App\Core\CrudController;
+use App\Models\asig_toalla;
 use App\Models\bitatoalla;
 use App\Models\toalla;
 use App\Services\bitatoalla\bitatoallaService;
+use DateTime;
 /** @property bitatoallaService $service */
 class bitatoallaController extends CrudController
 {
@@ -22,16 +24,42 @@ class bitatoallaController extends CrudController
         return  ["list"=>$bus,'total'=>count($bus)];
     }
 
-    public function reception($id,Request $request)
+    public function reception(Request $request)
     {
+      $id=$request->toalla_id;$request->toalla_id;
+      $fec=new DateTime('now');
       $cobs=bitatoalla::where('id_toalla',$id)->orderby('created_at','DESC')->take(1)->get();
-      $robs=bitatoalla::where('id',$cobs->id)->first();
-      $robs->obs=$request->obs;
+      $robs=bitatoalla::where('id',$cobs[0]->id)->first();
+      $robs->fec_ult=$fec;
+      $robs->obs="Asignacion terminada";
       $robs->save();
 
       $toal=toalla::where('id',$id)->first();
-      $toal->sta='En stock';
+      $toal->status='En stock';
       $toal->save();
+
+     
+      $oasi=asig_toalla::where('id_toalla',$id)->orderby('created_at','DESC')->take(1)->get();
+      $ida=$oasi[0]->id;
+    
+      $cfe=asig_toalla::where('id',$ida)->first();
+      $cfe->fec_fin=$fec;
+      $cfe->save();
+
+      $bit= new bitatoalla;
+      $bit->fec_asig=$fec;
+      $bit->id_toalla=$id;
+      $bit->sta='En stock';
+      $bit->user_id=$request->user_id;
+      $bit->user_name=$request->user_name;
+      $bit->obs=$request->obs;
+      $bit->fec_ult=$fec;
+      $bit->save();
+
+      return response()->json([
+        'status' => 200,
+        'message'=>'Toalla recibida'
+    ], 200)->setStatusCode(200, "Registro Actualizado");
 
       
     }
