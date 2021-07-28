@@ -42,7 +42,7 @@ class GuestController extends CrudController
         $subject = "Invitación Teetime";
         
         $guest_exist = Guest::where('email','=', "$request->email")->first();
-        if (!$guest_exist) {
+        if ($guest_exist) {
             return Response()->json(["error" => true,"message" => "El email ingresado ya se encuentra registrado"], 200);
         }
        // $object_guest = Guest::find($guest);
