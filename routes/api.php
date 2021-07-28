@@ -166,6 +166,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
         /** routes para bitatoalla **/ 
         $router->get('bitatoallas/toalla', 'bitatoalla\bitatoallaController@bita');
+        $router->post('bitatoallas/obs', 'bitatoalla\bitatoallaController@reception');
         $router->get('bitatoallas', 'bitatoalla\bitatoallaController@_index');
         $router->get('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_show');
         $router->post('bitatoallas', 'bitatoalla\bitatoallaController@_store');
