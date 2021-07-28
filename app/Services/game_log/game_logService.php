@@ -29,10 +29,17 @@ class game_logService extends CrudService
     {
         $user=$request->user_id;
         $inv=$request->inv_id;
+        $asoc=$request->auser_id;
+      
 
         if($user==null and $inv==null)
         {
             return response()->json(["error" => true, "message" => "No se puede crear un juego sin un socio o un invitado"], 400);
+        }
+
+        if($user==null and $asoc!==null)
+        {
+            return response()->json(["error" => true, "message" => "No se puede crear un juego sin un socio principal"], 400);
         }
 
         else
