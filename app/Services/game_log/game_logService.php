@@ -25,5 +25,21 @@ class game_logService extends CrudService
         parent::__construct($repository);
     }
     
+    public function _store(Request $request)
+    {
+        $user=$request->user_id;
+        $inv=$request->inv_id;
+
+        if($user==null and $inv==null)
+        {
+            return response()->json(["error" => true, "message" => "No se puede crear un juego sin un socio o un invitado"], 400);
+        }
+
+        else
+        {
+            return parent::_store($request);
+        }
+
+    }
 
 }
