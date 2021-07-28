@@ -317,6 +317,14 @@ class TeetimeRepository extends CrudRepository
                             $reservation[$i]["date"] = $date_save[0];
                             $reservation[$i]["start_hour"] = $date_save[1];
 
+                            $date_available = $date_save[0] . " " . $date_save[1];
+                            $start_available = Carbon::createFromFormat('Y-m-d H:i:s', $date_available);
+                            $reservation[$i]["available_time"] = $start_available->subHours($request->available)->format('Y-m-d H:i:s');
+
+                            $date_available = $date_save[0] . " " . $date_save[1];
+                            $start_available = Carbon::createFromFormat('Y-m-d H:i:s', $date_available);
+                            $reservation[$i]["cancel_time"] = $start_available->subHours($request->cancel_time)->format('Y-m-d H:i:s');
+
                             $i++;
                         }
                     }
