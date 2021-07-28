@@ -38,7 +38,7 @@ class GuestController extends CrudController
 
     public function email(Request $request){
 
-        $receipt_url = 'https://qarubick.zippyttech.com/';
+        $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest';
         $subject = "Invitación Teetime";
         
         $guest_exist = Guest::where('email','=', "$request->email")->first();
