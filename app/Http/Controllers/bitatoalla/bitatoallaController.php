@@ -20,7 +20,7 @@ class bitatoallaController extends CrudController
     public function bita(Request $request)
     {
         $r=$request->get('id');
-        $bus=bitatoalla::where('id_toalla',$r)->get();
+        $bus=bitatoalla::where('id_toalla',$r)->join('toalla','toalla.id','=','bitatoalla.id_toalla')->select('toalla.num as num_toalla','bitatoalla.id','bitatoalla.id_toalla','bitatoalla.fec_asig','bitatoalla.sta','bitatoalla.fec_ult','bitatoalla.user_id','bitatoalla.user_name')->get();
         return  ["list"=>$bus,'total'=>count($bus)];
     }
 
