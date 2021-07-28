@@ -34,7 +34,7 @@ class ReservationRepository extends CrudRepository
         $query = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 
                     'teetimes.min_capacity', 'teetimes.start_date as teetime_date_start', 'teetimes.end_date as teetime_date_end',
                     'teetimes.start_hour as teetime_hour_start', 'teetimes.end_hour as teetime_hour_end',
-                    DB::raw('array_agg(guests.full_name) as guests_fullname')])
+                    DB::raw('array_agg(guests.full_name) as guests_fullname'), DB::raw('array_agg(guests.email) as saved_guests_email')])
                 ->join('holes', 'holes.id', '=', 'reservations.hole_id')
                 ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
                 ->Leftjoin('guests', 'guests.id', '=', DB::raw("ANY(reservations.guests)"))
@@ -84,6 +84,12 @@ class ReservationRepository extends CrudRepository
                 $guests_fullname = explode(',', $guests_fullname);
                 $reservation->guests_fullname = $guests_fullname;
 
+                $saved_guests_email = $reservation->saved_guests_email;
+                $saved_guests_email = str_replace("{", '', $saved_guests_email);
+                $saved_guests_email = str_replace("}", '', $saved_guests_email);
+                $saved_guests_email = explode(',', $saved_guests_email);
+                $reservation->saved_guests_email = $saved_guests_email;
+
                 $reservation->teetime_start = $reservation->teetime_date_start . ' '. $reservation->teetime_hour_start;
                 $reservation->teetime_end = $reservation->teetime_date_end . ' '. $reservation->teetime_hour_end;
                     
@@ -100,7 +106,7 @@ class ReservationRepository extends CrudRepository
         $reservation = Reservation::select(['reservations.*', 'holes.name as hole_name', 'teetimes.max_capacity', 
         'teetimes.min_capacity', 'teetimes.start_date as teetime_date_start', 'teetimes.end_date as teetime_date_end',
         'teetimes.start_hour as teetime_hour_start', 'teetimes.end_hour as teetime_hour_end',
-        DB::raw('array_agg(guests.full_name) as guests_fullname')])
+        DB::raw('array_agg(guests.full_name) as guests_fullname'), DB::raw('array_agg(guests.email) as saved_guests_email')])
         ->join('holes', 'holes.id', '=', 'reservations.hole_id')
         ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
         ->Leftjoin('guests', 'guests.id', '=', DB::raw("ANY(reservations.guests)"))
@@ -132,6 +138,12 @@ class ReservationRepository extends CrudRepository
             $guests = str_replace("}", '', $guests);
             $guests = explode(',', $guests);
             $reservation->guests = $guests;
+
+            $saved_guests_email = $reservation->saved_guests_email;
+            $saved_guests_email = str_replace("{", '', $saved_guests_email);
+            $saved_guests_email = str_replace("}", '', $saved_guests_email);
+            $saved_guests_email = explode(',', $saved_guests_email);
+            $reservation->saved_guests_email = $saved_guests_email;
 
             $reservation->teetime_start = $reservation->teetime_date_start . ' '. $reservation->teetime_hour_start;
             $reservation->teetime_end = $reservation->teetime_date_end . ' '. $reservation->teetime_hour_end;
