@@ -52,8 +52,9 @@ class GuestController extends CrudController
 
         $owner_name = $request->owner_name;
         $owner_id = $request->host_id;
+        $owner_number = $request->host_number;
       
-        $receipt_url = "https://qarubick2.zippyttech.com/guest/register-guest/$name/$email/$owner_id/$owner_name";
+        $receipt_url = "https://qarubick2.zippyttech.com/guest/register-guest/$name/$email/$owner_id/$owner_name/$owner_number";
         if ($email) {
             $message = "Estimado $name el socio $owner_name lo ha invitado a registrarse al <b>Club de Golf Panamá</b>
             . Debe registrar sus datos en el siguiente enlace
