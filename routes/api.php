@@ -128,7 +128,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('game_logs/full/index', 'game_log\game_logController@indexfull');
 
         /** routes para waiting_list **/ 
- 
+        $router->get('waiting_lists/date/hour','waiting_list\waiting_listController@filter_by_date');
         $router->get('waiting_lists', 'waiting_list\waiting_listController@_index');
         $router->get('waiting_lists/{id}', 'waiting_list\waiting_listController@_show');
         $router->post('waiting_lists', 'waiting_list\waiting_listController@_store');
@@ -163,6 +163,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         /** routes para bitatoalla **/ 
         $router->get('bitatoallas/toalla', 'bitatoalla\bitatoallaController@bita');
         $router->post('bitatoallas/obs', 'bitatoalla\bitatoallaController@reception');
+        $router->get('bitatoallas/recep/full', 'bitatoalla\bitatoallaController@recepci');
         $router->get('bitatoallas', 'bitatoalla\bitatoallaController@_index');
         $router->get('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_show');
         $router->post('bitatoallas', 'bitatoalla\bitatoallaController@_store');

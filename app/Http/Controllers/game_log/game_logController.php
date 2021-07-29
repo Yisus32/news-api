@@ -4,6 +4,7 @@ namespace App\Http\Controllers\game_log;
 
 use Illuminate\Http\Request;
 use App\Core\CrudController;
+use App\Models\bitatoalla;
 use App\Services\game_log\game_logService;
 use App\Models\game_log;
 use Illuminate\Support\Facades\DB;
@@ -66,4 +67,6 @@ class game_logController extends CrudController
         return response()->json($game);
     }
     
+
+   
 }
