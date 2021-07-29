@@ -66,4 +66,9 @@ class game_logController extends CrudController
         return response()->json($game);
     }
     
+
+    public function recepci ()
+    {
+        
+    }
 }

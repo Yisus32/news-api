@@ -9,5 +9,5 @@ class game_log extends CrudModel
 {
     protected $guarded = ['id'];
     protected $table = 'game_log';
-    protected $fillable=['id','user_id','auser_id','car_id','hol_id','gro_id','id_hole','user_name','inv_id','inv_name','asoc_name','ainv_id','ainv_name'];
+    protected $fillable=['id','user_id','auser_id','car_id','hol_id','gro_id','id_hole','user_name','inv_id','inv_name','asoc_name','ainv_id','ainv_name','obs'];
 }
