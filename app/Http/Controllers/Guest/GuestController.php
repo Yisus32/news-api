@@ -43,7 +43,7 @@ class GuestController extends CrudController
         
         $guest_exist = Guest::where('email','=', "$request->email")->first();
         if ($guest_exist) {
-            return Response()->json(["error" => true,"message" => "El email ingresado ya se encuentra registrado"], 200);
+            return Response()->json(["error" => true,"message" => "El email ingresado ya se encuentra registrado"], 400);
         }
        // $object_guest = Guest::find($guest);
         $name =  $request->full_name;
