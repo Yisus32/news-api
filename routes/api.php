@@ -128,7 +128,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('game_logs/full/index', 'game_log\game_logController@indexfull');
 
         /** routes para waiting_list **/ 
- 
+        $router->get('waiting_lists/date/hour','waiting_list\waiting_listController@filter_by_date');
         $router->get('waiting_lists', 'waiting_list\waiting_listController@_index');
         $router->get('waiting_lists/{id}', 'waiting_list\waiting_listController@_show');
         $router->post('waiting_lists', 'waiting_list\waiting_listController@_store');
