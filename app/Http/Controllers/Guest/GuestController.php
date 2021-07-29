@@ -38,7 +38,7 @@ class GuestController extends CrudController
 
     public function email(Request $request){
 
-        $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest';
+        
         $subject = "Invitación Teetime";
         
         $guest_exist = Guest::where('email','=', "$request->email")->first();
@@ -50,9 +50,10 @@ class GuestController extends CrudController
         $email = $request->email;
         $email = filter_var($email,FILTER_VALIDATE_EMAIL);
 
-      
         $owner_name = $request->owner_name;
+        $owner_id = $request->host_id;
       
+        $receipt_url = "https://qarubick2.zippyttech.com/guest/register-guest/$name/$email/$owner_id/$owner_name";
         if ($email) {
             $message = "Estimado $name el socio $owner_name lo ha invitado a registrarse al <b>Club de Golf Panamá</b>
             . Debe registrar sus datos en el siguiente enlace
