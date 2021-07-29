@@ -27,6 +27,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-       $schedule->command('statoalla')->daily();
+       $schedule->command('statoalla')->timezone('America/Caracas')->everySixHours();;
     }
 }
