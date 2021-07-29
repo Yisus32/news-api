@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddInvgame extends Migration
+class Aainvgame extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,10 @@ class AddInvgame extends Migration
     public function up()
     {
         Schema::table('game_log', function (Blueprint $table) {
-            //
+            $table->integer('ainv_id')->nullable();
+            $table->string('ainv_name')->nullable();
+            $table->string('obs')->nullable();
+            $table->foreign('ainv_id')->references('id')->on('guests')->onDelete('cascade');
         });
     }
 
