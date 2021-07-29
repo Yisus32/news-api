@@ -14,7 +14,9 @@ class AddInvgame extends Migration
     public function up()
     {
         Schema::table('game_log', function (Blueprint $table) {
-            //
+            $table->integer('ainv_id')->nullable();
+            $table->string('ainv_name')->nullable();
+            $table->foreign('ainv_id')->references('id')->on('guests')->onDelete('cascade');
         });
     }
 
