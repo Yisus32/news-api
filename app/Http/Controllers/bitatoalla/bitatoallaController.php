@@ -63,4 +63,10 @@ class bitatoallaController extends CrudController
 
       
     }
+
+    public function recepci ()
+    {
+        $fil=bitatoalla::where('sta','En stock')->join('toalla','toalla.id','=','bitatoalla.id_toalla')->select('bitatoalla.id','bitatoalla.id_toalla','toalla.num as numtoalla','bitatoalla.fec_ult','bitatoalla.user_id','bitatoalla.user_name','bitatoalla.obs')->get();
+        return  ["list"=>$fil,'total'=>count($fil)];
+    }
 }
