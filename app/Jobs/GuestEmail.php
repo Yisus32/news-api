@@ -9,7 +9,7 @@ use App\Models\Reservation;
 
 class GuestEmail extends Job
 {
-    protected $request;
+ //   protected $request;
     protected $reservation;
     /**
      * Create a new job instance.
@@ -40,7 +40,7 @@ class GuestEmail extends Job
             // correos de invitados nuevos
             foreach ($email_receptor as $email) {
                 
-                $receipt_url = 'https://qarubick2.zippyttech.com/';
+                $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/$name/$email/$owner_id/$owner_name/$owner_number';
                 $subject = "Invitación Teetime";
                 if (isset($guests[$i]) and $guests[$i] != null) {
                     $name = $guests[$i];
@@ -63,7 +63,7 @@ class GuestEmail extends Job
             
             $array_guest = $reservation->guests;
             // checa que si se hayan registrado invitados en la reservacion
-            if (strlen($array_guest) > 2) {
+            if (strlen($array_guest) > 2) { // "{}"
                 $array_guest = str_replace("{", '', $array_guest);
                 $array_guest = str_replace("}", '', $array_guest);
                 $array_guest = explode(',', $array_guest);
