@@ -38,14 +38,24 @@ class game_logService extends CrudService
             return response()->json(["error" => true, "message" => "No se puede crear un juego sin un socio o un invitado"], 400);
         }
 
-        if($user==null and $asoc!==null)
+        elseif($user==null and $asoc!==null)
         {
             return response()->json(["error" => true, "message" => "No se puede crear un juego sin un socio principal"], 400);
         }
         
-        if($inv==$ainv)
+        elseif($inv==$ainv)
         {
             return response()->json(["error" => true, "message" => "No se puede crear un juego con el mismo invitado"], 400);
+        }
+
+        elseif($user!==null and $asoc!==null and $inv!==null and $ainv!==null)
+        {
+            return response()->json(["error" => true, "message" => "No se puede crear un juego con mas de dos personas"], 400);
+        }
+
+        elseif($user!==null and $asoc!==null and $inv!==null)
+        {
+            return response()->json(["error" => true, "message" => "No se puede crear un juego con mas de dos personas"], 400);
         }
 
         else
