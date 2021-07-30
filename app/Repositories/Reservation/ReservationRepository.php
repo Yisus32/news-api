@@ -210,15 +210,6 @@ class ReservationRepository extends CrudRepository
 
         $reservation = Reservation::findOrFail($id);
         if (isset($request["partners"])){
-         /*   if (!empty($request["partners"])) {
-                
-                foreach ($request["partners"] as $partner) {
-                    $invitation = new Invitation();
-                    $invitation->reservation_id = $id;
-                    $invitation->partner = $partner;
-                    $invitation->save();
-                }
-            }*/
    
             $request["partners"] = $this->model->formatTypeArray($request["partners"]);
         }

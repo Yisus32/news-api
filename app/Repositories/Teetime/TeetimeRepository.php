@@ -275,7 +275,7 @@ class TeetimeRepository extends CrudRepository
             
             if ($check_day == false) {
                 // se crea la hora final del dia para la comprobacion en el segundo do while
-                $date_time = explode(' ', $start);
+                $date_time = explode(' ', $start); // start = "2021-06-06 08:00:00
                 $date_end_time = $date_time[0] . ' ' . $request->end_hour;
                 $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $date_end_time, env('APP_TIMEZONE'));
                 do {
@@ -284,6 +284,7 @@ class TeetimeRepository extends CrudRepository
                     if (isset($request->break_times)) {
                         $check = explode(' ', $start);
                         foreach ($request->break_times as $break) {
+                            //chequea tiempos de descanso
                             if($check[1] >= $break["start_hour"] and $check[1] <= $break["end_hour"] ){
                                 $after_break = $check[0] . " " . $break["end_hour"];
                                 $start = Carbon::createFromFormat('Y-m-d H:i:s', $after_break, env('APP_TIMEZONE'));
@@ -296,7 +297,7 @@ class TeetimeRepository extends CrudRepository
                     }
         
                     //se crea una reservacion
-                    $date_save = explode(' ', $start);
+                    $date_save = explode(' ', $start); // $start= "2021-06-06 04:00:00 " -> $date_save[0] = "2021-06-16" [1] = "04:00:00"
 
                     //se hace el chequeo de la disponibilidad de cada hoyo en la fecha a mostrar
                     foreach ($holes as $hole) {
