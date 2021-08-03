@@ -9,6 +9,7 @@ use App\Models\bitatoalla;
 use App\Models\toalla;
 use App\Services\bitatoalla\bitatoallaService;
 use DateTime;
+use Carbon\Carbon;
 /** @property bitatoallaService $service */
 class bitatoallaController extends CrudController
 {
@@ -57,7 +58,8 @@ class bitatoallaController extends CrudController
             $cfe=asig_toalla::where('id',$ida)->first();
             $cfe->fec_fin=$fec;
             $cfe->save();
-      
+            
+            $now = Carbon::now()->timezone("America/Panama");
             $bit= new bitatoalla;
             $bit->fec_asig=$fec;
             $bit->id_toalla=$id;
@@ -65,7 +67,7 @@ class bitatoallaController extends CrudController
             $bit->user_id=$request->user_id;
             $bit->user_name=$request->user_name;
             $bit->obs=$request->obs;
-            $bit->fec_ult=$fec;
+            $bit->fec_ult=$now;
             $bit->save();
       
             return response()->json([
