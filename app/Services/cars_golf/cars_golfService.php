@@ -34,12 +34,29 @@ class cars_golfService extends CrudService
         }
         return parent::_store($request);
     }
+     
+    public function _update($id, Request $request)
+    {
+        $cod_exist=cars_golf::where('cod',$request->cod)->first();
+        if($cod_exist and $cod_exist->id !=$id) 
+        {
+            return response()->json(["error"=>true,"message"=> "El carrito de golf ya existe"],422);
+        }
 
+        else
+        {
+            return parent::_update($id,$request);
+        }
+    }
     public function _delete($id)
     {
         $exis=game_log::where('car_id',$id)->first();
         if ($exis) {
             return response()->json(['error' => true, "message" => 'Existen juegos asociados a este carrito'],409);
+        }
+        else
+        {
+            return parent::_delete($id);
         }
     }
 }
