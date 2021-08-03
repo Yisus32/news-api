@@ -14,6 +14,7 @@ use App\Models\toalla;
 use DateTime;
 use App\Models\asig_toalla;
 use App\Models\bitatoalla;
+use Carbon\Carbon;
 
 /** @property toallaRepository $repository */
 class toallaService extends CrudService
@@ -51,7 +52,7 @@ class toallaService extends CrudService
         
         if($veri>0)
         {
-            $fec=new DateTime('now');
+            $fec=Carbon::now()->timezone("America/Panama");
             $oasi=asig_toalla::where('id_toalla',$id)->orderby('created_at','DESC')->take(1)->get();
             $ida=$oasi[0]->id;
     
@@ -77,7 +78,7 @@ class toallaService extends CrudService
         
         else
         {
-            $fec=new DateTime('now');
+            $fec=Carbon::now()->timezone("America/Panama");
             //segumiento de toalla
             $bit= new bitatoalla;
             $bit->fec_asig=$fec;
