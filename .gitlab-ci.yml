@@ -40,7 +40,6 @@ dev_deploy_job:
     - docker rm devrubick2teetime-api || true
     - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 10091:80 devrubick2teetime-api
     - docker exec devrubick2teetime-api php artisan migrate
-    - docker exec devrubick2teetime-api php artisan schedule:run
   when: on_success
   tags:
     - devapp
@@ -274,4 +273,3 @@ aguaseo_deploy_job:
     - aguaseo
   only:
     - aguaseo
-
