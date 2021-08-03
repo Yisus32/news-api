@@ -40,7 +40,7 @@ class bitatoallaController extends CrudController
         else
         {
             $id=$request->toalla_id;
-            $fec=new DateTime('now');
+            $fec=Carbon::now()->timezone("America/Panama");
             $cobs=bitatoalla::where('id_toalla',$id)->orderby('created_at','DESC')->take(1)->get();
             $robs=bitatoalla::where('id',$cobs[0]->id)->first();
             $robs->fec_ult=$fec;

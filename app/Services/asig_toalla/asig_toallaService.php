@@ -85,6 +85,9 @@ class asig_toallaService extends CrudService
 
         else
         {
+          $usta=toalla::where('id',$request->id_toalla)->first();
+          $usta->sta='En uso';
+          $usta->save();
           return parent::_update($id,$request);
         }
     }
