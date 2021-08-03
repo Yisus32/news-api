@@ -35,7 +35,7 @@ class Authenticate
      */
     public function handle(Request $request, Closure $next)
     {
-        $token = '';
+       /* $token = '';
         if($request->hasHeader('Authorization')){
             $tokenA = $request->header('Authorization');
             $tokenA = explode(" ", $tokenA);
@@ -65,7 +65,7 @@ class Authenticate
            return response()->json(["error"=>true,"message"=>'unauthenticated '], 403);
         }
 
-        $request->attributes->add(['user' => $user]);
+        $request->attributes->add(['user' => $user]);*/
 
         return $next($request);
     }
