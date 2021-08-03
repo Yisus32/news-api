@@ -63,4 +63,30 @@ class asig_toallaService extends CrudService
         
         return parent::_store($request);
     }
+
+
+    public function _update($id, Request $request)
+    {
+        $tosta=toalla::where('id',$request->id_toalla)->get();
+     
+         if(count($tosta)==0)
+         {
+            return response()->json(["error"=>true,"message"=> "esta toalla no existe"],422);
+         }
+        if($tosta[0]->status=="En uso")
+        {
+            return response()->json(["error"=>true,"message"=> "esta toalla ya esta en uso"],422);
+        }
+
+        elseif($tosta[0]->status=="Perdida")
+        {
+            return response()->json(["error"=>true,"message"=> "esta toalla se encuentra perdida y no puede ser asignada"],422);
+        }
+
+        else
+        {
+          return parent::_update($id,$request);
+        }
+    }
 }
+

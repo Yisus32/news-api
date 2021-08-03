@@ -26,40 +26,54 @@ class bitatoallaController extends CrudController
 
     public function reception(Request $request)
     {
-      $id=$request->toalla_id;$request->toalla_id;
-      $fec=new DateTime('now');
-      $cobs=bitatoalla::where('id_toalla',$id)->orderby('created_at','DESC')->take(1)->get();
-      $robs=bitatoalla::where('id',$cobs[0]->id)->first();
-      $robs->fec_ult=$fec;
-      $robs->obs="Asignacion terminada";
-      $robs->save();
-
-      $toal=toalla::where('id',$id)->first();
-      $toal->status='En stock';
-      $toal->save();
-
-     
-      $oasi=asig_toalla::where('id_toalla',$id)->orderby('created_at','DESC')->take(1)->get();
-      $ida=$oasi[0]->id;
-    
-      $cfe=asig_toalla::where('id',$ida)->first();
-      $cfe->fec_fin=$fec;
-      $cfe->save();
-
-      $bit= new bitatoalla;
-      $bit->fec_asig=$fec;
-      $bit->id_toalla=$id;
-      $bit->sta='En stock';
-      $bit->user_id=$request->user_id;
-      $bit->user_name=$request->user_name;
-      $bit->obs=$request->obs;
-      $bit->fec_ult=$fec;
-      $bit->save();
-
-      return response()->json([
-        'status' => 200,
-        'message'=>'Toalla recibida'
-    ], 200)->setStatusCode(200, "Registro Actualizado");
+        $asig=asig_toalla::where('id_toalla',$request->toalla_id)->count();
+        $feasig=asig_toalla::where('id_toalla',$request->toalla_id)->orderby('created_at','DESC')->take(1)->get();
+        if($asig==0)
+        {
+            return response()->json(["error"=>true,"message"=> "La toalla no tiene asignaciones"],422);
+        }
+        elseif($feasig[0]->fec_fin!==null)
+        {
+            return response()->json(["error"=>true,"message"=> "Esta toalla no tiene una asignacion en curso"],422);
+        }
+        else
+        {
+            $id=$request->toalla_id;
+            $fec=new DateTime('now');
+            $cobs=bitatoalla::where('id_toalla',$id)->orderby('created_at','DESC')->take(1)->get();
+            $robs=bitatoalla::where('id',$cobs[0]->id)->first();
+            $robs->fec_ult=$fec;
+            $robs->obs="Asignacion terminada";
+            $robs->save();
+      
+            $toal=toalla::where('id',$id)->first();
+            $toal->status='En stock';
+            $toal->save();
+      
+           
+            $oasi=asig_toalla::where('id_toalla',$id)->orderby('created_at','DESC')->take(1)->get();
+            $ida=$oasi[0]->id;
+          
+            $cfe=asig_toalla::where('id',$ida)->first();
+            $cfe->fec_fin=$fec;
+            $cfe->save();
+      
+            $bit= new bitatoalla;
+            $bit->fec_asig=$fec;
+            $bit->id_toalla=$id;
+            $bit->sta='En stock';
+            $bit->user_id=$request->user_id;
+            $bit->user_name=$request->user_name;
+            $bit->obs=$request->obs;
+            $bit->fec_ult=$fec;
+            $bit->save();
+      
+            return response()->json([
+              'status' => 200,
+              'message'=>'Toalla recibida'
+          ], 200)->setStatusCode(200, "Registro Actualizado");
+        }
+      
 
       
     }

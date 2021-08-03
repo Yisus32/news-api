@@ -40,8 +40,12 @@ class toallaService extends CrudService
     public function _update($id, Request $request)
     {
         $veri=asig_toalla::where('id_toalla',$id)->count();
-    
-
+        $cod_exist=toalla::where('num',$request->num)->first();
+        if($cod_exist)
+        {
+            return response()->json(["error"=>true,"message"=> "La toalla ya existe"],422);
+        }
+        
         if($veri>0)
         {
             $fec=new DateTime('now');
