@@ -73,12 +73,12 @@ class asig_toallaService extends CrudService
          {
             return response()->json(["error"=>true,"message"=> "esta toalla no existe"],422);
          }
-        if($tosta[0]->status=="En uso" && $tosta[0]->id == $request->id_toalla)
+        if($tosta[0]->status=="En uso" && $tosta[0]->id != $request->id_toalla)
         {
             return response()->json(["error"=>true,"message"=> "esta toalla ya esta en uso"],422);
         }
 
-        elseif($tosta[0]->status=="Perdida" && $tosta[0]->id == $request->id_toalla)
+        elseif($tosta[0]->status=="Perdida" && $tosta[0]->id != $request->id_toalla)
         {
             return response()->json(["error"=>true,"message"=> "esta toalla se encuentra perdida y no puede ser asignada"],422);
         }
