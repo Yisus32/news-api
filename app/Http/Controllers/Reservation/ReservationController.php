@@ -119,7 +119,10 @@ class ReservationController extends CrudController
         $i = 0;
         foreach ($guests as $guest) {
            $model = Guest::where('id', '=', $guest)->first();
-           $guest_names[$i] = $model->full_name;
+           if ($model) {
+                $guest_names[$i] = $model->full_name;
+           }
+           
            $i++;
         }
         $guest_names = (new Reservation())->formatTypeArray($guest_names);
