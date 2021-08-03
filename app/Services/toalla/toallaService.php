@@ -69,8 +69,8 @@ class toallaService extends CrudService
             $bit->fec_asig=$fec;
             $bit->id_toalla=$id;
             $bit->sta=$request->status;
-            $bit->user_id=$request->user_id;
-            $bit->user_name=$request->user_name;
+            $bit->user_id=$request->user_num;
+            $bit->user_name=$request->user_nom;
             $bit->save();
             return parent::_update($id,$request);
         }
@@ -83,8 +83,8 @@ class toallaService extends CrudService
             $bit->fec_asig=$fec;
             $bit->id_toalla=$id;
             $bit->sta=$request->status;
-            $bit->user_id=$request->user_id;
-            $bit->user_name=$request->user_name;
+            $bit->user_id=$request->user_num;
+            $bit->user_name=$request->user_nom;
             $bit->fec_ult=$fec;
             $bit->save();
             return parent::_update($id,$request);
