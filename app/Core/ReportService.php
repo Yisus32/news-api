@@ -552,14 +552,14 @@ class ReportService
      */
     public function getAccountInfo($account)
     {
-        $client = new Client();
-        $account = $client->get(env('ACCOUNT_URL') . 'accounts/');
+        /*$client = new Client();
+        $account = $client->get(env('ACCOUNT_URL') . 'ac/list');
         if ($account->getStatusCode() == 200) {
-            $acc = json_decode($account->getBody())->list;
+            $acc = json_decode($account->getBody())->value;
             
             self::$account = $acc[0];
         }
-        $this->extractInfo();
+        $this->extractInfo();*/
     }
 
     public function extractInfo()

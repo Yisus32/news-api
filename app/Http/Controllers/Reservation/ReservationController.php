@@ -74,6 +74,10 @@ class ReservationController extends CrudController
     }
 
     public function report(Request $request){
+
+        if (empty($request->date) or empty($request->user_id)) {
+            return Response()->json(["error" => true, "message" => "la fecha y el id del usuario son requeridos"],400);
+        }
         
         $reservations= Reservation::where('status', '=', 'registrado')->where('date', '=', "$request->date")->orderBy('hole_id')
                         ->orderby('id')->get();
@@ -83,7 +87,7 @@ class ReservationController extends CrudController
         $user = $this->getUser($request);
         foreach ($reservations as $reservation) {
 
-            if (isset($reservation->guests)) {
+            if (!empty($reservation->guests) and strlen($reservation->guests) > 2) {
                 $reservation->guests = $this->guest_names($reservation->guests);
             }
             
