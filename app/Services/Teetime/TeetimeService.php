@@ -62,6 +62,7 @@ class TeetimeService extends CrudService
         if (!isset($account->time_zone)) {
             return response()->json(["error" => true, "message" => "Error en la zona horaria del sistema"], 400);
         }
+        $request->header("timezone", $account->time_zone);
 
         $request->created_at = Carbon::now($account->time_zone)->format('Y-m-d H:m:s');
         $request["created_at"] = Carbon::now($account->time_zone)->format('Y-m-d H:m:s');

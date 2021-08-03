@@ -16,7 +16,7 @@ class AsigToalla extends Migration
         Schema::create('asig_toalla', function (Blueprint $table) {
             $table->id();
             $table->integer('id_toalla');
-            $table->integer('user_id');
+            
             $table->dateTime('fec_ini');
             $table->datetime('fec_fin')->nullable();
             $table->timestamps();

@@ -60,6 +60,10 @@ class ReservationService extends CrudService
     {
         $reservations = Reservation::where('status', '=', 'reservado')->get();
         
+        $hole_exist = Hole::find($request->hole_id);
+        if (!$hole_exist) {
+            return response()->json(['error' => true, 'message' => "El hoyo con id $request->hole_id no existe"],400);
+        }
         if (count($reservations) > 0) {
             $now = Carbon::now();
 
@@ -87,41 +91,17 @@ class ReservationService extends CrudService
                             where('hole_id', '=', "$request->hole_id")->
                             first();
 
-        if ($exist) {
+        if ($exist and $exist->id != $request->id) {
             return response()->json(["error" => true, "message" => "La hora ingresada ya ha sido ocupada por otro jugador"], 409);
         }
 
-        //checar tiempo de disponibilidad
-
-        $teetime = Teetime::find($request->teetime_id);
-
-        $date = $request->date . ' '. $request->start_hour;
-        $final = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
-        if ($teetime->available >= 24) {
-            $sub_day = floor($teetime->available / 24);
-            $final->subDays($sub_day);
-        }
-        $final->subHours($teetime->available_time);
-
-        $account = new AccountService();
-        $account = $account->getAccount();
-        if (!isset($account->time_zone)) {
-            return response()->json(["error" => true, "message" => "Error en la zona horaria del sistema"], 400);
-        }
-        
-        $now = Carbon::now($account->time_zone);
-
-        // verificar que se esta eliminando con el tiempo de anticipacion
-        if ($final->greaterThan($now)) {
-            return response()->json(["error" => true, "message" => "Debe reservar máximo $teetime->available horas antes"], 409);
-        }
-
-        //checar que el hoyo exista 
-
-        $hole_exist = Hole::find($request->hole_id);
-
-        if (!$hole_exist) {
-            return response()->json(["error" => true, "message" => "El hoyo ingresado no es valido"], 409);
+        if (!empty($request->id)) {
+            $reservation = $this->repository->_store($request);
+            return response()->json([
+                'status' => 200,
+                'message'=>$this->name. ' Modificado',
+                $this->name=> $request->all()
+            ], 200)->setStatusCode(200, "Registro Actualizado");
         }
 
         return parent::_store($request);
@@ -131,6 +111,10 @@ class ReservationService extends CrudService
     {
         $reservations = Reservation::where('status', '=', 'reservado')->get();
         
+        $hole_exist = Hole::find($request->hole_id);
+        if (!$hole_exist) {
+            return response()->json(['error' => true, 'message' => "El hoyo con id $request->hole_id no existe"],400);
+        }
         if (count($reservations) > 0) {
             $now = Carbon::now();
 
@@ -158,16 +142,17 @@ class ReservationService extends CrudService
                             where('hole_id', '=', "$request->hole_id")->
                             first();
 
-        if ($exist) {
+        if ($exist and $exist->id != $request->id) {
             return response()->json(["error" => true, "message" => "La hora ingresada ya ha sido ocupada por otro jugador"], 409);
         }
 
-        //checar que el hoyo exista 
-
-        $hole_exist = Hole::find($request->hole_id);
-
-        if (!$hole_exist) {
-            return response()->json(["error" => true, "message" => "El hoyo ingresado no es valido"], 409);
+        if (!empty($request->id)) {
+            $reservation = $this->repository->_store($request);
+            return response()->json([
+                'status' => 200,
+                'message'=>$this->name. ' Modificado',
+                $this->name=> $request->all()
+            ], 200)->setStatusCode(200, "Registro Actualizado");
         }
 
         return parent::_store($request);
@@ -177,6 +162,12 @@ class ReservationService extends CrudService
 
         $reservation = Reservation::find($id);
 
+        if (isset($request->hole_id)) {
+            $hole_exist = Hole::find($request->hole_id);
+            if (!$hole_exist) {
+                return response()->json(['error' => true, 'message' => "El hoyo con id $request->hole_id no existe"],400);
+            }
+        }
         if (!$reservation) {
             return response()->json(["error" => true, "message" => "Reservacion no encontrada"], 404); 
         }
@@ -209,7 +200,7 @@ class ReservationService extends CrudService
             $number_players = $number_players + $this->countPlayers($request->guests);
         }
 
-        if (isset($request->guests_email)) {
+        if (isset($request->guests_email) and $request->guests_email != null and $request->guests_email != "") {
             $guests_email = explode(',', $request->guests_email);
             $number_players = $number_players + $this->countPlayers($guests_email);
         }
@@ -255,6 +246,16 @@ class ReservationService extends CrudService
                 
             }
         }
+
+        $account = new AccountService();
+        $account = $account->getAccount();
+        if (!isset($account->time_zone)) {
+            return response()->json(["error" => true, "message" => "Error en la zona horaria del sistema"], 400);
+        }
+        $request->header("timezone", $account->time_zone);
+
+        $request->created_at = Carbon::now($account->time_zone)->format('Y-m-d H:m:s');
+        $request["created_at"] = Carbon::now($account->time_zone)->format('Y-m-d H:m:s');
         
 
         // comienza a guardar los datos
@@ -289,16 +290,28 @@ class ReservationService extends CrudService
 
         $date = $reservation->date . ' '. $reservation->start_hour;
 
-        $final = Carbon::createFromFormat('Y-m-d H:i:s', $date, env('APP_TIMEZONE'));
+        $account = new AccountService();
+        $account = $account->getAccount();
+        if (!isset($account->time_zone)) {
+            return response()->json(["error" => true, "message" => "Error en la zona horaria del sistema"], 400);
+        }
+        $time_zone = $account->time_zone;
+
+
+        $final = Carbon::createFromFormat('Y-m-d H:i:s', $date);
         $final->subHours($teetime->cancel_time);
 
-        $now = Carbon::now(env('APP_TIMEZONE'));
+        $now = Carbon::now($time_zone);
 
         // verificar que se esta eliminando con el tiempo de anticipacion
         if ($now->greaterThan($final)) {
             return response()->json(["error" => true, "message" => "El tiempo para cancelar expiro"], 409);
         }
         
+        return parent::_delete($id);
+    }
+
+    public function delete_admin($id){
         return parent::_delete($id);
     }
 
@@ -344,6 +357,8 @@ class ReservationService extends CrudService
 
         if ($guests != null) {
             $number = count($guests);
+        }else{
+            $number = 0;
         }
 
         return $number;

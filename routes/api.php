@@ -96,11 +96,12 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('guests', 'Guest\GuestController@_index');
         $router->get('guests/{id}', 'Guest\GuestController@_show');
         $router->post('guests', 'Guest\GuestController@_store');
+        $router->post('guests/email', 'Guest\GuestController@email');
         $router->put('guests/{id}', 'Guest\GuestController@_update');
         $router->delete('guests/{id}', 'Guest\GuestController@_delete');
 
             /** routes para group **/ 
-        
+        $router->get('groups/psearch', 'group\groupController@psearch');
         $router->get('groups', 'group\groupController@_index');
         $router->get('groups/{id}', 'group\groupController@_show');
         $router->post('groups', 'group\groupController@_store');
@@ -108,34 +109,26 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->delete('groups/{id}', 'group\groupController@_delete');
         
         /** routes para cars_golf **/ 
-        
+        $router->get('cars_golfs/psearch','cars_golf\cars_golfController@psearch');
         $router->get('cars_golfs', 'cars_golf\cars_golfController@_index');
         $router->get('cars_golfs/{id}', 'cars_golf\cars_golfController@_show');
         $router->post('cars_golfs', 'cars_golf\cars_golfController@_store');
         $router->put('cars_golfs/{id}', 'cars_golf\cars_golfController@_update');
         $router->delete('cars_golfs/{id}', 'cars_golf\cars_golfController@_delete');
         
-
-        /** routes para number_holes **/ 
-        
-        $router->get('number_holes', 'number_holes\number_holesController@_index');
-        $router->get('number_holes/{id}', 'number_holes\number_holesController@_show');
-        $router->post('number_holes', 'number_holes\number_holesController@_store');
-        $router->put('number_holes/{id}', 'number_holes\number_holesController@_update');
-        $router->delete('number_holes/{id}', 'number_holes\number_holesController@_delete');
-
         /** routes para game_log **/ 
-        
         $router->get('game_logs/group', 'game_log\game_logController@list_by_group');
         $router->get('game_logs', 'game_log\game_logController@_index');
         $router->get('game_logs/{id}', 'game_log\game_logController@_show');
         $router->post('game_logs', 'game_log\game_logController@_store');
+        $router->get('game_logs/date/hour','game_log\game_logController@filter_by_date');
         $router->put('game_logs/{id}', 'game_log\game_logController@_update');
         $router->delete('game_logs/{id}', 'game_log\game_logController@_delete');
-        $router->post('game_logs/date/{fecha}','game_log\game_logController@filter_by_date');
+       
+        $router->get('game_logs/full/index', 'game_log\game_logController@indexfull');
 
         /** routes para waiting_list **/ 
- 
+        $router->get('waiting_lists/date/hour','waiting_list\waiting_listController@filter_by_date');
         $router->get('waiting_lists', 'waiting_list\waiting_listController@_index');
         $router->get('waiting_lists/{id}', 'waiting_list\waiting_listController@_show');
         $router->post('waiting_lists', 'waiting_list\waiting_listController@_store');
@@ -143,12 +136,13 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->delete('waiting_lists/{id}', 'waiting_list\waiting_listController@_delete');
 
         /** routes para toalla **/ 
- 
+        $router->get('toallas/search', 'toalla\toallaController@psearch');
         $router->get('toallas', 'toalla\toallaController@_index');
         $router->get('toallas/{id}', 'toalla\toallaController@_show');
         $router->post('toallas', 'toalla\toallaController@_store');
         $router->put('toallas/{id}', 'toalla\toallaController@_update');
         $router->delete('toallas/{id}', 'toalla\toallaController@_delete');
+        $router->post('toallas/{id}', 'toalla\toallaController@upsta');
         
         /** routes para asig_toalla **/ 
         
@@ -158,7 +152,29 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_update');
         $router->delete('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_delete');
 
-        });
+        /** routes para Document **/ 
+ 
+        $router->get('documents', 'Document\DocumentController@_index');
+        $router->get('documents/{id}', 'Document\DocumentController@_show');
+        $router->post('documents', 'Document\DocumentController@_store');
+        $router->put('documents/{id}', 'Document\DocumentController@_update');
+        $router->delete('documents/{id}', 'Document\DocumentController@_delete');
+
+        /** routes para bitatoalla **/ 
+        $router->get('bitatoallas/toalla', 'bitatoalla\bitatoallaController@bita');
+        $router->post('bitatoallas/obs', 'bitatoalla\bitatoallaController@reception');
+        $router->get('bitatoallas/recep/full', 'bitatoalla\bitatoallaController@recepci');
+        $router->get('bitatoallas', 'bitatoalla\bitatoallaController@_index');
+        $router->get('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_show');
+        $router->post('bitatoallas', 'bitatoalla\bitatoallaController@_store');
+        $router->put('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_update');
+        $router->delete('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_delete');
+
+        // invitation
+
+        $router->get('accept/invitation/{id}', 'Invitation\InvitationController@accept_invitation');
+
+    });
 
     
 
@@ -181,5 +197,17 @@ $router->delete('break_times/{id}', 'Break_time\Break_timeController@_delete');
 
  
 
+ 
+
+ 
+
+ 
+/** routes para Invitation **/ 
+ 
+$router->get('invitations', 'Invitation\InvitationController@_index');
+$router->get('invitations/{id}', 'Invitation\InvitationController@_show');
+$router->post('invitations', 'Invitation\InvitationController@_store');
+$router->put('invitations/{id}', 'Invitation\InvitationController@_update');
+$router->delete('invitations/{id}', 'Invitation\InvitationController@_destroy');
  
 

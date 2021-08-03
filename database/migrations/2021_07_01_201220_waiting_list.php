@@ -21,8 +21,6 @@ class WaitingList extends Migration
             $table->date('date');
             $table->timestamps();
 
-            //relaciona lista de espera con teetimes
-            $table->foreign('teetimes_id')->references('id')->on('teetimes')->onDelete('restrict');
         });
     }
 

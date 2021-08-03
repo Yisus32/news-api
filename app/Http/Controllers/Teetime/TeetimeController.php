@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Teetime;
 
 use Illuminate\Http\Request;
 use App\Core\CrudController;
+use App\Jobs\GuestEmail;
 use App\Services\Teetime\TeetimeService;
 use Carbon\Carbon;
 
@@ -72,16 +73,11 @@ class TeetimeController extends CrudController
     }
 
     public function day(Request $request){
-        return Carbon::today(env('APP_TIMEZONE'));
-
-        $end = Carbon::createFromFormat('Y-m-d H:i:s', "2021-09-01 08:00:00", env('APP_TIMEZONE'));
-
-        $day_name = array("Sunday","Monday", "Tuesday","Wednesday", "Thursday", "Friday", "Saturday");
-
-        $day_name[5] = "0";
-
-        $day_name[6] = "0";
-
-        return response()->json([$end->format('l'), $day_name], 200);
+   
+        $emails = "pluvet01@gmail.com";
+        $send = new GuestEmail($emails, 2);
+        $send->handle();
+        return "send";
+        
     }
 }

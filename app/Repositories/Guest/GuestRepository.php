@@ -24,7 +24,10 @@ class GuestRepository extends CrudRepository
     public function _index($request = null, $user = null)
     {
         if (isset($request->email)){
-            return Guest::whereraw("lower(email) like lower('%{$request->email}%')")->get();
+            return Guest::whereraw("lower(email) like lower('%{$request->email}%')")
+                    ->orWhereraw("lower(full_name) like lower('%{$request->email}%')")
+                    ->orderBy('email')
+                    ->get();
         }else{
             $guests = Guest::all();
         }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class NumberHoles extends Migration
+class AddAsig extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class NumberHoles extends Migration
      */
     public function up()
     {
-        Schema::create('number_holes', function (Blueprint $table) {
-            $table->id();
-            $table->integer('hol_can');
-            $table->timestamps();
+        Schema::table('asig_toalla', function (Blueprint $table) {
+            $table->string('user_id')->nullable();
         });
     }
 
@@ -27,6 +25,8 @@ class NumberHoles extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('number_holes');
+        Schema::table('asig_toalla', function (Blueprint $table) {
+            //
+        });
     }
 }
