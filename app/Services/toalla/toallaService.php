@@ -95,4 +95,17 @@ class toallaService extends CrudService
         
     }
 
+    public function _delete($id)
+    {
+        $asig=asig_toalla::where('id_toalla',$id)->count();
+         if($asig>0)
+         {
+            return response()->json(["error"=>true,"message"=> "Esta toalla tiene asignaciones no puede ser eliminada"],422);
+         }
+         else
+         {
+             return parent::_delete($id);
+         }
+    }
+
 }
