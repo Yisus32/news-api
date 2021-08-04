@@ -9,7 +9,9 @@ use App\Services\game_log\game_logService;
 use App\Models\game_log;
 use Illuminate\Support\Facades\DB;
 use DateTime;
+use App\Core\ReportService;
 use SebastianBergmann\CodeCoverage\Report\Xml\Totals;
+use Carbon\Carbon;
 
 /** @property game_logService $service */
 class game_logController extends CrudController
@@ -67,6 +69,44 @@ class game_logController extends CrudController
         return response()->json($game);
     }
     
+    
+    public function report(Request $request){
+
+        if (empty($request->date)) {
+            return Response()->json(["error" => true, "message" => "la fecha es requerida"],400);
+        }
+        
+        $alqu= $game=DB::table('game_log')->where(DB::Raw('cast(game_log.created_at as date)'),$request->date)
+        ->join('group','group.id','=','game_log.gro_id')
+        ->join('cars_golf','cars_golf.id','=','game_log.car_id')
+        ->join('holes','holes.id','=','game_log.id_hole')
+        ->select(DB::Raw('cast(game_log.created_at as date) as fecha'),'group.cod as codegroup','game_log.id','game_log.user_id','game_log.auser_id','game_log.car_id','game_log.hol_id','game_log.gro_id','game_log.id_hole','cars_golf.cod as numcar','game_log.user_name','holes.name as namehole','game_log.inv_id','game_log.inv_name','game_log.asoc_name','game_log.ainv_id','game_log.ainv_name','game_log.obs','game_log.tipo_p','game_log.can_p')->get();  
+        
+        $headers = ["Authorization" => $request->input('token')];
+        $index=[
+            'Fecha'=>'fecha',
+            'Hora de incio'=>'codegroup',
+            'Hoyo de salida'=>'namehole',
+            'N° de socio'=>'user_id',
+            'Nombre de socio'=>'user_name',
+            'Socio adicional'=>'asoc_name',
+            'Invitado'=>'inv_name',
+            'Invitado adicional'=>'ainv_name',
+            'Socio/Invitado/REC.'=>'tipo_p',
+            'Grupo ronda(cantidad de personas que juegan en la ronda)'=>'can_p',
+            'Cantidad de hoyos jugados'=>'hol_id',
+            'Observaciones'=>'obs'
+
+        ];
+        $info []=$alqu;
+        $report = new ReportService();
+        $report->indexPerSheet([$index]);
+        $report->dataPerSheet($info);
+        $report->index($index);
+        $report->data($alqu);
+        //$report->external();
+        return $report->report("automatic","Alquiler de carritos",null,null,false,1);
+    }
 
    
 }
