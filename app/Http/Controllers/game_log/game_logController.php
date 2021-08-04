@@ -72,11 +72,12 @@ class game_logController extends CrudController
     
     public function report(Request $request){
 
-        if (empty($request->date)) {
+        if (empty($request->star)) {
             return Response()->json(["error" => true, "message" => "la fecha es requerida"],400);
         }
-        
-        $alqu= $game=DB::table('game_log')->where(DB::Raw('cast(game_log.created_at as date)'),$request->date)
+        $r=$request->get('star');
+        $f=$request->get('end');
+        $alqu= $game=DB::table('game_log')->whereBetween(DB::Raw('cast(game_log.created_at as date)'), array($r, $f))
         ->join('group','group.id','=','game_log.gro_id')
         ->join('cars_golf','cars_golf.id','=','game_log.car_id')
         ->join('holes','holes.id','=','game_log.id_hole')
