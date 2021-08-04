@@ -60,6 +60,11 @@ class game_logService extends CrudService
             return response()->json(["error" => true, "message" => "No se puede crear un juego con mas de dos personas"], 400);
         }
 
+        elseif($user!==null and $asoc!==null and $user==$asoc)
+        {
+            return response()->json(["error" => true, "message" => "No se puede crear un juego con el mismo socio"], 400);
+        }
+
         else
         {
             return parent::_store($request);
