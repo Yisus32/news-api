@@ -43,6 +43,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         //routes para reports
         $router->group(['prefix' => 'report'], function () use ($router) {
             $router->get('/reservations', 'Reservation\ReservationController@report');
+            $router->get('/game_log', 'game_log\game_logController@report');
             $router->post('/automatic', 'ReportController@automatic');
         });
     });
