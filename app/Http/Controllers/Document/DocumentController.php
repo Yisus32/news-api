@@ -103,7 +103,7 @@ class DocumentController extends CrudController
                                 'success' => false,
                                 'message' => 'El documento no satisface los parámetros de validación necesarios',
                                 'value'   => null, 
-                                'count'   => 1
+                                'count'   => 0
                             ));
                         }
                         if($this->getBase64ImageSize($request->input('front_image')) > 1){
