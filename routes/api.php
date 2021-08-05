@@ -154,11 +154,12 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
         /** routes para Document **/ 
  
-        $router->get('documents', 'Document\DocumentController@_index');
-        $router->get('documents/{id}', 'Document\DocumentController@_show');
-        $router->post('documents', 'Document\DocumentController@_store');
-        $router->put('documents/{id}', 'Document\DocumentController@_update');
-        $router->delete('documents/{id}', 'Document\DocumentController@_delete');
+        $router->get('documents',           'Document\DocumentController@_index');
+        $router->get('documents/{id}',      'Document\DocumentController@_show');
+        $router->post('documents',          'Document\DocumentController@_store');
+        $router->put('documents/{id}',      'Document\DocumentController@_update');
+        $router->delete('documents/{id}',   'Document\DocumentController@_delete');
+        $router->post('documents/validate', 'Document\DocumentController@_validate');
 
         /** routes para bitatoalla **/ 
         $router->get('bitatoallas/toalla', 'bitatoalla\bitatoallaController@bita');

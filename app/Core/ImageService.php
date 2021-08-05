@@ -12,6 +12,7 @@ namespace App\Core;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 
 class ImageService //extends TatucoService
 {
@@ -21,8 +22,7 @@ class ImageService //extends TatucoService
      * @param string $id
      * @return bool|string
      */
-    public function image($images, $id = 'zippyttech')
-    {
+    public function image($images, $id = 'zippyttech'){
         try{
             $route = rtrim(app()->basePath('public/'), '/') . "/images/";
             $route_web = env('CUSTOM_URL') . '/images/';
@@ -42,29 +42,62 @@ class ImageService //extends TatucoService
             Log::critical($e->getMessage());
             return null;
         }
-
     }
-
-    public function document($document, $id = 'zippyttech'){
+         /**
+     * Función cargar una imagen en el servidor 
+     *
+     * @author foskert@gmail.com
+     * @param String $images
+     * @param String $url
+     * @param String $cons
+     * @return boolean | String
+     * @version 2.0
+     */
+    public function document($images,  $url = "", $cons = "DOCUMENT_FRONT" ){
         try{
-            $route = rtrim(app()->basePath('public/'), '/') . "/images/";
-            $route_web = env('CUSTOM_URL') . '/images/';
-            $now = Carbon::now()->format('Y-m-d');
-            $upload_dir =$route;
-            $doc = $document;
-            $ext = $this->get_extension($doc);
-            $doc = str_replace('data:document/'.$ext.';base64,', '', $doc);
-            $data = base64_decode($doc);
-            $var_for = uniqid().'-'.$id.'-'.$now. '.'.$ext;
-            $file = $upload_dir . $var_for;
-            $image = $route_web . $var_for;
-            $success = file_put_contents($file, $data);
-            return $success ?$image: false;
-        }catch (\Exception $e){
+            $route = app()->basePath('public/images'.$url.'/');
+            if(strpos(env('APP_URL'), "https:\\") !== true){
+                $route_web = "https:\\".env('APP_URL').'/images'.$url.'/';
+            }else{
+                $route_web = env('APP_URL').'/images'.$url.'/';
+            }
+            $now = Carbon::now()->format('Ymdhmsnm');
+            if (!File::exists($route)) {
+               File::makeDirectory($route , 0777, true);
+            }
+            define('UPLOAD_DIR_'.$cons, $route);
+            $img = $images;
+            if($ext = $this->get_extension($img, $cons)){
+                $img     = str_replace('data:image/'.$ext.';base64,', '', $img);
+                $data    = base64_decode($img);
+                $ran     = mt_rand(10000,99999);
+                $var_for = $cons.'-'.$now.$ran. '.'.$ext;
 
-            Log::critical($e->getMessage());
-            return null;
+                if($cons == "DOCUMENT_FRONT"){
+                    $file = UPLOAD_DIR_DOCUMENT_FRONT.$var_for;
+                }else if($cons == "DOCUMENT_BACK"){
+                    $file = UPLOAD_DIR_DOCUMENT_BACK.$var_for;
+                }else if($cons == "DOCUMENT_VALIDATE"){
+                    $file = UPLOAD_DIR_DOCUMENT_VALIDATE.$var_for;
+                }else if($cons == "ARCHIVE"){
+                    $file = UPLOAD_DIR_ARCHIVE.$var_for;
+                }
+                $image = $route_web . $var_for;
+                if(file_put_contents($file, $data)){
+                    return $image;
+                }else{
+                    Log::critical( 'La imagen no se pudo cargar correctamente');
+                    return false;
+                }
+            }else{
+                Log::critical( 'Formato de imagen no válida');
+                return false;
+            }
+        }catch (\Exception $e){
+            Log::critical( 'SCCOREI0001 '.$e);
+            return false;
         }
+    
     }
 
     /**

@@ -11,7 +11,14 @@ class Document extends CrudModel
 
     protected $table = 'documents';
 
-    protected $fillable = ["guest_id", "name", "front_image", "back_image", "document"];
+    protected $fillable = [
+    	"guest_id", 
+    	"name", 
+    	'type',
+    	"front_image", 
+    	"back_image", 
+    	"document"
+    ];
 
     public function guest(){
         return $this->belongsTo(Guest::class, 'id', 'guest_id');

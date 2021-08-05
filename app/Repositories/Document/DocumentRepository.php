@@ -20,9 +20,7 @@ class DocumentRepository extends CrudRepository
         parent::__construct($model);
     }
 
-    public function _store(Request $data)
-    {
-
+    public function _store(Request $data){
         if (isset($data["document"])) {
             $data["document"] = (new ImageService)->document($data["document"]);
         }
@@ -32,12 +30,10 @@ class DocumentRepository extends CrudRepository
         if (isset($data["back_image"])) {
             $data["back_image"] = (new ImageService)->image($data["back_image"]);
         }
-
         return parent::_store($data);
     }
 
-    public function _update($id, $data)
-    {
+    public function _update($id, $data){
         if (isset($data["document"])) {
             $data["document"] = (new ImageService)->document($data["document"]);
         }
@@ -47,8 +43,6 @@ class DocumentRepository extends CrudRepository
         if (isset($data["back_image"])) {
             $data["back_image"] = (new ImageService)->image($data["back_image"]);
         }
-
         return parent::_update($id,$data);
     }
-
 }

@@ -105,5 +105,4 @@ class GuestRepository extends CrudRepository
 
         return $guest;
     }
-
 }

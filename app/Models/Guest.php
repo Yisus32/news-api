@@ -8,12 +8,20 @@ use App\Core\CrudModel;
 class Guest extends CrudModel
 {
     protected $guarded = ['id'];
-
     protected $table = 'guests';
-
-    protected $fillable = ["full_name", "email", "identifier", "status","host_id", "host_name", "games_number", "games_number_month",
-     "host_number","created_at", "updated_at"];
-
+    protected $fillable = [
+        "full_name", 
+        "email", 
+        "identifier", 
+        "status",
+        "host_id", 
+        "host_name", 
+        "games_number", 
+        "games_number_month",
+        "host_number",
+        "created_at", 
+        "updated_at"
+    ];
     protected $hidden = [];
 
     /**
