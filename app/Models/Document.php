@@ -18,6 +18,12 @@ class Document extends CrudModel
     	"front_image", 
     	"back_image", 
     	"document"
+        'state',
+        'emission',
+        'expiration',
+        'img_validation',
+        'created_at',
+        'updated_at'
     ];
 
     public function guest(){
