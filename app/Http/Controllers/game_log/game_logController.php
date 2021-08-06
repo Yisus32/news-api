@@ -184,6 +184,10 @@ class game_logController extends CrudController
                     "data"=>$gu.$gi],
                     201);
             }
+            elseif($inv!==null and $user==null and $asoc==null and $ainv==null)
+            {
+                
+            }
             else
             {
                 $now = Carbon::now()->timezone("America/Panama");

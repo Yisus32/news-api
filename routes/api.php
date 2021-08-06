@@ -171,6 +171,14 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_update');
         $router->delete('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_delete');
 
+        /** routes para alq_car **/ 
+ 
+        $router->get('alq_cars', 'alq_car\alq_carController@_index');
+        $router->get('alq_cars/{id}', 'alq_car\alq_carController@_show');
+        $router->post('alq_cars', 'alq_car\alq_carController@sav');
+        $router->put('alq_cars/{id}', 'alq_car\alq_carController@_update');
+        $router->delete('alq_cars/{id}', 'alq_car\alq_carController@_destroy');
+
         // invitation
 
         $router->get('accept/invitation/{id}', 'Invitation\InvitationController@accept_invitation');
@@ -210,5 +218,7 @@ $router->get('invitations/{id}', 'Invitation\InvitationController@_show');
 $router->post('invitations', 'Invitation\InvitationController@_store');
 $router->put('invitations/{id}', 'Invitation\InvitationController@_update');
 $router->delete('invitations/{id}', 'Invitation\InvitationController@_destroy');
+ 
+
  
 
