@@ -17,7 +17,7 @@ class Document extends CrudModel
     	'type',
     	"front_image", 
     	"back_image", 
-    	"document"
+    	"document",
         'state',
         'emission',
         'expiration',
