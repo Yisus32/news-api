@@ -93,6 +93,11 @@ class game_logService extends CrudService
                 $gi->inv_name=$request->inv_name;
                 $gi->obs=$request->obs;
                 $gi->save();
+
+                return response()->json([
+                    "status" => 201,
+                    "data"=>$gu.$gi],
+                    201);
             }
             else
             {
