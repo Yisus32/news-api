@@ -89,7 +89,7 @@ class game_logService extends CrudService
                 $gi->gro_id=$request->gro_id;
                 $gi->id_hole=$request->id_hole;
                 $gi->can_p=$request->can_p;
-                $gi->tipo_P=$request->tipo_p;
+                $gi->tipo_p=$request->tipo_p;
                 $gi->inv_name=$request->inv_name;
                 $gi->obs=$request->obs;
                 $gi->save();
