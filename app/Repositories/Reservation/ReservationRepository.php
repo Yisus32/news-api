@@ -191,9 +191,9 @@ class ReservationRepository extends CrudRepository
             $data["guests"] = $this->model->formatTypeArray($data["guests"]);
         }
         
-        
+        $reservation = parent::_update($id, $data);
 
-        return parent::_update($id, $data);
+        return $reservation;
     }
 
     public function take($id, Request $request){

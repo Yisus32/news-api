@@ -63,10 +63,6 @@ class ReservationController extends CrudController
         return $this->service->take($id, $request);
     }
 
-    public function _update($id,Request $request){
-        return $this->service->_update($id,$request);
-    }
-
     public function reservation_register($id, Request $request){
 
         $validator = Validator::make($request->all(), array_merge($this->validateRegister, $this->validateDefault),$this->messages);

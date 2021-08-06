@@ -280,7 +280,7 @@ class ReservationService extends CrudService
     public function _update($id, Request $request)
     {
         
-        return $this->repository->_update($id,$request);
+        return parent::_update($id, $request);
     }
 
     public function _delete($id)
