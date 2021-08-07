@@ -44,6 +44,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->group(['prefix' => 'report'], function () use ($router) {
             $router->get('/reservations', 'Reservation\ReservationController@report');
             $router->get('/game_log', 'game_log\game_logController@report');
+            $router->get('/alq_car', 'alq_car\alq_carController@report');
             $router->post('/automatic', 'ReportController@automatic');
         });
     });
@@ -175,9 +176,10 @@ $router->group(['prefix' => 'api'], function (Router $router) {
  
         $router->get('alq_cars', 'alq_car\alq_carController@_index');
         $router->get('alq_cars/{id}', 'alq_car\alq_carController@_show');
+        $router->get('alq_cars/fill/date','alq_car\alq_carController@filter_by_date');
         $router->post('alq_cars', 'alq_car\alq_carController@sav');
         $router->put('alq_cars/{id}', 'alq_car\alq_carController@_update');
-        $router->delete('alq_cars/{id}', 'alq_car\alq_carController@_destroy');
+        $router->delete('alq_cars/{id}', 'alq_car\alq_carController@_delete');
 
         // invitation
 

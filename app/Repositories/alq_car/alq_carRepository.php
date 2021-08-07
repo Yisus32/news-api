@@ -22,10 +22,10 @@ class alq_carRepository extends CrudRepository
     public function _index($request = null, $user = null)
 {
     $game=DB::table('alq_car')
-    ->join('group','group.id','=','game_log.gro_id')
-    ->join('cars_golf','cars_golf.id','=','game_log.car_id')
-    ->join('holes','holes.id','=','game_log.id_hole')
-    ->select(DB::Raw('cast(game_log.created_at as date) as fecha'),'group.cod as codegroup','game_log.id','game_log.user_id','game_log.auser_id','game_log.car_id','game_log.hol_id','game_log.gro_id','game_log.id_hole','cars_golf.cod as numcar','game_log.user_name','holes.name as namehole','game_log.inv_id','game_log.inv_name','game_log.asoc_name','game_log.ainv_id','game_log.ainv_name','game_log.obs','game_log.tipo_p','game_log.can_p')->get();  
+    ->join('group','group.id','=','alq_car.gro_id')
+    ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
+    ->join('holes','holes.id','=','alq_car.id_hole')
+    ->select('group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get();  
     return $game;
 }
 
@@ -35,11 +35,11 @@ public function _show($id)
 
     if($veri>0)
     {
-    $game=DB::table('alq_car')->where('game_log.id',$id)
-    ->join('group','group.id','=','game_log.gro_id')
-    ->join('cars_golf','cars_golf.id','=','game_log.car_id')
-    ->join('holes','holes.id','=','game_log.id_hole')
-    ->select(DB::Raw('cast(game_log.created_at as date) as fecha'),'group.cod as codegroup','game_log.id','game_log.user_id','game_log.auser_id','game_log.car_id','game_log.hol_id','game_log.gro_id','game_log.id_hole','cars_golf.cod as numcar','game_log.user_name','holes.name as namehole','game_log.inv_id','game_log.inv_name','game_log.asoc_name','game_log.ainv_id','game_log.ainv_name','game_log.obs','game_log.tipo_p','game_log.can_p')->get(); 
+    $game=DB::table('alq_car')->where('alq_car.id',$id)
+    ->join('group','group.id','=','alq_car.gro_id')
+    ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
+    ->join('holes','holes.id','=','alq_car.id_hole')
+    ->select('group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get();  
     return $game;
     }
     
