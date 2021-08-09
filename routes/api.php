@@ -148,6 +148,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         
         /** routes para asig_toalla **/ 
         $router->get('asig_toallas/uso', 'asig_toalla\asig_toallaController@usotoalla');
+        $router->get('asig_toallas/bus/stock', 'asig_toalla\asig_toallaController@stocktoalla');
         $router->get('asig_toallas', 'asig_toalla\asig_toallaController@_index');
         $router->get('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_show');
         $router->post('asig_toallas', 'asig_toalla\asig_toallaController@_store');
