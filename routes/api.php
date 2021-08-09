@@ -147,13 +147,13 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('toallas/{id}', 'toalla\toallaController@upsta');
         
         /** routes para asig_toalla **/ 
-        
+        $router->get('asig_toallas/uso', 'asig_toalla\asig_toallaController@usotoalla');
         $router->get('asig_toallas', 'asig_toalla\asig_toallaController@_index');
         $router->get('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_show');
         $router->post('asig_toallas', 'asig_toalla\asig_toallaController@_store');
         $router->put('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_update');
         $router->delete('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_delete');
-        $router->get('asig_toallas/uso', 'asig_toalla\asig_toallaController@usotoalla');
+       
 
         /** routes para Document **/ 
  
