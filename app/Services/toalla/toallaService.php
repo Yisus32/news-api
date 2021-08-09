@@ -35,7 +35,10 @@ class toallaService extends CrudService
         {
             return response()->json(["error"=>true,"message"=> "La toalla ya existe"],422);
         }
-        return parent::_store($request);
+        else{
+            return parent::_store($request);
+        }
+       
     }
 
     public function _update($id, Request $request)
