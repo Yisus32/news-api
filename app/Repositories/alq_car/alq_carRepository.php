@@ -25,7 +25,7 @@ class alq_carRepository extends CrudRepository
     ->join('group','group.id','=','alq_car.gro_id')
     ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
     ->join('holes','holes.id','=','alq_car.id_hole')
-    ->select('group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get();  
+    ->select('alq_car.id','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get();  
     return $game;
 }
 
@@ -39,7 +39,7 @@ public function _show($id)
     ->join('group','group.id','=','alq_car.gro_id')
     ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
     ->join('holes','holes.id','=','alq_car.id_hole')
-    ->select('group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get();  
+    ->select('alq_car.id','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get();  
     return $game;
     }
     
