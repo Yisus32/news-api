@@ -141,7 +141,7 @@ class alq_carController extends CrudController
             $gi->fecha=$now;
             $gi->id_hole=$request->id_hole;
             $gi->obs=$request->obs;
-            $gi->tipo_p=$request->tipo_p;
+            $gi->tipo_p=$request->atipo_p;
             $gi->can_p=$request->can_p;
             $gi->save();
             return response()->json([
