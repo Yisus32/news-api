@@ -13,6 +13,8 @@ use App\Models\bitatoalla;
 use App\Models\toalla;
 use App\Repositories\asig_toalla\asig_toallaRepository;
 use Illuminate\Http\Request;
+use DateTime;
+use Carbon\Carbon;
 
 /** @property asig_toallaRepository $repository */
 class asig_toallaService extends CrudService
@@ -97,9 +99,20 @@ class asig_toallaService extends CrudService
     {
         $asi=asig_toalla::where('id',$id)->get();
       $toa=$asi[0]->id_toalla;
+
       $usta=toalla::where('id',$toa)->first();
       $usta->status='En stock';
           $usta->save();
+
+          $id=$toa;
+            $fec=Carbon::now()->timezone("America/Panama");
+            $cobs=bitatoalla::where('id_toalla',$id)->orderby('created_at','DESC')->take(1)->get();
+            $robs=bitatoalla::where('id',$cobs[0]->id)->first();
+            $robs->fec_ult=$fec;
+            $robs->obs="Asignacion eliminada";
+            $robs->save();
+
+
           return parent::_delete($id);
     }
 }

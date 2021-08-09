@@ -33,5 +33,14 @@ class asig_toallaController extends CrudController
        return $bus;
     }
 
+
+    public function stocktoalla(Request $request)
+    {
+        $r=$request->get('num');
+      
+       $bus=toalla::whereRaw('num like ?',"%{$r}%")->where('status','En stock')->get();
+       return $bus;
+    }
+
     
 }
