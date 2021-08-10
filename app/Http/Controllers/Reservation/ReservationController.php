@@ -135,4 +135,8 @@ class ReservationController extends CrudController
         }
         return $user->user;
     }
+
+    public function resendMail($id, Request $request){
+        return $this->service->resendMail($id, $request);
+    }
 }

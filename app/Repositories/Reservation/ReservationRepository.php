@@ -238,8 +238,40 @@ class ReservationRepository extends CrudRepository
             return $reservation;
         }else{
             return null;
+        }    
+    }
+
+    public function resendMail($id, Request $request){
+        $reservation = Reservation::select('reservations.id as reservid','guests.id as guestid','guests.email','guests.full_name','reservations.owner_name','reservations.date','reservations.start_hour')
+                                    ->where('reservations.id',$id)
+                                    ->where('guests.email',$request->email)
+                                    ->leftjoin('guests', 'guests.id', '=', DB::raw("ANY(reservations.guests)"))
+                                    ->groupBy('reservations.id','guests.id')
+                                    ->first();
+       
+        $invitation = Invitation::where('reservation_id',$reservation->reservid)
+                                ->where('guest',$reservation->guestid)
+                                ->first();
+        
+        $date = $reservation->date;
+        $time = $reservation->start_hour;
+        $name = $reservation->full_name;
+        $partner = $reservation->owner_name;
+        $partner = explode(" ", $partner);
+        $receipt_url = 'https://qarubick2teetime.zippyttech.com/accept/invitation/' . $invitation->id;
+        $subject = "Invitación Teetime";
+        
+        $message = "Estimado $name 
+                    El socio $partner[1] $partner[2] lo ha invitado a un juego en el club de golf de Panamá el día ". Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".$receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
+        
+        dd($message);
+        
+        if (filter_var($request->email,FILTER_VALIDATE_EMAIL)) {
+            $mailer = new NotificationService;
+            $mailer->sendEmail($request->email,$subject,$message,6,"notificaciones@zippyttech.com");
         }
-            
+
+       return $reservation;
     }
 
 }
