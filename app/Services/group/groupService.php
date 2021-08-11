@@ -8,6 +8,7 @@ namespace App\Services\group;
 
 
 use App\Core\CrudService;
+use App\Models\alq_car;
 use App\Models\group;
 use App\Repositories\group\groupRepository;
 use Illuminate\Http\Request;
@@ -45,6 +46,19 @@ class groupService extends CrudService
         else
         {
             return parent::_update($id,$request);
+        }
+    }
+
+
+    public function _delete($id)
+    {
+        $exis=alq_car::where('gro_id',$id)->first();
+        if ($exis) {
+            return response()->json(['error' => true, "message" => 'Existen juegos asociados a esta hora'],409);
+        }
+        else
+        {
+            return parent::_delete($id);
         }
     }
 }
