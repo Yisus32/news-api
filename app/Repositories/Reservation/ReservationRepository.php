@@ -190,7 +190,7 @@ class ReservationRepository extends CrudRepository
         }
         if (isset($data["guests"]) && $data['guests'] != null){
             
-            foreach ($request["guests"] as $guest) {
+            foreach ($data["guests"] as $guest) {
                     $invitation = new Invitation();
                     $invitation->reservation_id = $id;
                     $invitation->guest = $guest;
