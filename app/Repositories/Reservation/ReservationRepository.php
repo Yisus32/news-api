@@ -253,6 +253,7 @@ class ReservationRepository extends CrudRepository
                                 ->where('guest',$reservation->guestid)
                                 ->first();
         
+        dd($invitation);
         $date = $reservation->date;
         $time = $reservation->start_hour;
         $name = $reservation->full_name;
