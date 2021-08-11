@@ -32,6 +32,8 @@ class asig_toallaService extends CrudService
     
     public function _store(Request $request)
     {
+        $fec=Carbon::now()->timezone("America/Panama");
+        $request['fec_ini']=$fec;
          $tosta=toalla::where('id',$request->id_toalla)->get();
        
         if($tosta[0]->status=="En uso")
@@ -62,8 +64,7 @@ class asig_toallaService extends CrudService
         $bit->user_name=$date['user_name'];
         $bit->save();
         }
-        
-        
+    
         return parent::_store($request);
     }
 
