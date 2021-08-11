@@ -188,7 +188,7 @@ class ReservationRepository extends CrudRepository
         if (isset($data["partners"])){
             $data["partners"] = $this->model->formatTypeArray($data["partners"]);
         }
-        if (isset($data["guests"]) && $data['guests'] != null){
+        if (isset($data["guests"])){
             
             foreach ($data["guests"] as $guest) {
                     $invitation = new Invitation();

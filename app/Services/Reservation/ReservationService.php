@@ -366,6 +366,11 @@ class ReservationService extends CrudService
     }
 
     public function resendMail($id, Request $request){
+        try {
+            
+        } catch (\Exception $e) {
+            
+        }
         return $this->repository->resendMail($id, $request);
     }
 }
