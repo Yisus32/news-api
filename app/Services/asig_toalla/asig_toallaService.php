@@ -107,7 +107,7 @@ class asig_toallaService extends CrudService
           $ic=$toa;
             $fec=Carbon::now()->timezone("America/Panama");
             $cobs=bitatoalla::where('id_toalla',$ic)->orderby('created_at','DESC')->take(1)->get();
-            $robs=bitatoalla::where('id',$cobs[0]->ic)->first();
+            $robs=bitatoalla::where('id',$cobs[0]->id)->first();
             $robs->fec_ult=$fec;
             $robs->obs="Asignacion eliminada";
             $robs->save();
