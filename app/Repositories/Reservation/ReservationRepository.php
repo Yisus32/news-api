@@ -187,7 +187,15 @@ class ReservationRepository extends CrudRepository
         if (isset($data["partners"])){
             $data["partners"] = $this->model->formatTypeArray($data["partners"]);
         }
-        if (isset($data["guests"])){
+        if (isset($data["guests"]) && $data['guests'] != null){
+            
+            foreach ($request["guests"] as $guest) {
+                    $invitation = new Invitation();
+                    $invitation->reservation_id = $id;
+                    $invitation->guest = $guest;
+                    $invitation->save();
+                }
+
             $data["guests"] = $this->model->formatTypeArray($data["guests"]);
         }
         
@@ -252,8 +260,7 @@ class ReservationRepository extends CrudRepository
         $invitation = Invitation::where('reservation_id',$reservation->reservid)
                                 ->where('guest',$reservation->guestid)
                                 ->first();
-        
-        dd($invitation);
+    
         $date = $reservation->date;
         $time = $reservation->start_hour;
         $name = $reservation->full_name;
