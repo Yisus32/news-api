@@ -248,28 +248,54 @@ class ReservationRepository extends CrudRepository
                                     ->where('reservations.id',$id)
                                     ->where('guests.email',$request->email)
                                     ->first();
-                                    
-        $invitation = Invitation::where('reservation_id',$reservation->reservid)
+        
+        if ($reservation) {
+            $invitation = Invitation::where('reservation_id',$reservation->reservid)
                                 ->where('guest',$reservation->guestid)
                                 ->first();
     
-        $date = $reservation->date;
-        $time = $reservation->start_hour;
-        $name = $reservation->full_name;
-        $partner = $reservation->owner_name;
-        $partner = explode(" ", $partner);
-        $receipt_url = 'https://qarubick2teetime.zippyttech.com/accept/invitation/' . $invitation->id;
-        $subject = "Invitación Teetime";
+            $date = $reservation->date;
+            $time = $reservation->start_hour;
+            $name = $reservation->full_name;
+            $partner = $reservation->owner_name;
+            $receipt_url = 'https://qarubick2teetime.zippyttech.com/accept/invitation/' . $invitation->id;
+            $subject = "Invitación Teetime";
         
-        $message = "Estimado $name 
-                    El socio $partner[1] $partner[2] lo ha invitado a un juego en el club de golf de Panamá el día ". Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".$receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
+            $message = "Estimado $name 
+                        El socio $partner lo ha invitado a un juego en el club de golf de Panamá el día ". Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".$receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
         
-        if (filter_var($request->email,FILTER_VALIDATE_EMAIL)) {
-            $mailer = new NotificationService;
-            $mailer->sendEmail($request->email,$subject,$message,6,"notificaciones@zippyttech.com");
+            if (filter_var($request->email,FILTER_VALIDATE_EMAIL)) {
+                $mailer = new NotificationService;
+                $mailer->sendEmail($request->email,$subject,$message,6,"notificaciones@zippyttech.com");
+            }
+
+            return response()->json(["status" => 200, "message" => "se ha reenviado la invitacion"],200);   
+        }else{
+
+            $reservation = Reservation::select('reservations.id as reservid','guests.id as guestid','guests.email','guests.full_name','reservations.owner_name','reservations.date','reservations.start_hour','reservations.owner','reservations.hole_id')
+                                    ->leftjoin('guests', 'guests.id', '=', DB::raw("ANY(reservations.guests)"))
+                                    ->groupBy('reservations.id','guests.id')
+                                    ->where('reservations.id',$id)
+                                    ->first();
+            
+            $date = $reservation->date;
+            $time = $reservation->start_hour;
+            $name = $reservation->full_name;
+            $partner = $reservation->owner_name;
+            $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/%20/'.$request->email.'/'.$reservation->hole_id.'/'.$reservation->owner_name.'/'.$reservation->owner.'/'.$reservation->reservid;
+
+            $subject = "Invitación Teetime";
+
+            $message = "Usted ha sido invitado por el socio $partner a un juego en el club de golf de Panamá el día ". Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". Para aceptar la solicitud debe registrarse en nuestra plataforma <br> <br> <a href='".$receipt_url."' target='_blank'>Haga click aquí para registrarse</a>";
+
+            dd($message);
+
+             if (filter_var($request->email,FILTER_VALIDATE_EMAIL)) {
+                $mailer = new NotificationService;
+                $mailer->sendEmail($request->email,$subject,$message,6,"notificaciones@zippyttech.com");
+            }
+
+            return response()->json(["status" => 200, "message" => "se ha reenviado la invitacion"],200);  
         }
-
-       return response()->json(["status" => 200, "message" => "se ha reenviado la invitacion"],200);
     }
-
 }
