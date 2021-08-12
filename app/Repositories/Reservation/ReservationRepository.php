@@ -243,12 +243,11 @@ class ReservationRepository extends CrudRepository
 
     public function resendMail($id, Request $request){
         $reservation = Reservation::select('reservations.id as reservid','guests.id as guestid','guests.email','guests.full_name','reservations.owner_name','reservations.date','reservations.start_hour')
-                                    ->where('reservations.id',$id)
-                                    ->where('guests.email',$request->email)
                                     ->leftjoin('guests', 'guests.id', '=', DB::raw("ANY(reservations.guests)"))
                                     ->groupBy('reservations.id','guests.id')
-                                    ->get();
-                                    //->first();
+                                    ->where('reservations.id',$id)
+                                    ->where('guests.email',$request->email)
+                                    ->first();
        dd($reservation);
         $invitation = Invitation::where('reservation_id',$reservation->reservid)
                                 ->where('guest',$reservation->guestid)
