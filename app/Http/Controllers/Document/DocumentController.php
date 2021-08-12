@@ -98,7 +98,48 @@ class DocumentController extends CrudController
                             $value = $string->responses[0]->textAnnotations[0]->description;
                             $porAceptacion = $this->validateDNI($value, $guest->full_name, $guest->identifier);
                         }
-                        if(!$porAceptacion){
+                        if($porAceptacion){
+                            $document->name        = $guest->full_name;
+                            $document->guest_id    = $request->guest_id;
+                            $document->type        = 'DNI';
+                            $document->document    = $guest->identifier;
+                            $document->emission    = $request->emission;
+                            $document->expiration  = $request->expiration;
+                            $document->state       = 'Aceptado';
+                            if($this->getBase64ImageSize($request->input('front_image')) > 1){
+                                return response()->json(array( 
+                                    'success' => false,
+                                    'message' => 'La imagen frontal supera el tamaño máximo disponible',
+                                    'value'   => null ,
+                                    'count'   => 0
+                                ));
+                            }else{
+                                 $document->front_image = $this->loadImage($request->front_image, '/invitado/dni/', 'DOCUMENT_FRONT', 'invitado');
+                                if(!$document->front_image){
+                                    return response()->json(array(  
+                                        'success'=> false,
+                                        'message'=> 'No se proceso la carga de la imagen frontal',
+                                        'value'  =>  $document->front_image,
+                                        'count'  => 0
+                                    ));
+                                }   
+                            }
+                            if($document->save()){
+                                return response()->json(array( 
+                                    'success' => true,
+                                    'message' => 'Registro exitoso',
+                                    'value'   => $document, 
+                                    'count'   => 1
+                                ));
+                            }else{
+                                return response()->json(array( 
+                                    'success' => false,
+                                    'message' => 'No se logro el registro del documento',
+                                    'value'   => $document, 
+                                    'count'   => 0
+                                ));
+                            }
+                        }else{
                             return response()->json(array( 
                                 'success' => false,
                                 'message' => 'El documento no satisface los parámetros de validación necesarios',
@@ -106,39 +147,6 @@ class DocumentController extends CrudController
                                 'count'   => 1
                             ));
                         }
-                        if($this->getBase64ImageSize($request->input('front_image')) > 1){
-                            return response()->json(array( 
-                                'success' => false,
-                                'message' => 'La imagen frontal supera el tamaño máximo disponible',
-                                'value'   => null ,
-                                'count'   => 0
-                            ));
-                        }else{
-                             $document->front_image = $this->loadImage($request->front_image, '/invitado/dni/', 'DOCUMENT_FRONT', 'invitado');
-                            if(!$document->front_image){
-                                return response()->json(array(  
-                                    'success'=> false,
-                                    'message'=> 'No se proceso la carga de la imagen frontal',
-                                    'value'  =>  $document->front_image,
-                                    'count'  => 0
-                                ));
-                            }   
-                        }
-                        $document->name        = $guest->full_name;
-                        $document->guest_id    = $request->guest_id;
-                        $document->type        = 'DNI';
-                        $document->document    = $guest->identifier;
-                        $document->emission    = $request->emission;
-                        $document->expiration  = $request->expiration;
-                        $document->state       = 'Aceptado';
-                        $document->save();
-                    
-                        return response()->json(array( 
-                            'success' => true,
-                            'message' => 'Registro exitoso',
-                            'value'   => $document, 
-                            'count'   => 1
-                        ));
                     }else if($type == 'pasaporte'){
                         $string = $this->googleOCR($request->front_image);
                         $porAceptacion = false;
@@ -146,48 +154,56 @@ class DocumentController extends CrudController
                             $value = $string->responses[0]->textAnnotations[0]->description;
                             $porAceptacion = $this->validatePasaporte($value, $guest->full_name, $guest->identifier, $request->expiration);
                         }
-                        if(!$porAceptacion){
+                        if($porAceptacion){
+                            $document->guest_id    = $request->guest_id;
+                            $document->name        = $guest->full_name;
+                            $document->type        = 'Pasaporte';
+                            $document->document    = $guest->identifier;
+                            $document->emission    = $request->emission;
+                            $document->expiration  = $request->expiration;
+                            $document->state       = 'Aceptado';
+                            if($this->getBase64ImageSize($request->input('front_image')) > 1){
+                                return response()->json(array( 
+                                    'success' => false,
+                                    'message' => 'La imagen frontal supera el tamaño máximo disponible',
+                                    'value'   => null ,
+                                    'count'   => 0
+                                ));
+                            }else{
+                                $front_image = $this->loadImage($request->front_image, '/invitado/pasaporte/', 'DOCUMENT_FRONT', 'Invitado');
+                                if(!$front_image){
+                                    return response()->json(array(  
+                                        'success'=> false,
+                                        'message'=> 'No se proceso la carga de la imagen',
+                                        'value'  => $front_image,
+                                        'count'  => 0
+                                    ));
+                                }   
+                            }                            
+                            $document->front_image = $front_image;
+                            if($document->save()){
+                                return response()->json(array( 
+                                    'success' => false,
+                                    'message' => 'Registro exitoso',
+                                    'value'   => $document, 
+                                    'count'   => 1
+                                ));
+                            }else{
+                                return response()->json(array( 
+                                    'success' => false,
+                                    'message' => 'Error en el registro',
+                                    'value'   => $document, 
+                                    'count'   => 0
+                                ));
+                            }
+                        }else{
                             return response()->json(array( 
                                 'success' => false,
                                 'message' => 'El pasaporte no satisface los parámetros de validación necesarios',
                                 'value'   => $porAceptacion, 
                                 'count'   => 0
                             ));
-                        }
-                        if($this->getBase64ImageSize($request->input('front_image')) > 1){
-                            return response()->json(array( 
-                                'success' => false,
-                                'message' => 'La imagen frontal supera el tamaño máximo disponible',
-                                'value'   => null ,
-                                'count'   => 0
-                            ));
-                        }else{
-                            $front_image = $this->loadImage($request->front_image, '/invitado/pasaporte/', 'DOCUMENT_FRONT', 'Invitado');
-                            if(!$front_image){
-                                return response()->json(array(  
-                                    'success'=> false,
-                                    'message'=> 'No se proceso la carga de la imagen',
-                                    'value'  => $front_image,
-                                    'count'  => 0
-                                ));
-                            }   
-                        }                            
-                        $document->guest_id    = $request->guest_id;
-                        $document->name        = $guest->full_name;
-                        $document->type        = 'Pasaporte';
-                        $document->document    = $guest->identifier;
-                        $document->emission    = $request->emission;
-                        $document->expiration  = $request->expiration;
-                        $document->front_image = $front_image;
-                        $document->state       = 'Aceptado';
-                        $document->save();
-                    
-                        return response()->json(array( 
-                            'success' => true,
-                            'message' => 'Registro exitoso',
-                            'value'   => $document, 
-                            'count'   => 1
-                        ));
+                        } 
                     }else{
                         return response()->json(array( 
                             'success' => false,
@@ -297,9 +313,9 @@ class DocumentController extends CrudController
     public function validateDNI($string, $full_name, $document){
         $document = preg_replace("/[^0-9]/", "", $document);
         $string = str_replace('\n', ' ', $string);
-        $number = str_replace(['-', '.', ',', ' '], '', $string);
+        $number = str_replace(['-', '.', ','], '', $string);
         $value = strtolower($string);
-        if(strpos($value, $document) === false) {
+        if(strpos($number, $document) === false) {
             return false;
         }else{
             $porciones = explode(" ", strtolower($full_name));
@@ -331,14 +347,14 @@ class DocumentController extends CrudController
     public function validatePasaporte($string = "", $full_name = "", $document = "", $expiration = "" , $birthdate = ""){
         $document = preg_replace("/[^0-9]/", "", $document);
         $string = str_replace('\n', ' ', $string);
-        $string = str_replace(['-', '.', '/'], '', $string);
+        $valueDocument = str_replace(['-', '.', ',', '<', '>'], '', $string);
         $value = strtolower($string);
-        if(strpos($value, $document) === false) {
-            return 1;
+        if(strpos($valueDocument, $document) == false) {
+            return $document;
         }else{
             $porciones = explode(" ", strtolower($full_name));
             if(empty($porciones)){
-                return 2;
+                return false;
             }
             $val = count($porciones);
             foreach ($porciones as $por) {
@@ -347,23 +363,23 @@ class DocumentController extends CrudController
                 }
             }
             if($val/count($porciones)*100 < 60){
-                return 3;
+                return false;
             }
             $porciones = explode("/", $expiration);
             if(empty($porciones)){
-                return 4;
+                return false;
             }
             if(strpos($value, substr($porciones[2], -2).$porciones[1].$porciones[0]) === false){
-                return 5;
+                return false;
             }
             if($birthdate != ""){
                 $birthdate = str_replace(' 00:00:00', '', $birthdate);
                 $porciones = explode('-', $birthdate);
                 if(empty($porciones)){
-                    return 6;
+                    return false;
                 }
                 if(strpos($value, substr($porciones[0], -2).$porciones[1].$porciones[2]) === false){
-                    return 7;
+                    return false;
                 }
             }
             return true;            
