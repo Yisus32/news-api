@@ -55,9 +55,10 @@ class ImageService //extends TatucoService
      */
     public function document($images,  $url = "", $cons = "DOCUMENT_FRONT" ){
         try{
-            $route = app()->basePath('public/documents'.$url.'/');
-            if(strpos(env('APP_URL'), "https:\\") !== true){
-                $route_web = "https:\\".env('APP_URL').'/images'.$url.'/';
+            $route = app()->basePath('public/images'.$url.'/');
+            if(strpos(env('APP_URL'), "https://") === false){
+                $route_web = "https://".env('APP_URL').'/images'.$url.'/';
+
             }else{
                 $route_web = env('APP_URL').'/images'.$url.'/'; 
             }
