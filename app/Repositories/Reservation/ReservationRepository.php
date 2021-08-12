@@ -247,7 +247,7 @@ class ReservationRepository extends CrudRepository
                                     ->where('guests.email',$request->email)
                                     ->leftjoin('guests', 'guests.id', '=', DB::raw("ANY(reservations.guests)"))
                                     ->groupBy('reservations.id','guests.id')
-                                    ->first();
+                                    //->first();
        dd($reservation);
         $invitation = Invitation::where('reservation_id',$reservation->reservid)
                                 ->where('guest',$reservation->guestid)
