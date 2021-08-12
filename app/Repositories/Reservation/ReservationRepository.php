@@ -257,7 +257,7 @@ class ReservationRepository extends CrudRepository
                                     ->where('reservations.id',$id)
                                     ->where('guests.email',$request->email)
                                     ->first();
-       dd($reservation);
+                                    
         $invitation = Invitation::where('reservation_id',$reservation->reservid)
                                 ->where('guest',$reservation->guestid)
                                 ->first();
