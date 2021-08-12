@@ -297,12 +297,12 @@ class DocumentController extends CrudController
     public function validateDNI($string, $full_name, $document){
         $document = preg_replace("/[^0-9]/", "", $document);
         $string = str_replace('\n', ' ', $string);
-        $string = str_replace(['-', '.'], '', $string);
+        $number = str_replace(['-', '.', ',', ' '], '', $string);
         $value = strtolower($string);
         if(strpos($value, $document) === false) {
             return false;
         }else{
-             $porciones = explode(" ", strtolower($full_name));
+            $porciones = explode(" ", strtolower($full_name));
             if(empty($porciones)){
                 return false;
             }
