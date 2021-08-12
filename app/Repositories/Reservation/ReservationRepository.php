@@ -288,8 +288,6 @@ class ReservationRepository extends CrudRepository
 
             $message = "Usted ha sido invitado por el socio $partner a un juego en el club de golf de Panamá el día ". Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". Para aceptar la solicitud debe registrarse en nuestra plataforma <br> <br> <a href='".$receipt_url."' target='_blank'>Haga click aquí para registrarse</a>";
 
-            dd($message);
-
              if (filter_var($request->email,FILTER_VALIDATE_EMAIL)) {
                 $mailer = new NotificationService;
                 $mailer->sendEmail($request->email,$subject,$message,6,"notificaciones@zippyttech.com");
