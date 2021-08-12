@@ -8,10 +8,13 @@ namespace App\Services\asig_toalla;
 
 
 use App\Core\CrudService;
+use App\Models\asig_toalla;
 use App\Models\bitatoalla;
 use App\Models\toalla;
 use App\Repositories\asig_toalla\asig_toallaRepository;
 use Illuminate\Http\Request;
+use DateTime;
+use Carbon\Carbon;
 
 /** @property asig_toallaRepository $repository */
 class asig_toallaService extends CrudService
@@ -29,6 +32,8 @@ class asig_toallaService extends CrudService
     
     public function _store(Request $request)
     {
+        $fec=Carbon::now()->timezone("America/Panama");
+        $request['fec_ini']=$fec;
          $tosta=toalla::where('id',$request->id_toalla)->get();
        
         if($tosta[0]->status=="En uso")
@@ -59,8 +64,7 @@ class asig_toallaService extends CrudService
         $bit->user_name=$date['user_name'];
         $bit->save();
         }
-        
-        
+    
         return parent::_store($request);
     }
 
@@ -90,6 +94,27 @@ class asig_toallaService extends CrudService
           $usta->save();
           return parent::_update($id,$request);
         }
+    }
+
+    public function _delete($id)
+    {
+        $asi=asig_toalla::where('id',$id)->get();
+      $toa=$asi[0]->id_toalla;
+
+      $usta=toalla::where('id',$toa)->first();
+      $usta->status='En stock';
+          $usta->save();
+
+          $ic=$toa;
+            $fec=Carbon::now()->timezone("America/Panama");
+            $cobs=bitatoalla::where('id_toalla',$ic)->orderby('created_at','DESC')->take(1)->get();
+            $robs=bitatoalla::where('id',$cobs[0]->id)->first();
+            $robs->fec_ult=$fec;
+            $robs->obs="Asignacion eliminada";
+            $robs->save();
+
+
+          return parent::_delete($id);
     }
 }
 

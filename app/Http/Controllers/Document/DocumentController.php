@@ -144,7 +144,7 @@ class DocumentController extends CrudController
                                 'success' => false,
                                 'message' => 'El documento no satisface los parámetros de validación necesarios',
                                 'value'   => null, 
-                                'count'   => 1
+                                'count'   => 0
                             ));
                         }
                     }else if($type == 'pasaporte'){

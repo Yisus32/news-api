@@ -23,7 +23,7 @@ class asig_toallaRepository extends CrudRepository
 
     public function _index($request = null, $user = null)
     {
-        $game=DB::table('asig_toalla')
+        $game=DB::table('asig_toalla')->where('fec_fin',null)
         ->join('toalla','toalla.id','=','asig_toalla.id_toalla')
         ->select('asig_toalla.id','toalla.num as num_toalla','asig_toalla.id_toalla','asig_toalla.fec_ini','asig_toalla.fec_fin','asig_toalla.created_at','asig_toalla.updated_at','asig_toalla.user_name','asig_toalla.user_id','asig_toalla.obs')->get();  
    

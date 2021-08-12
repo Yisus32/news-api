@@ -67,7 +67,42 @@ class game_logService extends CrudService
 
         else
         {
-            return parent::_store($request);
+            if($user!==null and $inv!==null)
+            {
+                $now = Carbon::now()->timezone("America/Panama");
+                //guardar socio 
+                $gu= new game_log;
+                $gu->user_id=$user;
+                $gu->car_id=$request->car_id;
+                $gu->hol_id=$request->hol_id;
+                $gu->gro_id=$request->gro_id;
+                $gu->id_hole=$request->id_hole;
+                $gu->can_p=$request->can_p;
+                $gu->user_name=$request->user_name;
+                $gu->obs=$request->obs;
+                $gu->save();
+                //guardar invitado
+                $gi= new game_log;
+                $gi->inv_id=$inv;
+                $gi->car_id=$request->car_id;
+                $gi->hol_id=$request->hol_id;
+                $gi->gro_id=$request->gro_id;
+                $gi->id_hole=$request->id_hole;
+                $gi->can_p=$request->can_p;
+                $gi->tipo_p=$request->tipo_p;
+                $gi->inv_name=$request->inv_name;
+                $gi->obs=$request->obs;
+                $gi->save();
+
+                return response()->json([
+                    "status" => 201,
+                    "data"=>$gu.$gi],
+                    201);
+            }
+            else
+            {
+
+            }
         }
 
     }
