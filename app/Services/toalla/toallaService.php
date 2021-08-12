@@ -35,7 +35,10 @@ class toallaService extends CrudService
         {
             return response()->json(["error"=>true,"message"=> "La toalla ya existe"],422);
         }
-        return parent::_store($request);
+        else{
+            return parent::_store($request);
+        }
+       
     }
 
     public function _update($id, Request $request)
@@ -100,7 +103,7 @@ class toallaService extends CrudService
         $asig=asig_toalla::where('id_toalla',$id)->count();
          if($asig>0)
          {
-            return response()->json(["error"=>true,"message"=> "Esta toalla tiene asignaciones no puede ser eliminada"],422);
+            return response()->json(["error"=>true,"message"=> "Esta toalla tiene un segumiento y no puede ser eliminada no puede ser eliminada"],422);
          }
          else
          {

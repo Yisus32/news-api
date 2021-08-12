@@ -58,8 +58,9 @@ class ImageService //extends TatucoService
             $route = app()->basePath('public/images'.$url.'/');
             if(strpos(env('APP_URL'), "https://") === false){
                 $route_web = "https://".env('APP_URL').'/images'.$url.'/';
+
             }else{
-                $route_web = env('APP_URL').'/images'.$url.'/';
+                $route_web = env('APP_URL').'/images'.$url.'/'; 
             }
             $now = Carbon::now()->format('Ymdhmsnm');
             if (!File::exists($route)) {

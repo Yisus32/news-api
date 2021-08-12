@@ -44,6 +44,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->group(['prefix' => 'report'], function () use ($router) {
             $router->get('/reservations', 'Reservation\ReservationController@report');
             $router->get('/game_log', 'game_log\game_logController@report');
+            $router->get('/alq_car', 'alq_car\alq_carController@report');
             $router->post('/automatic', 'ReportController@automatic');
         });
     });
@@ -85,6 +86,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     
         $router->get('reservations', 'Reservation\ReservationController@_index');
         $router->get('reservations/{id}', 'Reservation\ReservationController@_show');
+        $router->get('reservations/resend/{id}', 'Reservation\ReservationController@resendMail');
         $router->post('reservations', 'Reservation\ReservationController@_store');
         $router->put('reservations/{id}', 'Reservation\ReservationController@_update');
         $router->delete('reservations/{id}', 'Reservation\ReservationController@_delete');
@@ -121,7 +123,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('game_logs/group', 'game_log\game_logController@list_by_group');
         $router->get('game_logs', 'game_log\game_logController@_index');
         $router->get('game_logs/{id}', 'game_log\game_logController@_show');
-        $router->post('game_logs', 'game_log\game_logController@_store');
+        $router->post('game_logs', 'game_log\game_logController@sav');
         $router->get('game_logs/date/hour','game_log\game_logController@filter_by_date');
         $router->put('game_logs/{id}', 'game_log\game_logController@_update');
         $router->delete('game_logs/{id}', 'game_log\game_logController@_delete');
@@ -146,12 +148,14 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('toallas/{id}', 'toalla\toallaController@upsta');
         
         /** routes para asig_toalla **/ 
-        
+        $router->get('asig_toallas/uso', 'asig_toalla\asig_toallaController@usotoalla');
+        $router->get('asig_toallas/bus/stock', 'asig_toalla\asig_toallaController@stocktoalla');
         $router->get('asig_toallas', 'asig_toalla\asig_toallaController@_index');
         $router->get('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_show');
         $router->post('asig_toallas', 'asig_toalla\asig_toallaController@_store');
         $router->put('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_update');
         $router->delete('asig_toallas/{id}', 'asig_toalla\asig_toallaController@_delete');
+       
 
         /** routes para Document **/ 
  
@@ -171,6 +175,15 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('bitatoallas', 'bitatoalla\bitatoallaController@_store');
         $router->put('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_update');
         $router->delete('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_delete');
+
+        /** routes para alq_car **/ 
+ 
+        $router->get('alq_cars', 'alq_car\alq_carController@_index');
+        $router->get('alq_cars/{id}', 'alq_car\alq_carController@_show');
+        $router->get('alq_cars/fill/date','alq_car\alq_carController@filter_by_date');
+        $router->post('alq_cars', 'alq_car\alq_carController@sav');
+        $router->put('alq_cars/{id}', 'alq_car\alq_carController@_update');
+        $router->delete('alq_cars/{id}', 'alq_car\alq_carController@_delete');
 
         // invitation
 
@@ -211,5 +224,7 @@ $router->get('invitations/{id}', 'Invitation\InvitationController@_show');
 $router->post('invitations', 'Invitation\InvitationController@_store');
 $router->put('invitations/{id}', 'Invitation\InvitationController@_update');
 $router->delete('invitations/{id}', 'Invitation\InvitationController@_destroy');
+ 
+
  
 

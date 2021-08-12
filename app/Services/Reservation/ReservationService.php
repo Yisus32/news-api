@@ -364,4 +364,8 @@ class ReservationService extends CrudService
         return $number;
 
     }
+
+    public function resendMail($id, Request $request){
+        return $this->repository->resendMail($id, $request);
+    }
 }

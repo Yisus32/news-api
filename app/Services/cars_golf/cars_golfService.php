@@ -8,6 +8,7 @@ namespace App\Services\cars_golf;
 
 
 use App\Core\CrudService;
+use App\Models\alq_car;
 use App\Models\cars_golf;
 use App\Models\game_log;
 use App\Repositories\cars_golf\cars_golfRepository;
@@ -50,7 +51,7 @@ class cars_golfService extends CrudService
     }
     public function _delete($id)
     {
-        $exis=game_log::where('car_id',$id)->first();
+        $exis=alq_car::where('car_id',$id)->first();
         if ($exis) {
             return response()->json(['error' => true, "message" => 'Existen juegos asociados a este carrito'],409);
         }
