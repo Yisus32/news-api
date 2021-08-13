@@ -272,7 +272,7 @@ class ReservationRepository extends CrudRepository
             return response()->json(["status" => 200, "message" => "se ha reenviado la invitacion"],200);   
         }else{
 
-            $reservation = Reservation::select('reservations.id as reservid','guests.id as guestid','guests.email','guests.full_name','reservations.owner_name','reservations.date','reservations.start_hour','reservations.owner','reservations.hole_id')
+            $reservation = Reservation::select('reservations.id as reservid','guests.id as guestid','guests.email','guests.full_name','reservations.owner_name','reservations.date','reservations.start_hour','reservations.owner','reservations.hole_id','guests.host_number as owner_number')
                                     ->leftjoin('guests', 'guests.id', '=', DB::raw("ANY(reservations.guests)"))
                                     ->groupBy('reservations.id','guests.id')
                                     ->where('reservations.id',$id)
@@ -280,9 +280,18 @@ class ReservationRepository extends CrudRepository
             
             $date = $reservation->date;
             $time = $reservation->start_hour;
-            $name = $reservation->full_name;
             $partner = $reservation->owner_name;
-            $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/%20/'.$request->email.'/'.$reservation->hole_id.'/'.$reservation->owner_name.'/'.$reservation->owner.'/'.$reservation->reservid;
+            $owner_name = explode(" ", $reservation->owner_name);
+            
+            if (count($owner_name) <= 2){
+                $owner_name = $owner_name[0];
+                $owner_number = $reservation->owner_number;
+            }else{
+                $owner_name = $owner_name[1];
+                $owner_number = $owner_name[0];
+            }
+
+            $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/'.null.'/'.$request->email.'/'.$reservation->owner.'/'.$owner_name.'/'.$reservation->owner_number;
 
             $subject = "Invitación Teetime";
 
