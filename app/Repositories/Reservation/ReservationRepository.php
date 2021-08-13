@@ -281,18 +281,18 @@ class ReservationRepository extends CrudRepository
             $date = $reservation->date;
             $time = $reservation->start_hour;
             $partner = $reservation->owner_name;
-            $owner_name = explode(" ", $reservation->owner_name);
+            $owner_data = explode(" ", $reservation->owner_name);
             
-            if (count($owner_name) <= 2){
-                $owner_name = $owner_name[0];
+            if (count($owner_data) <= 2){
+                $owner_name = $owner_data[0];
                 $owner_number = $reservation->owner_number;
             }else{
-                $owner_name = $owner_name[1];
-                $owner_number = $owner_name[0];
+                $owner_name = $owner_data[1];
+                $owner_number = $owner_data[0];
             }
 
             $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/'.null.'/'.$request->email.'/'.$reservation->owner.'/'.$owner_name.'/'.$owner_number;
-
+            dd($receipt_url);
             $subject = "Invitación Teetime";
 
             $message = "Usted ha sido invitado por el socio $partner a un juego en el club de golf de Panamá el día ". Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". Para aceptar la solicitud debe registrarse en nuestra plataforma <br> <br> <a href='".$receipt_url."' target='_blank'>Haga click aquí para registrarse</a>";
