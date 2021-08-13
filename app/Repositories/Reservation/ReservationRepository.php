@@ -292,7 +292,7 @@ class ReservationRepository extends CrudRepository
             }
 
             $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/'.null.'/'.$request->email.'/'.$reservation->owner.'/'.$owner_name.'/'.$owner_number;
-            dd($receipt_url);
+    
             $subject = "Invitación Teetime";
 
             $message = "Usted ha sido invitado por el socio $partner a un juego en el club de golf de Panamá el día ". Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". Para aceptar la solicitud debe registrarse en nuestra plataforma <br> <br> <a href='".$receipt_url."' target='_blank'>Haga click aquí para registrarse</a>";
