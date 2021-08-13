@@ -99,7 +99,9 @@ class DocumentController extends CrudController
                             $porAceptacion = $this->validateDNI(
                                 $value, 
                                 $guest->full_name, 
-                                $guest->identifier
+                                $guest->identifier,
+                                $request->expiration,
+                                $request->emission
                             );
                         }
                         if(is_bool($porAceptacion) && $porAceptacion == true){
@@ -170,7 +172,8 @@ class DocumentController extends CrudController
                                 $guest->identifier, 
                                 $request->expiration,
                                 '',
-                                $request->n_pasaport
+                                $request->n_pasaport,
+                                $request->emission
                             );
                         }
                         if(is_bool($porAceptacion) &&  $porAceptacion == true){
@@ -326,10 +329,10 @@ class DocumentController extends CrudController
      * @param String $string
      * @param String $full_name
      * @param String $document
-     * @return Exception|float|int
+     * @return Exception|string|bool
      * @version 1.0
     */
-    public function validateDNI($string, $full_name, $document){
+    public function validateDNI($string, $full_name = '', $document = '', $expiration = '', $emission = ''){ 
         $document = preg_replace("/[^0-9]/", "", $document);
         $string = str_replace('\n', ' ', $string);
         $number = str_replace(['-', '.', ','], '', $string);
@@ -337,19 +340,28 @@ class DocumentController extends CrudController
         if(strpos($number, $document) === false) {
             return 'el N° de documento no valido';
         }else{
-            $porciones = explode(" ", strtolower($full_name));
-            if(empty($porciones)){
+            if($full_name != ''){
+                if($this->validateName($string, $full_name) == false){
+                    return 'el nombre del invitado suministrado no satisface los parámetros';
+                }
+            }else{
                 return 'no se puede obtener el nombre del invitado';
             }
-            $val = count($porciones);
-            foreach ($porciones as $por) {
-                if(strpos($value, $por) === false){
-                    $val--; 
+            if($expiration != ''){
+                if($this->validateDate($string, $expiration) == false){
+                    return 'la fecha de vencimiento del documento no es válido';
                 }
+            }else{
+                return 'no se puede obtener la fecha de vencimiento del documento';
             }
-            if($val/count($porciones)*100 < 60){
-                return 'el nombre del invitado no es válido';
+            if($emission != ''){
+                if($this->validateDate($string, $emission) == false){
+                    return 'la fecha de expedición del documento no es válido';
+                }
+            }else{
+               return 'no se puede obtener la fecha de expedición del documento '; 
             }
+            
             return true;
         }     
     } 
@@ -358,55 +370,166 @@ class DocumentController extends CrudController
      *
      * @author foskert@gmail.com
      * @param String $string
-     * @param Object $user
-     * @param Request $request
-     * @return Exception|float|int
+     * @param String $full_name
+     * @param String $document
+     * @param String $expiration
+     * @param String $birthdate
+     * @param String $n_pasaport
+     * @return Exception|string|bool
      * @version 1.0
     */ 
-    public function validatePasaporte($string = "", $full_name = "", $document = "", $expiration = "" , $birthdate = "", $n_pasaport = ""){
+    public function validatePasaporte($string = "", $full_name = "", $document = "", $expiration = "" , $birthdate = "", $n_pasaport = "", $emission = ''){
         $document = preg_replace("/[^0-9]/", "", $document);
         $string = str_replace('\n', ' ', $string);
         $valueDocument = str_replace(['-', '.', ',', '<', '>', '/', '\n'], '', $string);
         $value = strtolower($string);
-        if(strpos($valueDocument, $document) == false) {
-            return 'el N° de documento no valido';
+        if(strpos($valueDocument, $document) === false) {
+            return 'el N° de identidad no coincide con la del documento';
         }else{
-            $porciones = explode(" ", strtolower($full_name));
-            if(empty($porciones)){
+            if($full_name != ''){
+                if($this->validateName($string, $full_name) == false){
+                    return 'el nombre del invitado suministrado no satisface los parámetros';
+                }
+            }else{
                 return 'no se puede obtener el nombre del invitado';
             }
-            $val = count($porciones);
-            foreach ($porciones as $por) {
-                if(strpos($value, $por) === false){
-                    $val--; 
+             if($expiration != ''){
+                if($this->validateDate($string, $expiration) == false){
+                    return 'la fecha de vencimiento no coincide con la del documento';
                 }
-            }
-            if($val/count($porciones)*100 < 60){
-                return 'el nombre del invitado no es válido';
-            }
-            $porciones = explode("/", $expiration);
-            if(empty($porciones)){
+            }else{
                 return 'no se puede obtener la fecha de vencimiento del documento';
             }
-            if(strpos($value, substr($porciones[2], -2).$porciones[1].$porciones[0]) === false){
-                return 'la fecha de vencimiento del documento no es válida';
-            }
-            if($birthdate != ""){
-                $birthdate = str_replace(' 00:00:00', '', $birthdate);
-                $porciones = explode('-', $birthdate);
-                if(empty($porciones)){
-                    return 'no se puede obtener la fecha de nacimiento';
+            if($emission != ''){
+                if($this->validateDate($string, $emission) == false){
+                    return 'la fecha de expedición no coincide con la del documento ';
                 }
-                if(strpos($value, substr($porciones[0], -2).$porciones[1].$porciones[2]) === false){
-                    return 'la fecha de nacimiento del documento no es válida';
+            }else{
+               return 'no se puede obtener la fecha de expedición del documento '; 
+            }
+            if($birthdate != ''){
+                if($this->validateDate($string, $birthdate) == false){
+                    return 'la fecha de nacimiento no coincide con la del documento ';
                 }
             }
             if($n_pasaport != ""){
-                if(strpos($value, $n_pasaport)== false){
-                    return 'el número de documento no es valido';
+                if(strpos($string, $n_pasaport) == false){
+                    return 'el número de pasaporte no es valido';
                 }
             }
             return true;            
         }     
+    }
+    /**
+     * Función que valida cualquier fecha en el documento  
+     *
+     * @author foskert@gmail.com
+     * @param String $string
+     * @param String $date
+     * @return Exception|string|bool
+     * @version 1.0
+    */
+    public function validateDate($string, $date = ''){
+        if($date != ''){
+            $date = str_replace(' 00:00:00', '', $date);
+            $string = str_replace('\n', ' ', $string);
+
+            $dateFormat = str_replace(['/', '.', ' '], '-', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', ' '], '/', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0, -2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', '/'], ' ', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0, -2)) != false) {
+                return true;
+            }
+            $dateArray = explode("/", $date);
+            switch ($dateArray[1]) {
+                case '01':
+                    $mes = 'ENE';
+                    break;
+                case '02':
+                    $mes = 'FER';
+                    break;
+                case '03':
+                    $mes = 'MAR';
+                    break;
+                case '04':
+                    $mes = 'ABR';
+                    break;
+                case '05':
+                    $mes = 'MAY';
+                    break;
+                case '06':
+                    $mes = 'JUN';
+                    break;
+                case '07':
+                    $mes = 'JUL';
+                    break;
+                case '08':
+                    $mes = 'AGO';
+                    break;
+                case '09':
+                    $mes = 'SET';
+                    break;
+                case '10':
+                    $mes = 'OCT';
+                    break;
+                case '11':
+                    $mes = 'NOV';
+                    break;
+                case '12':
+                    $mes = 'DIC';
+                    break;
+                default:
+                    return $mes;
+                    break;
+            }
+            $date = $dateArray[0].' '.$mes.' '.$dateArray[2];
+            $dateFormat = str_replace(['/', '.', ' '], '-', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0, -2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', ' '], '/', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0, -2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', '/'], ' ', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0, -2)) != false) {
+                return true;
+            }            
+        }
+        return false ;
+    }
+    /**
+     * Función que valida el nombre en el documento 
+     *
+     * @author foskert@gmail.com
+     * @param String $string
+     * @param String $date
+     * @return Exception|string|bool
+     * @version 1.0
+    */
+    public function validateName($string, $full_name = ''){
+        if($full_name != ""){
+            $string = str_replace('\n', ' ', $string);
+            $string = strtolower($string);
+            $porciones = explode(" ", strtolower($full_name));
+            if(!empty($porciones)){
+                $val = count($porciones);
+                foreach ($porciones as $por) {
+                    if(strpos($string, $por) === false){
+                        $val--; 
+                    }
+                }
+                if($val/count($porciones)*100 > 60){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
