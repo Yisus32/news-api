@@ -291,7 +291,7 @@ class ReservationRepository extends CrudRepository
                 $owner_number = $owner_data[0];
             }
 
-            $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/'.null.'/'.$request->email.'/'.$reservation->owner.'/'.$owner_name.'/'.$owner_number;
+            $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/%20/'.$request->email.'/'.$reservation->owner.'/'.$owner_name.'/'.$owner_number;
     
             $subject = "Invitación Teetime";
 
