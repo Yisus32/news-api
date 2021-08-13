@@ -95,6 +95,7 @@ qa_deploy_job:
     - docker rm qarubick2teetime-api || true
     - docker run -d --restart always --name qarubick2teetime-api --memory="512m" -v qarubick2teetime-api-images:/var/www/html/public/images -v qarubick2teetime-api-images:/var/www/html/public/logos --network qaapp -p 8116:80  qarubick2teetime-api
     - docker exec qarubick2teetime-api php artisan migrate
+    - docker exec qarubick2teetime-api php artisan schedule:work
     - docker exec qarubick2teetime-api php artisan schedule:run
   when: on_success
   tags:
@@ -109,6 +110,8 @@ qa_rollback_job:
     - docker rm qarubick2teetime-api || true
     - docker image tag qarubick2teetime-api:prev qarubick2teetime-api:latest || true
     - docker run -d --restart always --name qarubick2teetime-api --memory="512m" -v qarubick2teetime-api-images:/var/www/html/public/images -v qarubick2teetime-api-images:/var/www/html/public/logos --network qaapp -p 8116:80 qarubick2teetime-api
+    - docker exec qarubick2teetime-api php artisan schedule:work
+    - docker exec qarubick2teetime-api php artisan schedule:run
   when: manual
   tags:
     - qaapp
@@ -136,7 +139,7 @@ prod_build_job:
     - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
-    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=qarubick2teetime.zippyttech.com;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=rubick2teetime.zippyttech.com;g" .env
     - docker build -t rubick2teetime-api .
   when: on_success
   tags:
@@ -151,6 +154,7 @@ prod_deploy_job:
     - docker rm rubick2teetime-api || true
     - docker run -d --restart always --name rubick2teetime-api  --memory="512m" -v rubick2teetime-api-images:/var/www/html/public/images -v rubick2teetime-api-images:/var/www/html/public/logos --network app -p 9020:80 rubick2teetime-api
     - docker exec rubick2teetime-api php artisan migrate
+    - docker exec rubick2teetime-api php artisan schedule:work
     - docker exec rubick2teetime-api php artisan schedule:run
   when: on_success
   tags:
@@ -165,6 +169,8 @@ prod_rollback_job:
     - docker rm rubick2teetime-api || true
     - docker image tag rubick2teetime-api:prev rubick2teetime-api:latest || true
     - docker run -d --restart always --name rubick2teetime-api --memory="512m" -v rubick2teetime-api-images:/var/www/html/public/images -v rubick2teetime-api-images:/var/www/html/public/logos --network app -p 9020:80 rubick2teetime-api
+    - docker exec rubick2teetime-api php artisan schedule:work
+    - docker exec rubick2teetime-api php artisan schedule:run
   when: manual
   tags:
     - prodapp
@@ -198,6 +204,7 @@ berygo_deploy_job:
     - docker rm teetime-api || true
     - docker run -d --restart always --name teetime-api --memory="512m" -v teetime-api-images:/var/www/html/public/images -v teetime-api-images:/var/www/html/public/logos --network app -p 9023:80 teetime-api
     - docker exec teetime-api php artisan migrate
+    - docker exec teetime-api php artisan schedule:work
     - docker exec teetime-api php artisan schedule:run
   when: on_success
   tags:
@@ -233,6 +240,7 @@ cdg_deploy_job:
     - docker rm teetime-api || true
     - docker run -d --restart always --name teetime-api --memory="512m" -v teetime-api-images:/var/www/html/public/images -v teetime-api-images:/var/www/html/public/logos --network app -p 9016:80 teetime-api
     - docker exec teetime-api php artisan migrate
+    - docker exec teetime-api php artisan schedule:work
     - docker exec teetime-api php artisan schedule:run
   when: on_success
   tags:
@@ -268,6 +276,7 @@ aguaseo_deploy_job:
     - docker rm aguaseo-teetime-api || true
     - docker run -d --restart always --name aguaseo-teetime-api --memory="512m" -v aguaseo-teetime-api-images:/var/www/html/public/images -v aguaseo-teetime-api-images:/var/www/html/public/logos --network app -p 9023:80 aguaseo-teetime-api
     - docker exec aguaseo-teetime-api php artisan migrate
+    - docker exec aguaseo-teetime-api php artisan schedule:work
     - docker exec aguaseo-teetime-api php artisan schedule:run
   when: on_success
   tags:
