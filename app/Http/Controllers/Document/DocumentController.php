@@ -96,9 +96,13 @@ class DocumentController extends CrudController
                         $porAceptacion = false;
                         if(!empty($string->responses[0]->textAnnotations[0]->description)){
                             $value = $string->responses[0]->textAnnotations[0]->description;
-                            $porAceptacion = $this->validateDNI($value, $guest->full_name, $guest->identifier);
+                            $porAceptacion = $this->validateDNI(
+                                $value, 
+                                $guest->full_name, 
+                                $guest->identifier
+                            );
                         }
-                        if($porAceptacion){
+                        if(is_bool($porAceptacion) && $porAceptacion == true){
                             $document->name        = $guest->full_name;
                             $document->guest_id    = $request->guest_id;
                             $document->type        = 'DNI';
@@ -142,19 +146,34 @@ class DocumentController extends CrudController
                         }else{
                             return response()->json(array( 
                                 'success' => false,
-                                'message' => 'El documento no satisface los parámetros de validación necesarios',
+                                'message' => 'El documento no satisface los parámetros de validación necesarios debido a que '.$porAceptacion,
                                 'value'   => null, 
                                 'count'   => 0
                             ));
                         }
                     }else if($type == 'pasaporte'){
+                        if(\Validator::make($request->all(), ['n_pasaport' => 'required'])->fails()){
+                            return response()->json(array( 
+                                'success' => false,
+                                'message' => 'Se requiere el número del pasaporte',
+                                'value'   => null,
+                                'count'   => 0
+                            ));
+                        }
                         $string = $this->googleOCR($request->front_image);
                         $porAceptacion = false;
                         if(!empty($string->responses[0]->textAnnotations[0]->description)){
                             $value = $string->responses[0]->textAnnotations[0]->description;
-                            $porAceptacion = $this->validatePasaporte($value, $guest->full_name, $guest->identifier, $request->expiration);
+                            $porAceptacion = $this->validatePasaporte(
+                                $value, 
+                                $guest->full_name, 
+                                $guest->identifier, 
+                                $request->expiration,
+                                '',
+                                $request->n_pasaport
+                            );
                         }
-                        if($porAceptacion){
+                        if(is_bool($porAceptacion) &&  $porAceptacion == true){
                             $document->guest_id    = $request->guest_id;
                             $document->name        = $guest->full_name;
                             $document->type        = 'Pasaporte';
@@ -183,7 +202,7 @@ class DocumentController extends CrudController
                             $document->front_image = $front_image;
                             if($document->save()){
                                 return response()->json(array( 
-                                    'success' => false,
+                                    'success' => true,
                                     'message' => 'Registro exitoso',
                                     'value'   => $document, 
                                     'count'   => 1
@@ -199,8 +218,8 @@ class DocumentController extends CrudController
                         }else{
                             return response()->json(array( 
                                 'success' => false,
-                                'message' => 'El pasaporte no satisface los parámetros de validación necesarios',
-                                'value'   => $porAceptacion, 
+                                'message' => 'El pasaporte no satisface los parámetros de validación necesarios debido a que '.$porAceptacion,
+                                'value'   => null, 
                                 'count'   => 0
                             ));
                         } 
@@ -316,11 +335,11 @@ class DocumentController extends CrudController
         $number = str_replace(['-', '.', ','], '', $string);
         $value = strtolower($string);
         if(strpos($number, $document) === false) {
-            return false;
+            return 'el N° de documento no valido';
         }else{
             $porciones = explode(" ", strtolower($full_name));
             if(empty($porciones)){
-                return false;
+                return 'no se puede obtener el nombre del invitado';
             }
             $val = count($porciones);
             foreach ($porciones as $por) {
@@ -329,7 +348,7 @@ class DocumentController extends CrudController
                 }
             }
             if($val/count($porciones)*100 < 60){
-                return false;
+                return 'el nombre del invitado no es válido';
             }
             return true;
         }     
@@ -344,17 +363,17 @@ class DocumentController extends CrudController
      * @return Exception|float|int
      * @version 1.0
     */ 
-    public function validatePasaporte($string = "", $full_name = "", $document = "", $expiration = "" , $birthdate = ""){
+    public function validatePasaporte($string = "", $full_name = "", $document = "", $expiration = "" , $birthdate = "", $n_pasaport = ""){
         $document = preg_replace("/[^0-9]/", "", $document);
         $string = str_replace('\n', ' ', $string);
-        $valueDocument = str_replace(['-', '.', ',', '<', '>'], '', $string);
+        $valueDocument = str_replace(['-', '.', ',', '<', '>', '/', '\n'], '', $string);
         $value = strtolower($string);
         if(strpos($valueDocument, $document) == false) {
-            return $document;
+            return 'el N° de documento no valido';
         }else{
             $porciones = explode(" ", strtolower($full_name));
             if(empty($porciones)){
-                return false;
+                return 'no se puede obtener el nombre del invitado';
             }
             $val = count($porciones);
             foreach ($porciones as $por) {
@@ -363,23 +382,28 @@ class DocumentController extends CrudController
                 }
             }
             if($val/count($porciones)*100 < 60){
-                return false;
+                return 'el nombre del invitado no es válido';
             }
             $porciones = explode("/", $expiration);
             if(empty($porciones)){
-                return false;
+                return 'no se puede obtener la fecha de vencimiento del documento';
             }
             if(strpos($value, substr($porciones[2], -2).$porciones[1].$porciones[0]) === false){
-                return false;
+                return 'la fecha de vencimiento del documento no es válida';
             }
             if($birthdate != ""){
                 $birthdate = str_replace(' 00:00:00', '', $birthdate);
                 $porciones = explode('-', $birthdate);
                 if(empty($porciones)){
-                    return false;
+                    return 'no se puede obtener la fecha de nacimiento';
                 }
                 if(strpos($value, substr($porciones[0], -2).$porciones[1].$porciones[2]) === false){
-                    return false;
+                    return 'la fecha de nacimiento del documento no es válida';
+                }
+            }
+            if($n_pasaport != ""){
+                if(strpos($value, $n_pasaport)== false){
+                    return 'el número de documento no es valido';
                 }
             }
             return true;            
