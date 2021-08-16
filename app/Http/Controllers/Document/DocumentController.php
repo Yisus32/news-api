@@ -468,7 +468,7 @@ class DocumentController extends CrudController
                     $mes = 'ENE';
                     break;
                 case '02':
-                    $mes = 'FER';
+                    $mes = 'FEB';
                     break;
                 case '03':
                     $mes = 'MAR';
