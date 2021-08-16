@@ -105,7 +105,7 @@ class DocumentController extends CrudController
                             $document->type        = 'DNI';
                             $document->document    = $guest->identifier;
                             $document->emission    = $request->emission;
-                            $document->expiration  = ''.$request->expiration;
+                            $document->expiration  = (string) $request->expiration;
                             $document->state       = 'Aceptado';
                             if($this->getBase64ImageSize($request->input('front_image')) > 1){
                                 return response()->json(array( 
