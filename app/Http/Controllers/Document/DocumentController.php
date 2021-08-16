@@ -105,7 +105,7 @@ class DocumentController extends CrudController
                             $document->type        = 'DNI';
                             $document->document    = $guest->identifier;
                             $document->emission    = $request->emission;
-                            $document->expiration_date  = $request->expiration;
+                            $document->expiration  = $request->expiration;
                             $document->state       = 'Aceptado';
                             if($this->getBase64ImageSize($request->input('front_image')) > 1){
                                 return response()->json(array( 
@@ -184,7 +184,7 @@ class DocumentController extends CrudController
                             $document->type        = 'Pasaporte';
                             $document->document    = $guest->identifier;
                             $document->emission    = $request->emission;
-                            $document->expiration_date  = $request->expiration;
+                            $document->expiration  = $request->expiration;
                             $document->state       = 'Aceptado';
                             if($this->getBase64ImageSize($request->input('front_image')) > 1){
                                 return response()->json(array( 

@@ -15,11 +15,13 @@ class AddDocumentTime extends Migration
     {
        Schema::table('documents', function (Blueprint $table) {
             $table->dropColumn([
-                'expiration',
+                'expiration_date',
+                'emission'
             ]);  
         });
        Schema::table('documents', function (Blueprint $table) {
-           $table->timestamp('expiration_date')->nullable();
+            $table->string('expiration')->nullable()->default('');
+            $table->string('emission')->nullable()->default('');
         });
     }
 
