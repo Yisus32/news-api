@@ -19,7 +19,7 @@ class AddDocumentTime extends Migration
             ]);  
         });
        Schema::table('documents', function (Blueprint $table) {
-            $table->string('expiration')->nullable()->default('');
+           $table->timestamp('expiration')->nullable();
         });
     }
 
