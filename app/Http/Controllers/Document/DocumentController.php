@@ -67,12 +67,7 @@ class DocumentController extends CrudController
                         $guest->save();
                     }
                     if(\Validator::make($request->all(), ['emission'   => 'required'])->fails()){
-                        return response()->json(array( 
-                            'success' => false,
-                            'message' => 'Se requiere de la fecha de emisión del documento',
-                            'value'   => null,
-                            'count'   => 0
-                        ));
+
                     }
                     if(\Validator::make($request->all(), ['expiration' => 'required'])->fails()){
                         return response()->json(array( 
@@ -120,7 +115,7 @@ class DocumentController extends CrudController
                                     'count'   => 0
                                 ));
                             }else{
-                                 $document->front_image = $this->loadImage($request->front_image, '/invitado/dni/', 'DOCUMENT_FRONT', 'invitado');
+                                 $document->front_image = $this->loadImage($request->front_image, '/invitado/dni', 'DOCUMENT_FRONT', 'invitado');
                                 if(!$document->front_image){
                                     return response()->json(array(  
                                         'success'=> false,
@@ -166,6 +161,7 @@ class DocumentController extends CrudController
                         $porAceptacion = false;
                         if(!empty($string->responses[0]->textAnnotations[0]->description)){
                             $value = $string->responses[0]->textAnnotations[0]->description;
+
                             $porAceptacion = $this->validatePasaporte(
                                 $value, 
                                 $guest->full_name, 
@@ -175,6 +171,12 @@ class DocumentController extends CrudController
                                 $request->n_pasaport,
                                 $request->emission
                             );
+                            return response()->json(array( 
+                                'success' => false,
+                                'message' => 'value',
+                                'value'   => $value,
+                                'count'   => 0
+                            ));
                         }
                         if(is_bool($porAceptacion) &&  $porAceptacion == true){
                             $document->guest_id    = $request->guest_id;
@@ -192,7 +194,7 @@ class DocumentController extends CrudController
                                     'count'   => 0
                                 ));
                             }else{
-                                $front_image = $this->loadImage($request->front_image, '/invitado/pasaporte/', 'DOCUMENT_FRONT', 'Invitado');
+                                $front_image = $this->loadImage($request->front_image, '/invitado/pasaporte', 'DOCUMENT_FRONT', 'Invitado');
                                 if(!$front_image){
                                     return response()->json(array(  
                                         'success'=> false,
@@ -435,18 +437,32 @@ class DocumentController extends CrudController
             $string = str_replace('\n', ' ', $string);
 
             $dateFormat = str_replace(['/', '.', ' '], '-', $date);
-            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-2)) != false) {
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
                 return true;
             }
             $dateFormat = str_replace(['-', '.', ' '], '/', $date);
-            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0, -2)) != false) {
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
                 return true;
             }
             $dateFormat = str_replace(['-', '.', '/'], ' ', $date);
-            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0, -2)) != false) {
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
                 return true;
             }
             $dateArray = explode("/", $date);
+            
+            $date = $dateArray[1].' '.$dateArray[2];
+            $dateFormat = str_replace(['-', '.', ' '], '-', $date);
+            if(strpos($string, $dateFormat) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', ' '], '/', $date);
+            if(strpos($string, $dateFormat) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', '/'], ' ', $date);
+            if(strpos($string, $dateFormat) != false) {
+                return true;
+            }
             switch ($dateArray[1]) {
                 case '01':
                     $mes = 'ENE';
@@ -490,17 +506,30 @@ class DocumentController extends CrudController
             }
             $date = $dateArray[0].' '.$mes.' '.$dateArray[2];
             $dateFormat = str_replace(['/', '.', ' '], '-', $date);
-            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0, -2)) != false) {
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
                 return true;
             }
             $dateFormat = str_replace(['-', '.', ' '], '/', $date);
-            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0, -2)) != false) {
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
                 return true;
             }
             $dateFormat = str_replace(['-', '.', '/'], ' ', $date);
-            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0, -2)) != false) {
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
                 return true;
-            }            
+            }
+            $date = $mes.' '.$dateArray[2];
+            $dateFormat = str_replace(['/', '.', ' '], '-', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', ' '], '/', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', '/'], ' ', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
         }
         return false ;
     }
