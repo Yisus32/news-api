@@ -20,7 +20,7 @@ class Document extends CrudModel
     	"document",
         'state',
         'emission',
-        'expiration',
+        'expiration_date',
         'img_validation',
         'created_at',
         'updated_at'
