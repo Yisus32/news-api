@@ -171,12 +171,7 @@ class DocumentController extends CrudController
                                 $request->n_pasaport,
                                 $request->emission
                             );
-                            return response()->json(array( 
-                                'success' => false,
-                                'message' => 'value',
-                                'value'   => $value,
-                                'count'   => 0
-                            ));
+                        
                         }
                         if(is_bool($porAceptacion) &&  $porAceptacion == true){
                             $document->guest_id    = $request->guest_id;
