@@ -8,6 +8,7 @@ namespace App\Services\Hole;
 
 
 use App\Core\CrudService;
+use App\Models\alq_car;
 use App\Models\Hole;
 use App\Repositories\Hole\HoleRepository;
 use Illuminate\Http\Request;
@@ -62,6 +63,20 @@ class HoleService extends CrudService
         }
 
         return parent::_update($id, $request);
+    }
+    
+
+    public function _delete($id)
+    {
+        $alq=alq_car::where('id',$id)->count();
+        if($alq>0)
+        {
+            return response()->json(["error"=>true,"message"=> "Este hoyo tiene rondas asignadas no se puede eliminar "],422);
+        }
+        else
+        {
+            return parent::_delete($id);
+        }
     }
 
 }
