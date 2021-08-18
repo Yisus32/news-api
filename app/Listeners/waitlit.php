@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\waitlist;
+use App\Models\waiting_list;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -26,6 +27,8 @@ class waitlit
      */
     public function handle(waitlist $event)
     {
-          var_dump('holissss');
+         $r= $event->reservation;
+         $c=waiting_list::where('date',$r->fecha)->where('start_hour',$r->hora)->get();
+         dd($c);
     }
 }

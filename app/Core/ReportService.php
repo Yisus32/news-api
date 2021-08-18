@@ -181,16 +181,14 @@ class ReportService
     public static function excel(string $fi = null, string $ff = null)
     {
         try {
-
+            $now = Carbon::now()->timezone("America/Panama");
             $toExcel = $arrayData = [];
             $spreadsheet = new Spreadsheet();
             $pathLogo = self::$log_url;
             $sheet = self::getDefaultConfiguration($spreadsheet, $pathLogo);
 
             $sheet->getActiveSheet()->setCellValue("A6", "Fecha de Emision: ");
-            $sheet->getActiveSheet()->setCellValue("B6", self::$date);
-            $sheet->getActiveSheet()->setCellValue("C6", 'Usuario: ');
-            $sheet->getActiveSheet()->setCellValue("D6", self::$username);
+            $sheet->getActiveSheet()->setCellValue("B6", $now);
 
             //Parsear la información a pasar
             foreach (self::$index as $title => $value) {
