@@ -31,4 +31,9 @@ class waiting_listService extends CrudService
         parent::__construct($repository);
     }
 
+    public function _store(Request $request)
+    {
+        
+    }
+
 }

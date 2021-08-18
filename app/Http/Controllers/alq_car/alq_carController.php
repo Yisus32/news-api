@@ -52,6 +52,7 @@ class alq_carController extends CrudController
         if (empty($request->star)) {
             return Response()->json(["error" => true, "message" => "la fecha es requerida"],400);
         }
+        $now = Carbon::now()->timezone("America/Panama");
         $r=$request->get('star');
         $f=$request->get('end');
         $alqu= $game=DB::table('alq_car')->whereBetween(DB::Raw('cast(alq_car.fecha as date)'), array($r, $f))
@@ -75,6 +76,7 @@ class alq_carController extends CrudController
 
         ];
         $info []=$alqu;
+        $dat=$now;
         $report = new ReportService();
         $report->indexPerSheet([$index]);
         $report->dataPerSheet($info);
