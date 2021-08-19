@@ -17,7 +17,7 @@ class cars_golfController extends CrudController
     public function psearch(Request $request)
     {
         $r=$request->get('cod');
-        $bus=cars_golf::whereRaw('cod like ?',"%{$r}%")->get();
+        $bus=cars_golf::whereRaw("lower(cod) like lower('%{$r}%')")->get();
         return response()->json($bus);
     }
 }
