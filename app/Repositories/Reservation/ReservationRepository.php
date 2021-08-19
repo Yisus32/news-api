@@ -119,30 +119,28 @@ class ReservationRepository extends CrudRepository
     }
 
     public function checkCapacity($partners,$guests,$teetime_id){
-        $reservation = Reservation::select(['reservations.id',
-                                            'reservations.teetime_id',
-                                            'teetimes.min_capacity',
-                                            'teetimes.max_capacity'])
-                                ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
-                                ->where('reservations.teetime_id',$teetime_id)
-                                ->first();
+        $teetime = Teetime::where('id',$teetime_id)->first();
 
-        $partners = count($partners);
-        $guests = count($guests);
-        $players = $partners + $guests + 1;
+        if ($teetime) {
+             $partners = count($partners);
+             $guests = count($guests);
+             $players = $partners + $guests + 1;
         
-        switch ($players) {
-            case $players > $reservation['max_capacity']:
-                return response()->json(['status'=>400,'message'=>'La cantidad de jugadores es mayor a la capacidad maxima'],400);
-                break;
+            switch ($players) {
+                case $players > $teetime['max_capacity']:
+                    return response()->json(['status'=>400,'message'=>'La cantidad de jugadores es mayor a la capacidad maxima'],400);
+                    break;
 
-            case $players < $reservation['max_capacity']:
-                return response()->json(['status'=>400,'message'=>'La cantidad de jugadores es menor a la capacidad minima'],400);
-                break;
-            
-            default:
-                return 1;
-                break;
+                case $players < $teetime['min_capacity']:
+                    return response()->json(['status'=>400,'message'=>'La cantidad de jugadores es menor a la capacidad minima'],400);
+                    break;
+                
+                default:
+                    return 1;
+                    break;
+            }
+        }else{
+            return response()->json(['status'=>404,'message'=>'La programacion no existe o no tiene definidos todos los parametros'],404);
         }
     }
 }
