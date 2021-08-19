@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Core\CrudModel;
+use Carbon\Carbon;
 
 class Reservation extends CrudModel
 {
@@ -47,5 +48,19 @@ class Reservation extends CrudModel
         }
 
         return '{}';
+    }
+
+    public function setCancelDate($date,$time,$cancel_time){
+        $teetime_cancel_time = Carbon::createFromFormat('Y-m-d H:i:s', $date.' '.$time);
+        $teetime_cancel_time = Carbon::parse($teetime_cancel_time->modify('-'.$cancel_time.' hours'))->format('Y-m-d H:i:s',env('APP_TIMEZONE'));
+
+        return $teetime_cancel_time;
+    }
+
+    public function checkPartners($owner,$partners){
+        $partners = json_decode($partners);
+        $check = array_search($owner, $partners);
+
+        return $check;
     }
 }
