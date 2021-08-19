@@ -66,7 +66,6 @@ class ReservationRepository extends CrudRepository
         $data['guests'] = json_encode($data['guests']);
         $data['partners'] = json_encode($data['partners']);
         $data['partners_name'] = json_encode($data['partners_name']);
-        $data['date'] = Carbon::parse($data['date'])->format('m-d-Y');
         $data['status'] = 'registrado';
 
         $check = $this->model->checkPartners($data['owner'], $data['partners']);
