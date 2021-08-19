@@ -29,7 +29,7 @@ class asig_toallaController extends CrudController
     {
         $r=$request->get('num');
       
-       $bus=toalla::whereRaw('num like ?',"%{$r}%")->where('status','En uso')->get();
+       $bus=toalla::whereRaw("lower(num) like lower('%{$r}%')")->where('status','En uso')->get();
        return $bus;
     }
 
@@ -38,7 +38,7 @@ class asig_toallaController extends CrudController
     {
         $r=$request->get('num');
       
-       $bus=toalla::whereRaw('num like ?',"%{$r}%")->where('status','En stock')->get();
+       $bus=toalla::whereRaw("lower(num) like lower('%{$r}%')")->where('status','En stock')->get();
        return $bus;
     }
 
