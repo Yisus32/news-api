@@ -55,8 +55,9 @@ class ReservationRepository extends CrudRepository
             $reservation['partners'] = json_decode($reservation['partners']);
             $reservation['partners_name'] = json_decode($reservation['partners_name']);
             
-            $reservation['teetime_cancel_time'] = $this->model->setCancelDate($reservation['date'],
-            $reservation['start_hour'],$reservation['teetime_cancel_time']);
+            $reservation['teetime_cancel_time'] = $this->model->setCancelDate(
+            $reservation['teetime_date_start'], $reservation['teetime_hour_start'],
+            $reservation['teetime_cancel_time']);
         }
 
         return $reservations;
@@ -98,14 +99,20 @@ class ReservationRepository extends CrudRepository
     
     //Por culminar
     public function cancelReservation($id){
-        $reservation = Reservation::select(['reservations.*','teetimes.cancel_time as teetime_cancel_time'])
+        $reservation = Reservation::select(['reservations.*',
+                                            'teetimes.cancel_time as teetime_cancel_time',
+                                            'teetimes.start_date as teetime_start_date',
+                                            'teetimes.start_hour as teetime_start_hour'])
                                     ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
                                     ->where('reservations.id',$id)
                                     ->first();
+       
         
-        $cancel_time = $this->model->setCancelDate($reservation['date'],
-                                                   $reservation['start_hour'],
+
+        $cancel_time = $this->model->setCancelDate($reservation['teetime_start_date'],
+                                                   $reservation['teetime_start_hour'],
                                                    $reservation['teetime_cancel_time']);
+
 
         $now = Carbon::now(env('APP_TIMEZONE'));
 
