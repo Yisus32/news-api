@@ -63,4 +63,8 @@ class ReservationController extends CrudController
     public function cancelReservation($id){
         return $this->service->cancelReservation($id);
    }
+
+   public function resendInvitation($id,$reservation_id,Request $request){
+        return $this->service->resendInvitation($id,$reservation_id,$request);
+   }
 }
