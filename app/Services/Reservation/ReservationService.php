@@ -46,4 +46,8 @@ class ReservationService extends CrudService
    public function cancelReservation($id){
    		return $this->repository->cancelReservation($id);
    }
+
+   public function resendInvitation($id,$reservation_id,Request $request){
+      return $this->repository->resendInvitation($id,$reservation_id,$request);
+   }
 }

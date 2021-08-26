@@ -63,4 +63,29 @@ class Reservation extends CrudModel
 
         return $check;
     }
+
+    public function createInvitation($stored){
+
+        if ($stored['guests'] != null) {
+            $guests = json_decode($stored['guests']);
+            foreach ($guests as $guest) {
+                $invitation = new Invitation;
+                $invitation->reservation_id = $stored->id;
+                $invitation->guest = $guest;
+                $invitation->save();
+            }   
+        }
+
+        if ($stored['partners'] != null) {
+            $partners = json_decode($stored['partners']);
+            foreach ($partners as $partner) {
+                $invitation = new Invitation;
+                $invitation->reservation_id = $stored->id;
+                $invitation->partner = $partner;
+                $invitation->save();
+            } 
+        }
+        
+        return $invitation; 
+    }
 }

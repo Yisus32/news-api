@@ -92,6 +92,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
         $router->put('reservations/cancel/{id}', 'Reservation\ReservationController@cancelReservation');
         $router->post('reservations/register/{id}', 'Reservation\ReservationController@reservation_register');
+        $router->get('reservations/resend/{id}/{reservation_id}','Reservation\ReservationController@resendInvitation');
 
         /** routes para Guest **/ 
     

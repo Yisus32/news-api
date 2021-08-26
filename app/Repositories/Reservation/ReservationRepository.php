@@ -75,7 +75,11 @@ class ReservationRepository extends CrudRepository
         if (is_int($check)) {
             return response()->json(['status'=>400, 'message'=> 'El dueño del juego no puede ser seleccionado como socio'],400);
         }else {
-            return parent::_store($data);
+            $stored = parent::_store($data);
+           
+            $this->model->createInvitation($stored);
+
+            return $stored;
         }  
     }
 
@@ -97,7 +101,6 @@ class ReservationRepository extends CrudRepository
         return parent::_delete($id);
     }
     
-    //Por culminar
     public function cancelReservation($id){
         $reservation = Reservation::select(['reservations.*',
                                             'teetimes.cancel_time as teetime_cancel_time',
@@ -122,7 +125,7 @@ class ReservationRepository extends CrudRepository
 
             return $reservation;
         }else{
-            return response()->json(['status'=>400,'message'=>'El tiempo para cancelar la reserva a expirado'],400);
+            return response()->json(['status'=>400,'message'=>'El tiempo para cancelar la reserva ha expirado'],400);
         }
     }
 
@@ -148,7 +151,58 @@ class ReservationRepository extends CrudRepository
                     break;
             }
         }else{
-            return response()->json(['status'=>404,'message'=>'La programacion no existe o no tiene definidos todos los parametros'],404);
+            return response()->json(['status'=>404,'message'=>'Puede que la programacion no exista o no incumple con los parametros'],404);
         }
+    }
+
+
+    public function resendInvitation($id, $reservation_id, Request $request){
+        $type = $request->type;
+        $invitation = Invitation::select(['reservations.owner_name',
+                                          'teetimes.start_hour as teetime_start_hour',                           
+                                          'teetimes.start_date as teetime_start_date',
+                                          'invitations.id as invitation_id'])
+                                ->where('invitations.reservation_id',$reservation_id)
+                                ->when($type == 'partner', function ($query,$request) use ($id) {
+                                        
+                                        $query->where('invitations.partner',$id);
+                                    })
+                                ->when($type == 'guest', function ($query,$request) use ($id) {
+                                      
+                                        $query->where('invitations.guest',$id);
+                                    })
+                                ->leftjoin('reservations','reservations.id','=','invitations.reservation_id')
+                                ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
+                                ->first();
+
+        $exist_mail = Guest::where('email',$request->email)->first();
+
+        if ($exist_mail) {
+            $receipt_url = 'https://qarubick2teetime.zippyttech.com/accept/invitation/'.$invitation->invitation_id;
+        }else{
+             //$receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/null/'.$request->email.'/'.$reservation->owner.'/'.$owner_name.'/'.$owner_number.'/'.$reservid;
+            return response()->json(["status"=>200,"message"=>"Se ha enviado un correo de registro"],200);
+        }
+
+        $date = $invitation->teetime_start_date;
+        $time = $invitation->teetime_start_hour;
+        $name = $request->name;
+        $partner = $invitation->owner_name;
+        $subject = "Invitación Teetime";
+        
+        $message = "Estimado $name 
+                    El socio $partner lo ha invitado a un juego en el club de golf de Panamá el día ". 
+                    Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". 
+                    Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
+                    $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
+        
+
+        if (filter_var($request->email,FILTER_VALIDATE_EMAIL)) {
+            $mailer = new NotificationService;
+            $mailer->sendEmail($request->email,$subject,$message,6,"notificaciones@zippyttech.com");
+        }
+
+        return response()->json(["status"=>200,"message"=>"La invitacion ha sido reenviado"],200);
+
     }
 }
