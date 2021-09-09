@@ -64,7 +64,7 @@ qa_backup_job:
   script:
     - docker image tag qarubick2teetime-api:latest qarubick2teetime-api:prev || true
   tags:
-    - qaapp
+    - qarubick2
   only :
     - qa
 
@@ -84,7 +84,7 @@ qa_build_job:
     - docker build -t qarubick2teetime-api .
   when: on_success
   tags:
-    - qaapp
+    - qarubick2
   only :
     - qa
 
@@ -98,7 +98,7 @@ qa_deploy_job:
     - docker exec qarubick2teetime-api php artisan schedule:run
   when: on_success
   tags:
-    - qaapp
+    - qarubick2
   only:
     - qa
 
@@ -112,7 +112,7 @@ qa_rollback_job:
     - docker exec qarubick2teetime-api php artisan schedule:run
   when: manual
   tags:
-    - qaapp
+    - qarubick2
   only:
     - qa
 
