@@ -177,7 +177,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->delete('bitatoallas/{id}', 'bitatoalla\bitatoallaController@_delete');
 
         /** routes para alq_car **/ 
- 
+        
+        $router->get('alq_cars/filter', 'alq_car\alq_carController@specialFilter');
         $router->get('alq_cars', 'alq_car\alq_carController@_index');
         $router->get('alq_cars/{id}', 'alq_car\alq_carController@_show');
         $router->get('alq_cars/fill/date','alq_car\alq_carController@filter_by_date');
