@@ -153,4 +153,32 @@ class alq_carController extends CrudController
                 201);
         }
     }
+
+    public function specialFilter(Request $request)
+    {
+        $operations =DB::table('alq_car')
+        ->join('group','group.id','=','alq_car.gro_id')
+        ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
+        ->join('holes','holes.id','=','alq_car.id_hole')
+        ->select('alq_car.id','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')
+                                ->when($request->num, function($query,$num){
+                                    //buscar por numero de socio
+                                    return $query->where('alq_car.user_num',$num);
+                                })
+                                ->when($request->nom, function($query,$nom){
+                                    //buscar por nombre
+                                    return $query->where('alq_car.user_name','ILIKE',$nom);
+                                })
+                                ->when($request->car, function($query,$car){
+                                    //buscar por carrito
+                                    return $query->where('alq_car.car_id','ILIKE',$car);
+                                })
+                                ->when($request->hora, function($query,$hora){
+                                    //buscar numero
+                                    return $query->where('alq_car.gro_id','ILIKE',$hora);
+                                })
+                                ->get();
+        
+        return ["list" => $operations, "total" => $operations->count()];
+    }
 }
