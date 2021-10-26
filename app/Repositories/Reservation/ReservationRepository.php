@@ -123,7 +123,7 @@ class ReservationRepository extends CrudRepository
             $reservation->status = 'cancelado';
             $reservation->save();
 
-            return $reservation;
+            return response()->json(['status'=>200,'message'=>'La reservacion identificada con el id '.$reservation->id.' ha sido cancelada']);
         }else{
             return response()->json(['status'=>400,'message'=>'El tiempo para cancelar la reserva ha expirado'],400);
         }

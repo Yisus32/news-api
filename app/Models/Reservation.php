@@ -51,9 +51,10 @@ class Reservation extends CrudModel
     }
 
     public function setCancelDate($date,$time,$cancel_time){
+    
         $teetime_cancel_time = Carbon::createFromFormat('Y-m-d H:i:s', $date.' '.$time);
         $teetime_cancel_time = Carbon::parse($teetime_cancel_time->modify('-'.$cancel_time.' hours'))->format('Y-m-d H:i:s',env('APP_TIMEZONE'));
-
+        
         return $teetime_cancel_time;
     }
 

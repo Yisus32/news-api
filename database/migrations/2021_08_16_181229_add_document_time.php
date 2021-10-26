@@ -13,7 +13,7 @@ class AddDocumentTime extends Migration
      */
     public function up()
     {
-       Schema::table('documents', function (Blueprint $table) {
+       /*Schema::table('documents', function (Blueprint $table) {
             $table->dropColumn([
                 'expiration_date',
                 'emission'
@@ -22,7 +22,7 @@ class AddDocumentTime extends Migration
        Schema::table('documents', function (Blueprint $table) {
             $table->string('expiration')->nullable()->default('');
             $table->string('emission')->nullable()->default('');
-        });
+        });*/
     }
 
     /**
