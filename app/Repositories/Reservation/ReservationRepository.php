@@ -158,10 +158,14 @@ class ReservationRepository extends CrudRepository
 
     public function resendInvitation($id, $reservation_id, Request $request){
         $type = $request->type;
+        $exist_mail = Guest::where('email',$request->email)->first();
+
         $invitation = Invitation::select(['reservations.owner_name',
                                           'teetimes.start_hour as teetime_start_hour',                           
                                           'teetimes.start_date as teetime_start_date',
-                                          'invitations.id as invitation_id'])
+                                          'invitations.id as invitation_id',
+                                          'reservations.owner as reservation_owner_id',
+                                          'reservations.owner_name as reservation_owner_name'])
                                 ->where('invitations.reservation_id',$reservation_id)
                                 ->when($type == 'partner', function ($query,$request) use ($id) {
                                         
@@ -174,24 +178,27 @@ class ReservationRepository extends CrudRepository
                                 ->leftjoin('reservations','reservations.id','=','invitations.reservation_id')
                                 ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
                                 ->first();
-
-        $exist_mail = Guest::where('email',$request->email)->first();
+            
 
         if ($exist_mail) {
             $receipt_url = 'https://qarubick2teetime.zippyttech.com/accept/invitation/'.$invitation->invitation_id;
         }else{
-             //$receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/null/'.$request->email.'/'.$reservation->owner.'/'.$owner_name.'/'.$owner_number.'/'.$reservid;
-            return response()->json(["status"=>200,"message"=>"Se ha enviado un correo de registro"],200);
+            
+            $email = $request->email;
+            $owner_id = $invitation->reservation_owner_id;
+            $owner_number = explode(' ', $invitation->reservation_owner_name)[0];
+            $owner_name = explode(' ', $invitation->reservation_owner_name)[1];
+             
+            $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/%20/'.$email.'/'.$owner_id.'/'.$owner_name.'/'.$owner_number.'/'.$reservation_id;
         }
 
         $date = $invitation->teetime_start_date;
         $time = $invitation->teetime_start_hour;
-        $name = $request->name;
+        $name = $request->name ?? 'invitado';
         $partner = $invitation->owner_name;
         $subject = "Invitación Teetime";
         
-        $message = "Estimado $name 
-                    El socio $partner lo ha invitado a un juego en el club de golf de Panamá el día ". 
+        $message = "Estimado $name, el socio $partner lo ha invitado a un juego en el club de golf de Panamá el día ". 
                     Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". 
                     Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
                     $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
