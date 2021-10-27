@@ -9,9 +9,39 @@ use App\Services\alq_car\alq_carService;
 use Illuminate\Support\Facades\DB;
 use App\Core\ReportService;
 use Carbon\Carbon;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\Exception;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
+
 /** @property alq_carService $service */
 class alq_carController extends CrudController
 {
+    private static $data = [];
+    private static $index = [];
+    private static $external = false;
+    private static $dataPerSheet = [];
+    private static $indexPerSheet = [];
+    private static $title;
+    private static $name;
+    private static $username;
+    private static $date;
+    private static $user;
+    private static $log_url = null;
+    private static $account = [];
+    private static $orientation = "portrait";
+    private static $colors = ["primary" => '#9FD5D1', "secondary" => '#f2f2f2', "auxiliary" => '#ffffff'];
+    public static $report;
+    public static $current_url;
+    private static $returnRaw = false;
     public function __construct(alq_carService $service)
     {
         parent::__construct($service);
@@ -180,5 +210,100 @@ class alq_carController extends CrudController
                                 ->get();
         
         return ["list" => $operations, "total" => $operations->count()];
+    }
+
+
+    public function repo(Request $request)
+    {
+        if (empty($request->star)) {
+            return Response()->json(["error" => true, "message" => "la fecha es requerida"],400);
+        }
+
+        self::$index=[
+            'Fecha'=>'fecha',
+            'Hora de incio'=>'codegroup',
+            'Hoyo de salida'=>'namehole',
+            'N° de socio'=>'user_num',
+            'Jugador'=>'user_name',
+            'Socio/Invitado/REC.'=>'tipo_p',
+            'Grupo ronda(cantidad de personas que juegan en la ronda)'=>'can_p',
+            'Cantidad de hoyos jugados'=>'hol_id',
+            'Carrito de golf'=>'numcar',
+            'Observaciones'=>'obs'
+
+        ];
+        $now = Carbon::now()->timezone("America/Panama");
+        $r=$request->get('star');
+        $f=$request->get('end');
+        $alqu= $game=DB::table('alq_car')->whereBetween(DB::Raw('cast(alq_car.fecha as date)'), array($r, $f))
+        ->join('group','group.id','=','alq_car.gro_id')
+        ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
+        ->join('holes','holes.id','=','alq_car.id_hole')
+        ->select('group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
+        self::$data[]=$alqu;
+        $spreadsheet = new Spreadsheet();
+        $sheet = self::getDefaultConfiguration($spreadsheet);
+
+        foreach (self::$index as $title => $value) {
+            $arrayData[0][] = $title;
+        }
+
+        foreach (self::$data as $key) {
+            $i = 1;
+            $toArray = (is_object($key) ? $key : (is_array($key) ? (object)$key : null));
+            foreach (self::$index as $title => $value) {
+                $toExcel[$i] = $toArray->$value ?? null;
+                $i++;
+            }
+            $arrayData[] = $toExcel;
+        }
+        $sheet->getActiveSheet()->fromArray($arrayData, "Sin Registro", 'A7');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+    
+        //Todo esto de aqui abajo es para que se fuerce la descarga al ir al endpoint
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="reporte.xlsx"');
+        $writer->save("php://output"); 
+        return null;
+    }
+
+
+    protected static function getDefaultConfiguration(Spreadsheet $spreadsheet, $pathLogo = null, $columnStart = "A", $rowStart = '1')
+    {
+        try {
+            $alphabet = range('A', 'Z');
+            $totalColumns = count(self::$index) - 1;
+            $totalRows = count(self::$data) + 2;
+
+            for ($i = "A"; $i < "Z"; $i++) {
+                $spreadsheet->getActiveSheet()->getColumnDimension($i)->setAutoSize(true);
+
+            }
+
+            $spreadsheet->getActiveSheet()->setCellValue($columnStart . $rowStart, "Reporte de " . self::$title);
+            $spreadsheet->getActiveSheet()->mergeCells($columnStart . $rowStart . ':' . $alphabet[$totalColumns] . '5');
+            $spreadsheet->getActiveSheet()->getStyle($columnStart . $rowStart)->getFont()->setSize(16);
+            $spreadsheet->getActiveSheet()->getStyle($columnStart . $rowStart)->getAlignment()
+                ->applyFromArray([
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER
+                ]);
+
+            $spreadsheet->getActiveSheet()->getStyle($columnStart . $totalRows . ':' . $alphabet[$totalColumns] . $totalRows)
+                ->applyFromArray([
+                    'borders' => [
+                        'outline' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['argb' => 'FF000000'],
+                        ],
+                    ],
+                ]);
+            $spreadsheet->getActiveSheet()->getStyle($columnStart . $rowStart . ':' . $alphabet[$totalColumns] . '1')->getFill()->setFillType(Fill::FILL_SOLID);
+            $spreadsheet->getActiveSheet()->getStyle('A1:' . $alphabet[$totalColumns] . '1')->getFont()->getColor()->setARGB('00000000');
+            return $spreadsheet;
+        } catch (Exception $exception) {
+            Log::critical($exception->getMessage() . $exception->getLine() . $exception->getFile());
+            return $spreadsheet;
+        }
     }
 }
