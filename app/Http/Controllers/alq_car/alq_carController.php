@@ -303,7 +303,7 @@ class alq_carController extends CrudController
         $cabecera .= '</tr>';
 
         $html .= $cabecera;
-        foreach($alqu as $pag=>$l){
+        foreach($alqu as $l){
             $agrupar = '
                 <tr>
                     <td>'.$l->fecha.'</td> 
@@ -325,7 +325,7 @@ class alq_carController extends CrudController
                     <td></td>
                     <td>'.$l->obs.'</td>
 
-                <tr>
+                </tr>
             ';
             $html .= $agrupar;
             $valores = false;
