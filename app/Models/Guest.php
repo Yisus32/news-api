@@ -12,7 +12,8 @@ class Guest extends CrudModel
     protected $fillable = [
         "full_name", 
         "email", 
-        "identifier", 
+        "identifier",
+        "card_number", 
         "status",
         "host_id", 
         "host_name", 
