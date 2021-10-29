@@ -289,11 +289,6 @@ class alq_carController extends CrudController
 
         $html = '
         <html>
-            <head>
-                <style>
-                    tr,td{border:1px black solid}
-                </style>
-            </head>
         <table>
         ';
         $cabecera = '<tr>';
@@ -335,10 +330,9 @@ class alq_carController extends CrudController
         $html .= '</table></html>';
         //return $html; // aqui estoy probando mi tabla en html
         
-        self::$data[]=$alqu;
 
         $reader = new \PhpOffice\PhpSpreadsheet\Reader\Html();
-        $spreadsheet = $reader->loadFromString($html);
+        $spreadsheet = $reader->load($html);
         //AQUI CAMBIO EL COLOR DE LA CELDAS DE TITULO
         $spreadsheet->getActiveSheet()->getStyle('A1')->getFill()
         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
