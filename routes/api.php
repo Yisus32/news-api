@@ -185,7 +185,13 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('alq_cars', 'alq_car\alq_carController@sav');
         $router->put('alq_cars/{id}', 'alq_car\alq_carController@_update');
         $router->delete('alq_cars/{id}', 'alq_car\alq_carController@_delete');
-
+        /**
+         * Agregado por Marcos López
+         */
+        $router->get('buscar_nombre/alq_cars','alq_car\alq_carController@buscar_nombre');
+        /**
+         * ******************************
+         */
         // invitation
 
         $router->get('accept/invitation/{id}', 'Invitation\InvitationController@accept_invitation');

@@ -9,6 +9,8 @@ use App\Services\alq_car\alq_carService;
 use Illuminate\Support\Facades\DB;
 use App\Core\ReportService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
+
 /** @property alq_carService $service */
 class alq_carController extends CrudController
 {
@@ -214,5 +216,61 @@ class alq_carController extends CrudController
         $operations = $operations->get();      
         
         return ["list" => $operations, "total" => $operations->count()];
+    }
+
+    public function buscar_nombre(Request $request){
+        /**
+         * Validaciones
+         */
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'user_name' => 'required_without:user_num',
+                'user_num' => 'required_without:user_name' 
+            ],
+            [
+                'required_without' => 'El :attribute es requerido cuando no se envia anotherfield'
+            ],
+            [
+                'user_name' => 'nombre',
+                'user_num' => 'numero de socio'
+            ]
+            );
+            if ($validator->fails()) {
+            
+                $mensaje = $this->parseMessageBag($validator->getMessageBag());
+            
+                return response()->json(["error"=>true,"message"=>$mensaje[0][0]],422);
+            }
+            /**
+             * fin de las validaciones
+             */
+
+        $nombre = DB::table('alq_car');
+        if($request->has(['user_name','user_num'])){
+            return response()->json([
+                'error' => true,
+                'message' => 'Solo debe enviar un parametro'
+            ],422);
+        }
+
+        if($request->user_name != null && $request->user_name != ''){
+            $nombre = $nombre->select('alq_car.user_name')
+                    ->when($request->user_name,function($query,$user_name){
+                        return $query->where('user_name','ilike',$user_name);
+                    });
+            }
+        if($request->user_num != null && $request->user_num != ''){
+            $nombre = $nombre->select('alq_car.user_num')
+                    ->when($request->user_num,function($query,$user_num){
+                        return $query->where('user_num','ilike',$user_num);
+                    });
+        }
+        $nombre = $nombre->get();
+
+        return [
+            "list" => $nombre,
+            "total" => count($nombre)
+        ];
     }
 }
