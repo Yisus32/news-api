@@ -332,7 +332,7 @@ class alq_carController extends CrudController
         
 
         $reader = new \PhpOffice\PhpSpreadsheet\Reader\Html();
-        $spreadsheet = $reader->load($html);
+        $spreadsheet = $reader->loadFromString($html);
         //AQUI CAMBIO EL COLOR DE LA CELDAS DE TITULO
         $spreadsheet->getActiveSheet()->getStyle('A1')->getFill()
         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
