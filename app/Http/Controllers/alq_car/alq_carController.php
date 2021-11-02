@@ -490,29 +490,31 @@ public function rezero(Request $request)
 
     $excel->getActiveSheet()->getStyle('A1:Q1')->getFill()
     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-    ->getStartColor()->setARGB('4F42F9');
+    ->getStartColor()->setRGB('4F42F9');
 
     $excel->getActiveSheet()->getStyle('A1:Q1')->getFont()
         ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );
     
     $excel->getActiveSheet()->getRowDimension('1')->setRowHeight(80, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('A')->setWidth(20, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('B')->setWidth(23, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('C')->setWidth(25, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('D')->setWidth(30, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('E')->setWidth(27, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('F')->setWidth(30, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('G')->setWidth(40, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('H')->setWidth(70, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('I')->setWidth(35, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('J')->setWidth(50, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('K')->setWidth(27, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('L')->setWidth(32, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('M')->setWidth(23, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('N')->setWidth(20, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('O')->setWidth(23, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('P')->setWidth(35, 'pt');
-    $excel->getActiveSheet()->getColumnDimension('Q')->setWidth(32, 'pt');
+
+    $excel->getActiveSheet()->getColumnDimension('A')->setWidth(160, 'px');
+    //$excel->getActiveSheet()->getColumnDimension('A')->setWidth(20, 'px');
+    $excel->getActiveSheet()->getColumnDimension('B')->setWidth(170, 'px');
+    $excel->getActiveSheet()->getColumnDimension('C')->setWidth(170, 'px');
+    $excel->getActiveSheet()->getColumnDimension('D')->setWidth(200, 'px');
+    $excel->getActiveSheet()->getColumnDimension('E')->setWidth(230, 'px');
+    $excel->getActiveSheet()->getColumnDimension('F')->setWidth(270, 'px');
+    $excel->getActiveSheet()->getColumnDimension('G')->setWidth(320, 'px');
+    $excel->getActiveSheet()->getColumnDimension('H')->setWidth(430, 'px');
+    $excel->getActiveSheet()->getColumnDimension('I')->setWidth(35, 'px');
+    $excel->getActiveSheet()->getColumnDimension('J')->setWidth(50, 'px');
+    $excel->getActiveSheet()->getColumnDimension('K')->setWidth(27, 'px');
+    $excel->getActiveSheet()->getColumnDimension('L')->setWidth(32, 'px');
+    $excel->getActiveSheet()->getColumnDimension('M')->setWidth(23, 'px');
+    $excel->getActiveSheet()->getColumnDimension('N')->setWidth(20, 'px');
+    $excel->getActiveSheet()->getColumnDimension('O')->setWidth(23, 'px');
+    $excel->getActiveSheet()->getColumnDimension('P')->setWidth(35, 'px');
+    $excel->getActiveSheet()->getColumnDimension('Q')->setWidth(32, 'px');
 
     $excel->getActiveSheet()->getStyle('A1:Q1')
     ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
