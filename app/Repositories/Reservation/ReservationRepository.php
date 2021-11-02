@@ -140,6 +140,7 @@ class ReservationRepository extends CrudRepository
         
         if ($teetime) {
              $partners = count($partners);
+             $guests_email == "" ? $guests_email = [] : $guests_email;
              $guests = count($guests) + count($guests_email);
              $players = $partners + $guests + 1;
         
