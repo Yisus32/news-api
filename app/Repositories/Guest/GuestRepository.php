@@ -69,6 +69,10 @@ class GuestRepository extends CrudRepository
             
         }
 
+        if (isset($data->host_id)) {
+            $data['host_id'] = intval($data->host_id);
+        }
+
         $guest = parent::_store($data);
 
         $guest->documents()->createMany($documents);
