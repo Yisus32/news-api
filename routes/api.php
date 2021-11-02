@@ -44,7 +44,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->group(['prefix' => 'report'], function () use ($router) {
             $router->get('/reservations', 'Reservation\ReservationController@report');
             $router->get('/game_log', 'game_log\game_logController@report');
-            $router->get('/alq_car', 'alq_car\alq_carController@repo');
+            $router->get('/alq_car', 'alq_car\alq_carController@rezero');
             $router->post('/automatic', 'ReportController@automatic');
         });
     });
