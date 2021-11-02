@@ -18,6 +18,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use App\Http\Mesh\NotificationService;
+use App\Http\Mesh\UserService;
+use App\Models\TempData;
 
 //use Illuminate\Queue\Queue;
 //use Illuminate\Support\Facades\Queue as FacadesQueue;
@@ -78,7 +80,7 @@ class ReservationRepository extends CrudRepository
             $stored = parent::_store($data);
            
             $this->model->createInvitation($stored);
-
+            
             return $stored;
         }  
     }
@@ -129,12 +131,16 @@ class ReservationRepository extends CrudRepository
         }
     }
 
-    public function checkCapacity($partners,$guests,$teetime_id){
+    public function checkCapacity($partners,$guests,$guests_email,$teetime_id){
         $teetime = Teetime::where('id',$teetime_id)->first();
 
+        if ($guests_email != null) {
+            $guests_email = explode(' ', $guests_email);
+        }
+        
         if ($teetime) {
              $partners = count($partners);
-             $guests = count($guests);
+             $guests = count($guests) + count($guests_email);
              $players = $partners + $guests + 1;
         
             switch ($players) {
@@ -211,5 +217,20 @@ class ReservationRepository extends CrudRepository
 
         return response()->json(["status"=>200,"message"=>"La invitacion ha sido reenviado"],200);
 
+    }
+
+    public function standByTeetime($id){
+        
+        try {
+        $temp_data = new TempData();
+        $temp_data->teetime_id = $id;
+        $temp_data->created_at = Carbon::now(env('APP_TIMEZONE'));
+        $temp_data->save();
+
+        return response()->json(['status'=>200, 'message'=>'se apartado la reserva por 5 minutos']);   
+        
+        } catch (\Exception $e) {
+            return response()->json(['status'=>400,'message'=>'Este teetime está siendo registrado por otro usuario']);   
+        }
     }
 }

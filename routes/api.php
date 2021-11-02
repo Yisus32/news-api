@@ -196,6 +196,9 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
         $router->get('accept/invitation/{id}', 'Invitation\InvitationController@accept_invitation');
 
+        /** routes para TempData **/ 
+        $router->post('standByTeetime/{id}', 'Reservation\ReservationController@standByTeetime');
+
     });
 
     
@@ -212,18 +215,6 @@ $router->post('break_times', 'Break_time\Break_timeController@_store');
 $router->put('break_times/{id}', 'Break_time\Break_timeController@_update');
 $router->delete('break_times/{id}', 'Break_time\Break_timeController@_delete');
  
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
 /** routes para Invitation **/ 
  
 $router->get('invitations', 'Invitation\InvitationController@_index');
@@ -231,7 +222,5 @@ $router->get('invitations/{id}', 'Invitation\InvitationController@_show');
 $router->post('invitations', 'Invitation\InvitationController@_store');
 $router->put('invitations/{id}', 'Invitation\InvitationController@_update');
 $router->delete('invitations/{id}', 'Invitation\InvitationController@_destroy');
- 
 
- 
 

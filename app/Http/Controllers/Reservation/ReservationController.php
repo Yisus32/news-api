@@ -11,6 +11,7 @@ use App\Services\Reservation\ReservationService;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Validator;
+use App\Models\TempData;
 
 //commit de reposicion
 
@@ -44,6 +45,8 @@ class ReservationController extends CrudController
 
     public function _store(Request $data){
         if ($data->header('time') == 'expired') {
+            $temp_data = TempData::where('teetime_id',$data['teetime_id'])->first();
+            $temp_data->delete();
             return response()->json(['status'=>408,'message'=>'El tiempo de reserva ha expirado'],408);
         }else{
             $data['status'] = 'reservado';
@@ -56,6 +59,7 @@ class ReservationController extends CrudController
             return response()->json(['status'=>408,'message'=>'El tiempo de reserva ha expirado'],408);
         }else{
             $data['status'] = 'reservado';
+            \DB::raw("DELETE FROM temp_data WHERE teetime_id = ".$data['teetime_id']);
             return $this->service->_update($id,$data);
         }
     }
@@ -66,5 +70,9 @@ class ReservationController extends CrudController
 
    public function resendInvitation($id,$reservation_id,Request $request){
         return $this->service->resendInvitation($id,$reservation_id,$request);
+   }
+
+   public function standByTeetime($id){
+     return $this->service->standByTeetime($id);
    }
 }
