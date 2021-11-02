@@ -23,23 +23,11 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 
+
 /** @property alq_carService $service */
 class alq_carController extends CrudController
 {
-    private static $data = [];
-    private static $index = [];
-    private static $external = false;
-    private static $dataPerSheet = [];
-    private static $indexPerSheet = [];
-    private static $title;
-    private static $name;
-    private static $username;
-    private static $date;
-    private static $user;
-    private static $log_url = null;
-    private static $account = [];
-    private static $orientation = "portrait";
-    private static $colors = ["primary" => '#9FD5D1', "secondary" => '#f2f2f2', "auxiliary" => '#ffffff'];
+   
     public static $report;
     public static $current_url;
     private static $returnRaw = false;
@@ -91,19 +79,29 @@ class alq_carController extends CrudController
         ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
         ->join('holes','holes.id','=','alq_car.id_hole')
         ->select('group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
-        
+        $alqu->descri='N/A';
         $headers = ["Authorization" => $request->input('token')];
         $index=[
-            'Fecha'=>'fecha',
-            'Hora de incio'=>'codegroup',
+            'FECHA'=>'fecha',
+            'HORA DE ENTRADA'=>'descri',
             'Hoyo de salida'=>'namehole',
-            'N° de socio'=>'user_num',
-            'Jugador'=>'user_name',
-            'Socio/Invitado/REC.'=>'tipo_p',
-            'Grupo ronda(cantidad de personas que juegan en la ronda)'=>'can_p',
-            'Cantidad de hoyos jugados'=>'hol_id',
-            'Carrito de golf'=>'numcar',
-            'Observaciones'=>'obs'
+            'N° DE SOCIO'=>'user_num',
+            'TIPO DE SOCIO'=>'tipo_p',
+            'CATEGORIA DE SOCIO'=>'tipo_p',
+            'N° DE SOCIO QUE INVITA'=>'can_p',
+            'NOMBRE DEL SOCIO QUE INVITA'=>'hol_id',
+            'NOMBRE DE SOCIO / INVITADO /DEPENDIENTE/RECIPROCIDAD'=>'numcar',
+            'SOCIO / INVITADO / REC.'=>'obs',
+            'NOMBRE DE SOCIO / INVITADO /DEPENDIENTE/RECIPROCIDAD'=>'numcar',
+            'NUMERO DE CARNET DE INVITADOS'=>'numcar',
+            'RECUENTO DE RONDAS'=>'numcar',
+            'HORA DE INICIO JUEGO'=>'numcar',
+            'HOYO SALIDA'=>'numcar',
+            '# CARRITO'=>'numcar',
+            'GRUPO RONDA'=>'numcar',
+            'CANTIDAD DE HOYOS JUGADOS'=>'numcar',
+            'CARRITO / CAMINANDO'=>'numcar',
+            'OBSERVACIONES'=>'numcar',
 
         ];
         $info []=$alqu;
@@ -114,7 +112,7 @@ class alq_carController extends CrudController
         $report->index($index);
         $report->data($alqu);
         //$report->external();
-        return $report->report("automatic","Alquiler de carritos",null,null,false,1);
+        return $report->report("automatic","Alquiler de carritos",null,null,false,1,true);
     }
 
 
@@ -264,8 +262,8 @@ class alq_carController extends CrudController
         ->join('group','group.id','=','alq_car.gro_id')
         ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
         ->join('holes','holes.id','=','alq_car.id_hole')
-        ->select('group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
-      
+        ->select('group.cod as codegroup','group.description as descri','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
+        $alqu->descri='N/A';
         $index=[
             'FECHA',
             'HORA DE ENTRADA',
@@ -453,6 +451,110 @@ class alq_carController extends CrudController
        
 }
 
+
+public function rezero(Request $request)
+{
+   
+    if (empty($request->star)) {
+        return Response()->json(["error" => true, "message" => "la fecha es requerida"],400);
+    }
+    $now = Carbon::now()->timezone("America/Panama");
+    $r=$request->get('star');
+    $f=$request->get('end');
+    $alqu= $game=DB::table('alq_car')->whereBetween(DB::Raw('cast(alq_car.fecha as date)'), array($r, $f))
+    ->join('group','group.id','=','alq_car.gro_id')
+    ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
+    ->join('holes','holes.id','=','alq_car.id_hole')
+    ->select('group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
+    $excel=new Spreadsheet();
+    $hoja=$excel->getActiveSheet();
+    $hoja->setTitle("Alquiler de carritos");
+    $hoja->setCellValue('A1','FECHA');
+    $hoja->setCellValue('B1','HORA DE ENTRADA');
+    $hoja->setCellValue('C1','N° DE SOCIO');
+    $hoja->setCellValue('D1','TIPO DE SOCIO');
+    $hoja->setCellValue('E1','CATEGORIA DE SOCIO');
+    $hoja->setCellValue('F1','N° DE SOCIO QUE INVITA');
+    $hoja->setCellValue('G1','NOMBRE DEL SOCIO QUE INVITA');
+    $hoja->setCellValue('H1','NOMBRE DE SOCIO / INVITADO /DEPENDIENTE/RECIPROCIDAD');
+    $hoja->setCellValue('I1','SOCIO / INVITADO / REC.');
+    $hoja->setCellValue('J1','NUMERO DE CARNET DE INVITADOS');
+    $hoja->setCellValue('K1','RECUENTO DE RONDAS');
+    $hoja->setCellValue('L1','HORA DE INICIO JUEGO');
+    $hoja->setCellValue('M1','HOYO SALIDA');
+    $hoja->setCellValue('N1','# CARRITO');
+    $hoja->setCellValue('O1','GRUPO RONDA');
+    $hoja->setCellValue('P1','CANTIDAD DE HOYOS JUGADOS');
+    $hoja->setCellValue('Q1','Observaciones');
+
+
+    $excel->getActiveSheet()->getStyle('A1:Q1')->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()->setARGB('4F42F9');
+
+    $excel->getActiveSheet()->getStyle('A1:Q1')->getFont()
+        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );
+    
+    $excel->getActiveSheet()->getRowDimension('1')->setRowHeight(80, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('A')->setWidth(20, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('B')->setWidth(23, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('C')->setWidth(25, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('D')->setWidth(30, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('E')->setWidth(27, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('F')->setWidth(30, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('G')->setWidth(40, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('H')->setWidth(70, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('I')->setWidth(35, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('J')->setWidth(50, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('K')->setWidth(27, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('L')->setWidth(32, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('M')->setWidth(23, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('N')->setWidth(20, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('O')->setWidth(23, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('P')->setWidth(35, 'pt');
+    $excel->getActiveSheet()->getColumnDimension('Q')->setWidth(32, 'pt');
+
+    $excel->getActiveSheet()->getStyle('A1:Q1')
+    ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $excel->getActiveSheet()->getStyle('A1:Q1')
+    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    
+    
+    $fila=2;
+
+    foreach($alqu as $rows)
+    {
+        $hoja->setCellValue('A'.$fila,$rows->fecha);
+        $hoja->setCellValue('B'.$fila,'N/A');
+        $hoja->setCellValue('C'.$fila,$rows->user_num);
+        $hoja->setCellValue('D'.$fila,'');
+        $hoja->setCellValue('E'.$fila,'');
+        $hoja->setCellValue('F'.$fila,'N/A');
+        $hoja->setCellValue('G'.$fila,'N/A');
+        $hoja->setCellValue('H'.$fila,$rows->user_name);
+        $hoja->setCellValue('I'.$fila,$rows->tipo_p);
+        $hoja->setCellValue('J'.$fila,'N/A');
+        $hoja->setCellValue('K'.$fila,'1');
+        $hoja->setCellValue('L'.$fila,$rows->codegroup);
+        $hoja->setCellValue('M'.$fila,$rows->namehole);
+        $hoja->setCellValue('N'.$fila,$rows->numcar);
+        $hoja->setCellValue('O'.$fila,$rows->can_p);
+        $hoja->setCellValue('P'.$fila,$rows->hol_id);
+        $hoja->setCellValue('Q'.$fila,$rows->obs);
+        
+
+
+        $fila++;
+    }
+
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="reporte.xlsx"');
+        $writer=IOFactory::createWriter($excel,'Xlsx');
+        $writer->save("php://output");
+        exit;
+    
+}
 
    
 }
