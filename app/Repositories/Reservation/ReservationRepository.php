@@ -33,7 +33,7 @@ class ReservationRepository extends CrudRepository
     {
         parent::__construct($model);
     }
-
+    
     public function _index($request = null, $user = null){
         $owner = $request->owner;
         $reservations = Reservation::select(['reservations.*', 
@@ -60,6 +60,8 @@ class ReservationRepository extends CrudRepository
             $reservation['teetime_cancel_time'] = $this->model->setCancelDate(
             $reservation['teetime_date_start'], $reservation['teetime_hour_start'],
             $reservation['teetime_cancel_time']);
+            $reservation['created_at'] = Carbon::parse($reservation['created_at'])->format('Y-m-d',env('APP_TIMEZONE'));
+            $reservation['updated_at'] = Carbon::parse($reservation['created_at'])->format('Y-m-d',env('APP_TIMEZONE'));
         }
 
         return $reservations;
@@ -77,8 +79,10 @@ class ReservationRepository extends CrudRepository
         if (is_int($check)) {
             return response()->json(['status'=>400, 'message'=> 'El dueño del juego no puede ser seleccionado como socio'],400);
         }else {
+            
             $stored = parent::_store($data);
-           
+            
+            $this->sendInvitation($data['guests'],$data['partners_name'],$data['guests_email'],$stored);
             $this->model->createInvitation($stored);
             
             return $stored;
@@ -234,4 +238,11 @@ class ReservationRepository extends CrudRepository
             return response()->json(['status'=>400,'message'=>'Este teetime está siendo registrado por otro usuario']);   
         }
     }
+
+    public function restartTeetime($id){
+        $temp_data = TempData::where('teetime_id',$id)->first();
+        $temp_data->delete();
+        return response()->json(['status' => 200, 'message' => 'El teetime está disponible nuevamente']);
+    }
+
 }

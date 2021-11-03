@@ -192,6 +192,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
         /** routes para TempData **/ 
         $router->post('standByTeetime/{id}', 'Reservation\ReservationController@standByTeetime');
+         $router->delete('restartTeetime/{id}', 'Reservation\ReservationController@restartTeetime');
 
     });
 
