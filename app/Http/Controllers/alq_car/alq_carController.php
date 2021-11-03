@@ -22,24 +22,12 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
-use Illuminate\Support\Facades\Validator;
+
+
 /** @property alq_carService $service */
 class alq_carController extends CrudController
 {
-    private static $data = [];
-    private static $index = [];
-    private static $external = false;
-    private static $dataPerSheet = [];
-    private static $indexPerSheet = [];
-    private static $title;
-    private static $name;
-    private static $username;
-    private static $date;
-    private static $user;
-    private static $log_url = null;
-    private static $account = [];
-    private static $orientation = "portrait";
-    private static $colors = ["primary" => '#9FD5D1', "secondary" => '#f2f2f2', "auxiliary" => '#ffffff'];
+   
     public static $report;
     public static $current_url;
     private static $returnRaw = false;
@@ -91,19 +79,29 @@ class alq_carController extends CrudController
         ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
         ->join('holes','holes.id','=','alq_car.id_hole')
         ->select('group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
-        
+        $alqu->descri='N/A';
         $headers = ["Authorization" => $request->input('token')];
         $index=[
-            'Fecha'=>'fecha',
-            'Hora de incio'=>'codegroup',
+            'FECHA'=>'fecha',
+            'HORA DE ENTRADA'=>'descri',
             'Hoyo de salida'=>'namehole',
-            'N° de socio'=>'user_num',
-            'Jugador'=>'user_name',
-            'Socio/Invitado/REC.'=>'tipo_p',
-            'Grupo ronda(cantidad de personas que juegan en la ronda)'=>'can_p',
-            'Cantidad de hoyos jugados'=>'hol_id',
-            'Carrito de golf'=>'numcar',
-            'Observaciones'=>'obs'
+            'N° DE SOCIO'=>'user_num',
+            'TIPO DE SOCIO'=>'tipo_p',
+            'CATEGORIA DE SOCIO'=>'tipo_p',
+            'N° DE SOCIO QUE INVITA'=>'can_p',
+            'NOMBRE DEL SOCIO QUE INVITA'=>'hol_id',
+            'NOMBRE DE SOCIO / INVITADO /DEPENDIENTE/RECIPROCIDAD'=>'numcar',
+            'SOCIO / INVITADO / REC.'=>'obs',
+            'NOMBRE DE SOCIO / INVITADO /DEPENDIENTE/RECIPROCIDAD'=>'numcar',
+            'NUMERO DE CARNET DE INVITADOS'=>'numcar',
+            'RECUENTO DE RONDAS'=>'numcar',
+            'HORA DE INICIO JUEGO'=>'numcar',
+            'HOYO SALIDA'=>'numcar',
+            '# CARRITO'=>'numcar',
+            'GRUPO RONDA'=>'numcar',
+            'CANTIDAD DE HOYOS JUGADOS'=>'numcar',
+            'CARRITO / CAMINANDO'=>'numcar',
+            'OBSERVACIONES'=>'numcar',
 
         ];
         $info []=$alqu;
@@ -114,7 +112,7 @@ class alq_carController extends CrudController
         $report->index($index);
         $report->data($alqu);
         //$report->external();
-        return $report->report("automatic","Alquiler de carritos",null,null,false,1);
+        return $report->report("automatic","Alquiler de carritos",null,null,false,1,true);
     }
 
 
@@ -247,61 +245,6 @@ class alq_carController extends CrudController
         return ["list" => $operations, "total" => $operations->count()];
     }
 
-    public function buscar_nombre(Request $request){
-        /**
-         * Validaciones
-         */
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'user_name' => 'required_without:user_num',
-                'user_num' => 'required_without:user_name' 
-            ],
-            [
-                'required_without' => 'El :attribute es requerido cuando no se envia anotherfield'
-            ],
-            [
-                'user_name' => 'nombre',
-                'user_num' => 'numero de socio'
-            ]
-            );
-            if ($validator->fails()) {
-            
-                $mensaje = $this->parseMessageBag($validator->getMessageBag());
-            
-                return response()->json(["error"=>true,"message"=>$mensaje[0][0]],422);
-            }
-            /**
-             * fin de las validaciones
-             */
-
-        $nombre = DB::table('alq_car');
-        if($request->has(['user_name','user_num'])){
-            return response()->json([
-                'error' => true,
-                'message' => 'Solo debe enviar un parametro'
-            ],422);
-        }
-
-        if($request->user_name != null && $request->user_name != ''){
-            $nombre = $nombre->select('alq_car.user_name')
-                    ->when($request->user_name,function($query,$user_name){
-                        return $query->where('user_name','ilike',$user_name);
-                    });
-            }
-        if($request->user_num != null && $request->user_num != ''){
-            $nombre = $nombre->select('alq_car.user_num')
-                    ->when($request->user_num,function($query,$user_num){
-                        return $query->where('user_num','ilike',$user_num);
-                    });
-        }
-        $nombre = $nombre->get();
-
-        return [
-            "list" => $nombre,
-            "total" => count($nombre)
-        ];
-    }
 
     public function repo(Request $request)
     {
@@ -319,8 +262,8 @@ class alq_carController extends CrudController
         ->join('group','group.id','=','alq_car.gro_id')
         ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
         ->join('holes','holes.id','=','alq_car.id_hole')
-        ->select('group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
-      
+        ->select('group.cod as codegroup','group.description as descri','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
+        $alqu->descri='N/A';
         $index=[
             'FECHA',
             'HORA DE ENTRADA',
@@ -507,6 +450,136 @@ class alq_carController extends CrudController
         return null;
        
 }
+
+
+public function rezero(Request $request)
+{
+   
+    if (empty($request->star)) {
+        return Response()->json(["error" => true, "message" => "la fecha es requerida"],400);
+    }
+    $now = Carbon::now()->timezone("America/Panama");
+    $r=$request->get('star');
+    $f=$request->get('end');
+    $alqu= $game=DB::table('alq_car')->whereBetween(DB::Raw('cast(alq_car.fecha as date)'), array($r, $f))
+    ->join('group','group.id','=','alq_car.gro_id')
+    ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
+    ->join('holes','holes.id','=','alq_car.id_hole')
+    ->select('group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
+    $excel=new Spreadsheet();
+    $hoja=$excel->getActiveSheet();
+    $hoja->setTitle("Alquiler de carritos");
+    $hoja->setCellValue('A1','FECHA');
+    $hoja->setCellValue('B1','HORA DE ENTRADA');
+    $hoja->setCellValue('C1','N° DE SOCIO');
+    $hoja->setCellValue('D1','TIPO DE SOCIO');
+    $hoja->setCellValue('E1','CATEGORIA DE SOCIO');
+    $hoja->setCellValue('F1','N° DE SOCIO QUE INVITA');
+    $hoja->setCellValue('G1','NOMBRE DEL SOCIO QUE INVITA');
+    $hoja->setCellValue('H1','NOMBRE DE SOCIO / INVITADO /DEPENDIENTE/RECIPROCIDAD');
+    $hoja->setCellValue('I1','SOCIO / INVITADO / REC.');
+    $hoja->setCellValue('J1','NUMERO DE CARNET DE INVITADOS');
+    $hoja->setCellValue('K1','RECUENTO DE RONDAS');
+    $hoja->setCellValue('L1','HORA DE INICIO JUEGO');
+    $hoja->setCellValue('M1','HOYO SALIDA');
+    $hoja->setCellValue('N1','# CARRITO');
+    $hoja->setCellValue('O1','GRUPO RONDA');
+    $hoja->setCellValue('P1','CANTIDAD DE HOYOS JUGADOS');
+    $hoja->setCellValue('Q1','Observaciones');
+
+
+    $excel->getActiveSheet()->getStyle('A1:Q1')->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()->setRGB('4F42F9');
+
+    $excel->getActiveSheet()->getStyle('A1:Q1')->getFont()
+        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );
+    
+    $excel->getActiveSheet()->getRowDimension('1')->setRowHeight(80, 'pt');
+
+    $excel->getActiveSheet()->getColumnDimension('A')->setWidth(160, 'px');
+    //$excel->getActiveSheet()->getColumnDimension('A')->setWidth(20, 'px');
+    $excel->getActiveSheet()->getColumnDimension('B')->setWidth(170, 'px');
+    $excel->getActiveSheet()->getColumnDimension('C')->setWidth(170, 'px');
+    $excel->getActiveSheet()->getColumnDimension('D')->setWidth(200, 'px');
+    $excel->getActiveSheet()->getColumnDimension('E')->setWidth(230, 'px');
+    $excel->getActiveSheet()->getColumnDimension('F')->setWidth(270, 'px');
+    $excel->getActiveSheet()->getColumnDimension('G')->setWidth(320, 'px');
+    $excel->getActiveSheet()->getColumnDimension('H')->setWidth(475, 'px');
+    $excel->getActiveSheet()->getColumnDimension('I')->setWidth(330, 'px');
+    $excel->getActiveSheet()->getColumnDimension('J')->setWidth(330, 'px');
+    $excel->getActiveSheet()->getColumnDimension('K')->setWidth(270, 'px');
+    $excel->getActiveSheet()->getColumnDimension('L')->setWidth(320, 'px');
+    $excel->getActiveSheet()->getColumnDimension('M')->setWidth(230, 'px');
+    $excel->getActiveSheet()->getColumnDimension('N')->setWidth(200, 'px');
+    $excel->getActiveSheet()->getColumnDimension('O')->setWidth(230, 'px');
+    $excel->getActiveSheet()->getColumnDimension('P')->setWidth(350, 'px');
+    $excel->getActiveSheet()->getColumnDimension('Q')->setWidth(320, 'px');
+
+    $excel->getActiveSheet()->getStyle('A1:Q1')
+    ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $excel->getActiveSheet()->getStyle('A1:Q1')
+    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    
+    
+    $fila=2;
+
+    foreach($alqu as $rows)
+    {
+        $hoja->setCellValue('A'.$fila,$rows->fecha);
+        $hoja->setCellValue('B'.$fila,'N/A');
+        $hoja->setCellValue('C'.$fila,$rows->user_num);
+        $hoja->setCellValue('D'.$fila,'');
+        $hoja->setCellValue('E'.$fila,'');
+        $hoja->setCellValue('F'.$fila,'N/A');
+        $hoja->setCellValue('G'.$fila,'N/A');
+        $hoja->setCellValue('H'.$fila,$rows->user_name);
+        $hoja->setCellValue('I'.$fila,$rows->tipo_p);
+        $hoja->setCellValue('J'.$fila,'N/A');
+        $hoja->setCellValue('K'.$fila,'1');
+        $hoja->setCellValue('L'.$fila,$rows->codegroup);
+        $hoja->setCellValue('M'.$fila,$rows->namehole);
+        $hoja->setCellValue('N'.$fila,$rows->numcar);
+        $hoja->setCellValue('O'.$fila,$rows->can_p);
+        $hoja->setCellValue('P'.$fila,$rows->hol_id);
+        $hoja->setCellValue('Q'.$fila,$rows->obs);
+        
+
+
+        $fila++;
+    }
+
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="reporte.xlsx"');
+        $writer=IOFactory::createWriter($excel,'Xlsx');
+        $writer->save("php://output");
+        exit;
+    
+}
+
+
+public function topday($year,$month,$i)
+{
+    $outputs = DB::table('alq_car')->select(['user_id','user_name',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id','user_name'])
+    ->whereYear('created_at', $year) ->whereMonth('created_at',$month)
+    ->whereDay('created_at', $i)->limit('10')->get();
+
+    return $outputs;
+}
+
+
+
+    
+
+public function stadis($year, $i)
+    {
+        $ust=DB::table('alq_car')->whereYear('created_at', $year)
+        ->whereMonth('created_at',$i)->get()->count();
+        return $ust;
+    }
+
+    
 
 
    
