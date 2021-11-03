@@ -559,10 +559,10 @@ public function rezero(Request $request)
 }
 
 
-public function topday($year,$month,$i)
+public function topday($year,$month,$i,$tipo)
 {
     $outputs = DB::table('alq_car')->select(['user_id','user_name',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id','user_name'])
-    ->whereYear('created_at', $year) ->whereMonth('created_at',$month)
+    ->where('tipo_p',$tipo)->whereYear('created_at', $year) ->whereMonth('created_at',$month)
     ->whereDay('created_at', $i)->limit('10')->get();
 
     return $outputs;
