@@ -572,10 +572,12 @@ public function topday($year,$month,$i,$tipo)
 
     
 
-public function stadis($year, $i)
+public function topmes($year, $i,$tipo)
     {
-        $ust=DB::table('alq_car')->whereYear('created_at', $year)
-        ->whereMonth('created_at',$i)->get()->count();
+        $ust=DB::table('alq_car')->select(['user_id','user_name',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id','user_name'])
+        ->where('tipo_p',$tipo)->whereYear('created_at', $year)->whereMonth('created_at',$i)
+        ->limit('10')->get();
+
         return $ust;
     }
 
