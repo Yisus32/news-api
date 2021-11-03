@@ -461,38 +461,40 @@ public function rezero(Request $request)
     $now = Carbon::now()->timezone("America/Panama");
     $r=$request->get('star');
     $f=$request->get('end');
-    $alqu= $game=DB::table('alq_car')->whereBetween(DB::Raw('cast(alq_car.fecha as date)'), array($r, $f))
+
+    $alqu=DB::table('alq_car')->whereBetween(DB::Raw('cast(alq_car.fecha as date)'), array($r, $f))
     ->join('group','group.id','=','alq_car.gro_id')
     ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
     ->join('holes','holes.id','=','alq_car.id_hole')
-    ->select('group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
+    ->leftJoin('guests','guests.id','=','alq_car.user_id')
+    ->select('guests.host_number as invnumsoc','guests.host_name as invnamesoc','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
+  
     $excel=new Spreadsheet();
     $hoja=$excel->getActiveSheet();
     $hoja->setTitle("Alquiler de carritos");
     $hoja->setCellValue('A1','FECHA');
-    $hoja->setCellValue('B1','HORA DE ENTRADA');
-    $hoja->setCellValue('C1','N° DE SOCIO');
-    $hoja->setCellValue('D1','TIPO DE SOCIO');
-    $hoja->setCellValue('E1','CATEGORIA DE SOCIO');
-    $hoja->setCellValue('F1','N° DE SOCIO QUE INVITA');
-    $hoja->setCellValue('G1','NOMBRE DEL SOCIO QUE INVITA');
-    $hoja->setCellValue('H1','NOMBRE DE SOCIO / INVITADO /DEPENDIENTE/RECIPROCIDAD');
-    $hoja->setCellValue('I1','SOCIO / INVITADO / REC.');
-    $hoja->setCellValue('J1','NUMERO DE CARNET DE INVITADOS');
-    $hoja->setCellValue('K1','RECUENTO DE RONDAS');
-    $hoja->setCellValue('L1','HORA DE INICIO JUEGO');
-    $hoja->setCellValue('M1','HOYO SALIDA');
-    $hoja->setCellValue('N1','# CARRITO');
-    $hoja->setCellValue('O1','GRUPO RONDA');
-    $hoja->setCellValue('P1','CANTIDAD DE HOYOS JUGADOS');
-    $hoja->setCellValue('Q1','Observaciones');
+    $hoja->setCellValue('B1','N° DE SOCIO');
+    $hoja->setCellValue('C1','TIPO DE SOCIO');
+    $hoja->setCellValue('D1','CATEGORIA DE SOCIO');
+    $hoja->setCellValue('E1','N° DE SOCIO QUE INVITA');
+    $hoja->setCellValue('F1','NOMBRE DEL SOCIO QUE INVITA');
+    $hoja->setCellValue('G1','NOMBRE DE SOCIO / INVITADO /DEPENDIENTE/RECIPROCIDAD');
+    $hoja->setCellValue('H1','SOCIO / INVITADO / REC.');
+    $hoja->setCellValue('I1','NUMERO DE CARNET DE INVITADOS');
+    $hoja->setCellValue('J1','RECUENTO DE RONDAS');
+    $hoja->setCellValue('K1','HORA DE INICIO JUEGO');
+    $hoja->setCellValue('L1','HOYO SALIDA');
+    $hoja->setCellValue('M1','# CARRITO');
+    $hoja->setCellValue('N1','GRUPO RONDA');
+    $hoja->setCellValue('O1','CANTIDAD DE HOYOS JUGADOS');
+    $hoja->setCellValue('P1','Observaciones');
 
 
-    $excel->getActiveSheet()->getStyle('A1:Q1')->getFill()
+    $excel->getActiveSheet()->getStyle('A1:P1')->getFill()
     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-    ->getStartColor()->setRGB('4F42F9');
+    ->getStartColor()->setRGB('0066CC');
 
-    $excel->getActiveSheet()->getStyle('A1:Q1')->getFont()
+    $excel->getActiveSheet()->getStyle('A1:P1')->getFont()
         ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );
     
     $excel->getActiveSheet()->getRowDimension('1')->setRowHeight(80, 'pt');
@@ -504,21 +506,21 @@ public function rezero(Request $request)
     $excel->getActiveSheet()->getColumnDimension('D')->setWidth(200, 'px');
     $excel->getActiveSheet()->getColumnDimension('E')->setWidth(230, 'px');
     $excel->getActiveSheet()->getColumnDimension('F')->setWidth(270, 'px');
-    $excel->getActiveSheet()->getColumnDimension('G')->setWidth(320, 'px');
-    $excel->getActiveSheet()->getColumnDimension('H')->setWidth(475, 'px');
+    $excel->getActiveSheet()->getColumnDimension('G')->setWidth(475, 'px');
+    $excel->getActiveSheet()->getColumnDimension('H')->setWidth(320, 'px');
     $excel->getActiveSheet()->getColumnDimension('I')->setWidth(330, 'px');
     $excel->getActiveSheet()->getColumnDimension('J')->setWidth(330, 'px');
     $excel->getActiveSheet()->getColumnDimension('K')->setWidth(270, 'px');
     $excel->getActiveSheet()->getColumnDimension('L')->setWidth(320, 'px');
     $excel->getActiveSheet()->getColumnDimension('M')->setWidth(230, 'px');
     $excel->getActiveSheet()->getColumnDimension('N')->setWidth(200, 'px');
-    $excel->getActiveSheet()->getColumnDimension('O')->setWidth(230, 'px');
+    $excel->getActiveSheet()->getColumnDimension('O')->setWidth(270, 'px');
     $excel->getActiveSheet()->getColumnDimension('P')->setWidth(350, 'px');
-    $excel->getActiveSheet()->getColumnDimension('Q')->setWidth(320, 'px');
+    
 
-    $excel->getActiveSheet()->getStyle('A1:Q1')
+    $excel->getActiveSheet()->getStyle('A1:P1')
     ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-    $excel->getActiveSheet()->getStyle('A1:Q1')
+    $excel->getActiveSheet()->getStyle('A1:P1')
     ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
     
     
@@ -527,22 +529,37 @@ public function rezero(Request $request)
     foreach($alqu as $rows)
     {
         $hoja->setCellValue('A'.$fila,$rows->fecha);
-        $hoja->setCellValue('B'.$fila,'N/A');
-        $hoja->setCellValue('C'.$fila,$rows->user_num);
+        $hoja->setCellValue('B'.$fila,$rows->user_num);
+        $hoja->setCellValue('C'.$fila,'');
         $hoja->setCellValue('D'.$fila,'');
-        $hoja->setCellValue('E'.$fila,'');
-        $hoja->setCellValue('F'.$fila,'N/A');
-        $hoja->setCellValue('G'.$fila,'N/A');
-        $hoja->setCellValue('H'.$fila,$rows->user_name);
-        $hoja->setCellValue('I'.$fila,$rows->tipo_p);
-        $hoja->setCellValue('J'.$fila,'N/A');
-        $hoja->setCellValue('K'.$fila,'1');
-        $hoja->setCellValue('L'.$fila,$rows->codegroup);
-        $hoja->setCellValue('M'.$fila,$rows->namehole);
-        $hoja->setCellValue('N'.$fila,$rows->numcar);
-        $hoja->setCellValue('O'.$fila,$rows->can_p);
-        $hoja->setCellValue('P'.$fila,$rows->hol_id);
-        $hoja->setCellValue('Q'.$fila,$rows->obs);
+        if($rows->invnumsoc!==null)
+        {
+            $hoja->setCellValue('E'.$fila,$rows->invnumsoc);
+        }
+        else
+        {
+            $hoja->setCellValue('E'.$fila,'N/A');
+        }
+
+        if($rows->invnamesoc!==null)
+        {
+            $hoja->setCellValue('f'.$fila,$rows->invnamesoc);
+        }
+        else
+        {
+            $hoja->setCellValue('F'.$fila,'N/A');
+        }
+        
+        $hoja->setCellValue('G'.$fila,$rows->user_name);
+        $hoja->setCellValue('H'.$fila,$rows->tipo_p);
+        $hoja->setCellValue('I'.$fila,'N/A');
+        $hoja->setCellValue('J'.$fila,'1');
+        $hoja->setCellValue('K'.$fila,$rows->codegroup);
+        $hoja->setCellValue('L'.$fila,$rows->namehole);
+        $hoja->setCellValue('M'.$fila,$rows->numcar);
+        $hoja->setCellValue('N'.$fila,$rows->can_p);
+        $hoja->setCellValue('O'.$fila,$rows->hol_id);
+        $hoja->setCellValue('P'.$fila,$rows->obs);
         
 
 
