@@ -558,5 +558,29 @@ public function rezero(Request $request)
     
 }
 
+
+public function topday($year,$month,$i)
+{
+    $outputs = DB::table('alq_car')->select(['user_id','user_name',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id','user_name'])
+    ->whereYear('created_at', $year) ->whereMonth('created_at',$month)
+    ->whereDay('created_at', $i)->limit('10')->get();
+
+    return $outputs;
+}
+
+
+
+    
+
+public function stadis($year, $i)
+    {
+        $ust=DB::table('alq_car')->whereYear('created_at', $year)
+        ->whereMonth('created_at',$i)->get()->count();
+        return $ust;
+    }
+
+    
+
+
    
 }
