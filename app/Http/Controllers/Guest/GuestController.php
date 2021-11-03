@@ -13,17 +13,6 @@ class GuestController extends CrudController
     public function __construct(GuestService $service)
     {
         parent::__construct($service);
-
-        $this->validateStore = [
-            "full_name" => "required",
-            "identifier" => "required",
-            "email" => "required|email",
-        ];
-
-        $this->messages = [
-            "required" => "El campo ' :attribute ' es requerido",
-            "email" => "El campo ' :attribute ' debe ser un email válido"
-        ];
     }
 
     public function _store(Request $request)

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Core\CrudModel;
+use Carbon\Carbon;
 
 class Reservation extends CrudModel
 {
@@ -47,5 +48,45 @@ class Reservation extends CrudModel
         }
 
         return '{}';
+    }
+
+    public function setCancelDate($date,$time,$cancel_time){
+    
+        $teetime_cancel_time = Carbon::createFromFormat('Y-m-d H:i:s', $date.' '.$time);
+        $teetime_cancel_time = Carbon::parse($teetime_cancel_time->modify('-'.$cancel_time.' hours'))->format('Y-m-d H:i:s',env('APP_TIMEZONE'));
+        
+        return $teetime_cancel_time;
+    }
+
+    public function checkPartners($owner,$partners){
+        $partners = json_decode($partners);
+        $check = array_search($owner, $partners);
+
+        return $check;
+    }
+
+    public function createInvitation($stored){
+
+        if ($stored['guests'] != null) {
+            $guests = json_decode($stored['guests']);
+            foreach ($guests as $guest) {
+                $invitation = new Invitation;
+                $invitation->reservation_id = $stored->id;
+                $invitation->guest = $guest;
+                $invitation->save();
+            }   
+        }
+
+        if ($stored['partners'] != null) {
+            $partners = json_decode($stored['partners']);
+            foreach ($partners as $partner) {
+                $invitation = new Invitation;
+                $invitation->reservation_id = $stored->id;
+                $invitation->partner = $partner;
+                $invitation->save();
+            } 
+        }
+        
+        return $invitation; 
     }
 }

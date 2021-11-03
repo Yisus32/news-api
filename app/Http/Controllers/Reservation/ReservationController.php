@@ -11,6 +11,9 @@ use App\Services\Reservation\ReservationService;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Validator;
+use App\Models\TempData;
+
+//commit de reposicion
 
 /** @property ReservationService $service */
 class ReservationController extends CrudController
@@ -40,110 +43,40 @@ class ReservationController extends CrudController
         ];
     }
 
-    public function _store(Request $request)
-    {
-        if ($request->hasHeader("role") and $request->header('role') == "admin") {
-            return $this->service->store_admin($request);
-        }
-
-        return parent::_store($request);
+    public function _store(Request $data){
+        if ($data->header('time') == 'expired') {
+            $temp_data = TempData::where('teetime_id',$data['teetime_id'])->first();
+            $temp_data->delete();
+            return response()->json(['status'=>408,'message'=>'El tiempo de reserva ha expirado'],408);
+        }else{
+            $data['status'] = 'reservado';
+            return $this->service->_store($data);
+        }   
     }
 
-    public function _delete($id, Request $request)
-    {
-        if ($request->header('role') == "admin") {
-            return $this->service->delete_admin($id);
+    public function _update($id, $data){
+        if ($data->header('time') == 'expired') {
+            return response()->json(['status'=>408,'message'=>'El tiempo de reserva ha expirado'],408);
+        }else{
+            $data['status'] = 'reservado';
+            \DB::raw("DELETE FROM temp_data WHERE teetime_id = ".$data['teetime_id']);
+            return $this->service->_update($id,$data);
         }
-    
-        return parent::_delete($id, $request);
     }
 
-    public function take($id,Request $request){
+    public function cancelReservation($id){
+        return $this->service->cancelReservation($id);
+   }
 
-        return $this->service->take($id, $request);
-    }
+   public function resendInvitation($id,$reservation_id,Request $request){
+        return $this->service->resendInvitation($id,$reservation_id,$request);
+   }
 
-    public function reservation_register($id, Request $request){
+   public function standByTeetime($id){
+     return $this->service->standByTeetime($id);
+   }
 
-        $validator = Validator::make($request->all(), array_merge($this->validateRegister, $this->validateDefault),$this->messages);
-        if ($validator->fails()) {
-            return response()->json(["error"=>true,"message"=>$this->parseMessageBag($validator->getMessageBag())],422);
-        }
-
-        return $this->service->reservation_register($id, $request);
-    }
-
-    public function report(Request $request){
-
-        if (empty($request->date) or empty($request->user_id)) {
-            return Response()->json(["error" => true, "message" => "la fecha y el id del usuario son requeridos"],400);
-        }
-        
-        $reservations= Reservation::where('status', '=', 'registrado')->where('date', '=', "$request->date")->orderBy('hole_id')
-                        ->orderby('id')->get();
-        
-        $headers = ["Authorization" => $request->input('token')];
- 
-        $user = $this->getUser($request);
-        foreach ($reservations as $reservation) {
-
-            if (!empty($reservation->guests) and strlen($reservation->guests) > 2) {
-                $reservation->guests = $this->guest_names($reservation->guests);
-            }
-            
-        }
-        $index=[
-            'hora'=>'start_hour',
-            'dueño'=>'owner_name',
-            'socios'=>'partners_name',
-            'invitados'=>'guests'
-        ];
-        $info []=$reservations;
-        $report = new ReportService();
-        $report->indexPerSheet([$index]);
-        $report->dataPerSheet($info);
-        $report->index($index);
-        $report->data($reservations);
-        //$report->external();
-        $report->username($user->full_name);
-        $report->getAccountInfo(1);
-        
-        return $report->report("automatic","Reservaciones",null,null,false,1);
-    }
-
-    private function guest_names($guests){
-        $guests = str_replace('{', '', $guests);
-        $guests = str_replace('}', '', $guests);
-        $guests = explode(',', $guests);
-        $guest_names= array();
-        $i = 0;
-        foreach ($guests as $guest) {
-           $model = Guest::where('id', '=', $guest)->first();
-           if ($model) {
-                $guest_names[$i] = $model->full_name;
-           }
-           
-           $i++;
-        }
-        $guest_names = (new Reservation())->formatTypeArray($guest_names);
-
-        return $guest_names;
-
-    }
-
-    public function getUser($request){
-        $client = new Client();
-
-        $user = $client->get(env('USERS_API') . 'get/user/' . $request->user_id);
-        if ($user->getStatusCode() == 200) {
-            $user = json_decode($user->getBody())->value;
-            
-            
-        }
-        return $user->user;
-    }
-
-    public function resendMail($id, Request $request){
-        return $this->service->resendMail($id, $request);
+   public function restartTeetime($id){
+        return $this->service->restartTeetime($id);
     }
 }

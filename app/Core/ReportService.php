@@ -73,6 +73,7 @@ class ReportService
                 case "xls" AND $multisheet:
                     self::$report = self::excelWorksheet($numSheet, $fi, $ff);
                     break;
+               
 
             }
         } else {
@@ -180,17 +181,16 @@ class ReportService
      */
     public static function excel(string $fi = null, string $ff = null)
     {
+       
         try {
-
+            $now = Carbon::now()->timezone("America/Panama");
             $toExcel = $arrayData = [];
             $spreadsheet = new Spreadsheet();
             $pathLogo = self::$log_url;
             $sheet = self::getDefaultConfiguration($spreadsheet, $pathLogo);
 
             $sheet->getActiveSheet()->setCellValue("A6", "Fecha de Emision: ");
-            $sheet->getActiveSheet()->setCellValue("B6", self::$date);
-            $sheet->getActiveSheet()->setCellValue("C6", 'Usuario: ');
-            $sheet->getActiveSheet()->setCellValue("D6", self::$username);
+            $sheet->getActiveSheet()->setCellValue("B6", $now);
 
             //Parsear la información a pasar
             foreach (self::$index as $title => $value) {
@@ -292,6 +292,155 @@ class ReportService
         }
     }
 
+    public static function rodasexcel(string $fi = null, string $ff = null)
+    {
+        dd('aquito');
+        try {
+            $now = Carbon::now()->timezone("America/Panama");
+            $toExcel = $arrayData = [];
+            $spreadsheet = new Spreadsheet();
+            $pathLogo = self::$log_url;
+            $sheet = self::getDefaultConfiguration($spreadsheet, $pathLogo);
+
+            $sheet->getActiveSheet()->getStyle('A1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('B1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('C1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('D1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('E1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('F1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('G1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('H1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('I1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('D1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('J1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('K1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('L1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('M1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('N1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('O1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('P1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('Q1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+            $sheet->getActiveSheet()->getStyle('R1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF0000FF');
+    
+    
+    
+            //AQUI CAMBIO EL COLOR DE LA LETRA DE LOS TITULOS
+            $sheet->getActiveSheet()->getStyle('A1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );
+            $sheet->getActiveSheet()->getStyle('B1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('C1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('D1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('E1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('F1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('G1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('H1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('I1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('D1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('J1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('K1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('L1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('M1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('N1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('O1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('P1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('Q1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            $sheet->getActiveSheet()->getStyle('R1')->getFont()
+            ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
+            
+    
+            //aqui cambio el alto y ancho de las celdas
+            $sheet->getActiveSheet()->getRowDimension('1')->setRowHeight(80, 'pt');
+            $sheet->getActiveSheet()->getColumnDimension('A')->setWidth(20, 'pt');
+
+            //Parsear la información a pasar
+            foreach (self::$index as $title => $value) {
+                $arrayData[0][] = $title;
+            }
+            foreach (self::$data as $key) {
+                $i = 1;
+                $toArray = (is_object($key) ? $key : (is_array($key) ? (object)$key : null));
+                foreach (self::$index as $title => $value) {
+                    $toExcel[$i] = $toArray->$value ?? null;
+                    $i++;
+                }
+                $arrayData[] = $toExcel;
+            }
+            $sheet->getActiveSheet()->fromArray($arrayData, "Sin Registro", 'A7');
+
+            $writer = IOFactory::createWriter($spreadsheet, "Xlsx");
+
+            //header('Access-Control-Allow-Origin:*');
+
+            if (self::$external) {
+                $writer->save('./reports/' . self::$name . '.xls');
+                return response()->json(["message" => env('CUSTOM_URL') . 'reports/' . self::$name . '.xls'], 200);
+            }
+
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment; filename="reporte.xlsx"');
+            $writer->save("php://output");
+            return null;
+
+        } catch (Exception $exception) {
+            Log::critical($exception->getMessage());
+            return response()->json(["message" => "Error al crear el reporte"], 500);
+        }
+    }
 
     /**
      * @param $html

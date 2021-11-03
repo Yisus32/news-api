@@ -4,47 +4,38 @@ stages:
   - deploy
   - rollback
 
-dev_backup_job:
-  stage: backup
-  script:
-    - docker image tag devrubick2teetime-api:latest devrubick2teetime-api:prev || true
-  tags:
-    - devapp
-  only :
-    - develop
-
 dev_build_job:
   stage: build
   script:
     - cp .env.example .env
     - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
     - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
-    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=devteetime;g" .env
-    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=devteetime;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=devrubick2teetime;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=devrubick2teetime;g" .env
     - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$DEV_DB_PASS;g" .env
-    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=192.168.0.10;g" .env
-    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5433;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.26;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=1;g" .env
-    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=devteetime.zippyttech.com;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=devrubick2teetime.zippyttech.com;g" .env
     - docker build -t devrubick2teetime-api .
   when: on_success
   tags:
     - devapp
   only :
-    - develop
+    - dev
 
 dev_deploy_job:
   stage: deploy
   script:
     - docker stop devrubick2teetime-api || true
     - docker rm devrubick2teetime-api || true
-    - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 10091:80 devrubick2teetime-api
+    - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 9023:80 -v devrubick2teetime-api-images:/var/www/html/public/images -v devrubick2teetime-api-images:/var/www/html/public/logos devrubick2teetime-api
     - docker exec devrubick2teetime-api php artisan migrate
   when: on_success
   tags:
     - devapp
   only:
-    - develop
+    - dev
 
 dev_rollback_job:
   stage: rollback
@@ -52,19 +43,19 @@ dev_rollback_job:
     - docker stop devrubick2teetime-api || true
     - docker rm devrubick2teetime-api || true
     - docker image tag devrubick2teetime-api:prev devrubick2teetime-api:latest || true
-    - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 10091:80 devrubick2teetime-api
+    - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 9023:80 -v devrubick2teetime-api-images:/var/www/html/public/images -v devrubick2teetime-api-images:/var/www/html/public/logos devrubick2teetime-api
   when: manual
   tags:
     - devapp
   only:
-    - develop
+    - dev
 
 qa_backup_job:
   stage: backup
   script:
     - docker image tag qarubick2teetime-api:latest qarubick2teetime-api:prev || true
   tags:
-    - qaapp
+    - qarubick2
   only :
     - qa
 
@@ -84,7 +75,7 @@ qa_build_job:
     - docker build -t qarubick2teetime-api .
   when: on_success
   tags:
-    - qaapp
+    - qarubick2
   only :
     - qa
 
@@ -98,7 +89,7 @@ qa_deploy_job:
     - docker exec qarubick2teetime-api php artisan schedule:run
   when: on_success
   tags:
-    - qaapp
+    - qarubick2
   only:
     - qa
 
@@ -112,7 +103,7 @@ qa_rollback_job:
     - docker exec qarubick2teetime-api php artisan schedule:run
   when: manual
   tags:
-    - qaapp
+    - qarubick2
   only:
     - qa
 
@@ -207,7 +198,6 @@ berygo_deploy_job:
   only:
     - berygo
 
-
 cdg_build_job:
   stage:  build
   script:
@@ -216,7 +206,7 @@ cdg_build_job:
     - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
     - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=teetimerubick2cdg;g" .env
     - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=teetimerubick2cdg;g" .env
-    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$ACCOUNT_BERYGO_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$TEETIME_CDG_DB_PASS;g" .env
     - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
@@ -233,7 +223,7 @@ cdg_deploy_job:
   script:
     - docker stop teetime-api || true
     - docker rm teetime-api || true
-    - docker run -d --restart always --name teetime-api --memory="512m" -v teetime-api-images:/var/www/html/public/images -v teetime-api-images:/var/www/html/public/logos --network app -p 9016:80 teetime-api
+    - docker run -d --restart always --name teetime-api --memory="512m" -v teetime-api-images:/var/www/html/public/images -v teetime-api-images:/var/www/html/public/logos --network app -p 9023:80 teetime-api
     - docker exec teetime-api php artisan migrate
     - docker exec teetime-api php artisan schedule:run
   when: on_success
