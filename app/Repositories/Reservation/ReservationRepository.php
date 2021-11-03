@@ -82,7 +82,6 @@ class ReservationRepository extends CrudRepository
             
             $stored = parent::_store($data);
             
-            $this->sendInvitation($data['guests'],$data['partners_name'],$data['guests_email'],$stored);
             $this->model->createInvitation($stored);
             
             return $stored;
