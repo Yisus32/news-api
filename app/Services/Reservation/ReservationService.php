@@ -51,11 +51,11 @@ class ReservationService extends CrudService
       return $this->repository->resendInvitation($id,$reservation_id,$request);
    }
 
-   public function standByTeetime($id){
-     return $this->repository->standByTeetime($id);
+   public function standByTeetime($id,$hole_id){
+     return $this->repository->standByTeetime($id,$hole_id);
    }
 
-   public function restartTeetime($id){
-        return $this->repository->restartTeetime($id);
+   public function restartTeetime($id,$hole_id){
+        return $this->repository->restartTeetime($id,$hole_id);
     }
 }

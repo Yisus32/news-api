@@ -191,8 +191,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('accept/invitation/{id}', 'Invitation\InvitationController@accept_invitation');
 
         /** routes para TempData **/ 
-        $router->post('standByTeetime/{id}', 'Reservation\ReservationController@standByTeetime');
-         $router->delete('restartTeetime/{id}', 'Reservation\ReservationController@restartTeetime');
+        $router->post('standByTeetime/{id}/{hole_id}', 'Reservation\ReservationController@standByTeetime');
+         $router->delete('restartTeetime/{id}/{hole_id}', 'Reservation\ReservationController@restartTeetime');
 
     });
 
