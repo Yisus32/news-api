@@ -26,12 +26,11 @@ class GuestController extends CrudController
     }
 
     public function email(Request $request){
-
         
         $subject = "Invitación Teetime";
         
         $guest_exist = Guest::where('email','=', "$request->email")->first();
-        if ($guest_exist) {
+        if($guest_exist) {
             return Response()->json(["error" => true,"message" => "El email ingresado ya se encuentra registrado"], 400);
         }
        // $object_guest = Guest::find($guest);
@@ -53,7 +52,6 @@ class GuestController extends CrudController
             $mailer->sendEmail($email,$subject,$message,6,"notificaciones@zippyttech.com");
         
         }
-
         return Response()->json(["message" => "Invitacion enviada correctamente"], 200);
 
     }

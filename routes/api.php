@@ -93,6 +93,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('reservations/cancel/{id}', 'Reservation\ReservationController@cancelReservation');
         $router->post('reservations/register/{id}', 'Reservation\ReservationController@reservation_register');
         $router->get('reservations/resend/{id}/{reservation_id}','Reservation\ReservationController@resendInvitation');
+        $router->get('reservations/multi/resend/{id}/{reservation_id}','Reservation\ReservationController@multiResendInvitation');
 
         /** routes para Guest **/ 
     
@@ -200,6 +201,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
         /** routes para TempData **/ 
         $router->post('standByTeetime/{id}', 'Reservation\ReservationController@standByTeetime');
+         $router->delete('restartTeetime/{id}', 'Reservation\ReservationController@restartTeetime');
 
     });
 
