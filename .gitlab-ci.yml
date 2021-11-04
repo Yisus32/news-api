@@ -4,14 +4,6 @@ stages:
   - deploy
   - rollback
 
-dev_backup_job:
-  stage: backup
-  script:
-    - docker image tag devrubick2teetime-api:latest devrubick2teetime-api:prev || true
-  tags:
-    - devapp
-  only :
-    - develop
 
 dev_build_job:
   stage: build
@@ -19,32 +11,32 @@ dev_build_job:
     - cp .env.example .env
     - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
     - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
-    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=devteetime;g" .env
-    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=devteetime;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=devrubick2teetime;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=devrubick2teetime;g" .env
     - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$DEV_DB_PASS;g" .env
-    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=192.168.0.10;g" .env
-    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5433;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.26;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=1;g" .env
-    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=devteetime.zippyttech.com;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=devrubick2teetime.zippyttech.com;g" .env
     - docker build -t devrubick2teetime-api .
   when: on_success
   tags:
     - devapp
   only :
-    - develop
+    - dev
 
 dev_deploy_job:
   stage: deploy
   script:
     - docker stop devrubick2teetime-api || true
     - docker rm devrubick2teetime-api || true
-    - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 10091:80 devrubick2teetime-api
+    - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 9023:80 -v devrubick2teetime-api-images:/var/www/html/public/images -v devrubick2teetime-api-images:/var/www/html/public/logos devrubick2teetime-api
     - docker exec devrubick2teetime-api php artisan migrate
   when: on_success
   tags:
     - devapp
   only:
-    - develop
+    - dev
 
 dev_rollback_job:
   stage: rollback
@@ -52,12 +44,12 @@ dev_rollback_job:
     - docker stop devrubick2teetime-api || true
     - docker rm devrubick2teetime-api || true
     - docker image tag devrubick2teetime-api:prev devrubick2teetime-api:latest || true
-    - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 10091:80 devrubick2teetime-api
+    - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 9023:80 -v devrubick2teetime-api-images:/var/www/html/public/images -v devrubick2teetime-api-images:/var/www/html/public/logos devrubick2teetime-api
   when: manual
   tags:
     - devapp
   only:
-    - develop
+    - dev
 
 qa_backup_job:
   stage: backup

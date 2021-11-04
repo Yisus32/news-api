@@ -44,7 +44,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->group(['prefix' => 'report'], function () use ($router) {
             $router->get('/reservations', 'Reservation\ReservationController@report');
             $router->get('/game_log', 'game_log\game_logController@report');
-            $router->get('/alq_car', 'alq_car\alq_carController@report');
+            $router->get('/alq_car', 'alq_car\alq_carController@rezero');
             $router->post('/automatic', 'ReportController@automatic');
         });
     });
@@ -93,6 +93,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('reservations/cancel/{id}', 'Reservation\ReservationController@cancelReservation');
         $router->post('reservations/register/{id}', 'Reservation\ReservationController@reservation_register');
         $router->get('reservations/resend/{id}/{reservation_id}','Reservation\ReservationController@resendInvitation');
+        $router->get('reservations/multi/resend/{id}/{reservation_id}','Reservation\ReservationController@multiResendInvitation');
 
         /** routes para Guest **/ 
     
@@ -182,10 +183,18 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('alq_cars', 'alq_car\alq_carController@_index');
         $router->get('alq_cars/{id}', 'alq_car\alq_carController@_show');
         $router->get('alq_cars/fill/date','alq_car\alq_carController@filter_by_date');
+        $router->get('alq_cars/top/{year}/{month}/{i}/{tipo}', 'alq_car\alq_carController@topday');
+        $router->get('alq_cars/mes/top/{year}/{i}/{tipo}', 'alq_car\alq_carController@topmes');
         $router->post('alq_cars', 'alq_car\alq_carController@sav');
         $router->put('alq_cars/{id}', 'alq_car\alq_carController@_update');
         $router->delete('alq_cars/{id}', 'alq_car\alq_carController@_delete');
-
+        /**
+         * Agregado por Marcos López
+         */
+        $router->get('buscar_nombre/alq_cars','alq_car\alq_carController@buscar_nombre');
+        /**
+         * ******************************
+         */
         // invitation
 
         $router->get('accept/invitation/{id}', 'Invitation\InvitationController@accept_invitation');
