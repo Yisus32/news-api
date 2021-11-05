@@ -44,7 +44,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->group(['prefix' => 'report'], function () use ($router) {
             $router->get('/reservations', 'Reservation\ReservationController@report');
             $router->get('/game_log', 'game_log\game_logController@report');
-            $router->get('/alq_car', 'alq_car\alq_carController@repo');
+            $router->get('/alq_car', 'alq_car\alq_carController@rezero');
             $router->post('/automatic', 'ReportController@automatic');
         });
     });
@@ -93,6 +93,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('reservations/cancel/{id}', 'Reservation\ReservationController@cancelReservation');
         $router->post('reservations/register/{id}', 'Reservation\ReservationController@reservation_register');
         $router->get('reservations/resend/{id}/{reservation_id}','Reservation\ReservationController@resendInvitation');
+        $router->get('reservations/multi/resend/{id}/{reservation_id}','Reservation\ReservationController@multiResendInvitation');
 
         /** routes para Guest **/ 
     
@@ -182,6 +183,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('alq_cars', 'alq_car\alq_carController@_index');
         $router->get('alq_cars/{id}', 'alq_car\alq_carController@_show');
         $router->get('alq_cars/fill/date','alq_car\alq_carController@filter_by_date');
+        $router->get('alq_cars/top/{year}/{month}/{i}/{tipo}', 'alq_car\alq_carController@topday');
+        $router->get('alq_cars/mes/top/{year}/{i}/{tipo}', 'alq_car\alq_carController@topmes');
         $router->post('alq_cars', 'alq_car\alq_carController@sav');
         $router->put('alq_cars/{id}', 'alq_car\alq_carController@_update');
         $router->delete('alq_cars/{id}', 'alq_car\alq_carController@_delete');
@@ -195,6 +198,10 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         // invitation
 
         $router->get('accept/invitation/{id}', 'Invitation\InvitationController@accept_invitation');
+
+        /** routes para TempData **/ 
+        $router->post('standByTeetime/{id}/{hole_id}', 'Reservation\ReservationController@standByTeetime');
+         $router->delete('restartTeetime/{id}/{hole_id}', 'Reservation\ReservationController@restartTeetime');
 
     });
 
@@ -212,18 +219,6 @@ $router->post('break_times', 'Break_time\Break_timeController@_store');
 $router->put('break_times/{id}', 'Break_time\Break_timeController@_update');
 $router->delete('break_times/{id}', 'Break_time\Break_timeController@_delete');
  
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
 /** routes para Invitation **/ 
  
 $router->get('invitations', 'Invitation\InvitationController@_index');
@@ -231,7 +226,5 @@ $router->get('invitations/{id}', 'Invitation\InvitationController@_show');
 $router->post('invitations', 'Invitation\InvitationController@_store');
 $router->put('invitations/{id}', 'Invitation\InvitationController@_update');
 $router->delete('invitations/{id}', 'Invitation\InvitationController@_destroy');
- 
 
- 
 

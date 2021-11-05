@@ -34,7 +34,7 @@ class ReservationService extends CrudService
     }
 
    public function _store(Request $data){
-        $check = $this->repository->checkCapacity($data['partners'],$data['guests'],$data['teetime_id']);
+        $check = $this->repository->checkCapacity($data['partners'],$data['guests'],$data['guests_email'],$data['teetime_id']);
 
         if (is_int($check)) {
         	return $this->repository->_store($data);
@@ -50,4 +50,12 @@ class ReservationService extends CrudService
    public function resendInvitation($id,$reservation_id,Request $request){
       return $this->repository->resendInvitation($id,$reservation_id,$request);
    }
+
+   public function standByTeetime($id,$hole_id){
+     return $this->repository->standByTeetime($id,$hole_id);
+   }
+
+   public function restartTeetime($id,$hole_id){
+        return $this->repository->restartTeetime($id,$hole_id);
+    }
 }
