@@ -189,8 +189,8 @@ class alq_carController extends CrudController
         if($request->fecha_ini != null && $request->fecha_ini != '' && $request->fecha_fin != null && $request->fecha_fin != ''){
             $band = true;
 
-            $inicio = Carbon::parse($request->fecha_ini);
-            $fin = Carbon::parse($request->fecha_fin);
+            $inicio = Carbon::parse($request->fecha_ini)->startOfDay();
+            $fin = Carbon::parse($request->fecha_fin)->endOfDay();
         }
         $operations =DB::table('alq_car')
                         ->join('group','group.id','=','alq_car.gro_id')
@@ -235,7 +235,10 @@ class alq_carController extends CrudController
                             })
                             ->when($request->hol_id,function($query,$hol_id){
                                 //Buscar por id del hoyo
-                                return $query->where('alq_car.hol_id',$hol_id);
+                                return $query->where('alq_car.id_hole',$hol_id);
+                            })
+                            ->when($request->codegroup,function($query,$codegroup){
+                                return $query->where('group.codegroup','ilike',"$codegroup");
                             });
             if($band){
                 $operations = $operations->whereBetween('fecha',[$inicio,$fin]);
