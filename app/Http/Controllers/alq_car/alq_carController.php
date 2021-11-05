@@ -186,7 +186,7 @@ class alq_carController extends CrudController
     public function specialFilter(Request $request)
     {
         $band = false;
-        if($request->has(['fecha_ini','fecha_fin'])){
+        if($request->fecha_ini != null && $request->fecha_ini != '' && $request->fecha_fin != null && $request->fecha_fin != ''){
             $band = true;
 
             $inicio = Carbon::parse($request->fecha_ini);

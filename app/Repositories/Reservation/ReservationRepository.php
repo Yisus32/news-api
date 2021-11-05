@@ -325,25 +325,32 @@ class ReservationRepository extends CrudRepository
 
     }
 
-    public function standByTeetime($id){
+    public function standByTeetime($id,$hole_id){
         
         try {
         $temp_data = new TempData();
         $temp_data->teetime_id = $id;
+        $temp_data->hole_id = $hole_id;
         $temp_data->created_at = Carbon::now(env('APP_TIMEZONE'));
         $temp_data->save();
 
         return response()->json(['status'=>200, 'message'=>'se apartado la reserva por 5 minutos']);   
         
         } catch (\Exception $e) {
-            return response()->json(['status'=>400,'message'=>'Este teetime está siendo registrado por otro usuario']);   
+            return response()->json(['status'=>400,'message'=>'Este espacio está siendo registrado por otro usuario']);   
         }
     }
 
-    public function restartTeetime($id){
-        $temp_data = TempData::where('teetime_id',$id)->first();
-        $temp_data->delete();
-        return response()->json(['status' => 200, 'message' => 'El teetime está disponible nuevamente']);
+    public function restartTeetime($id,$hole_id){
+        
+        $temp_data = TempData::where('teetime_id',$id)
+                             ->where('hole_id',(integer)$hole_id)
+                             ->first();
+        if ($temp_data) {
+            $temp_data->delete();
+            return response()->json(['status' => 200, 'message' => 'El espacio está disponible nuevamente']);    
+        }else{
+            return response()->json(['status'=>400,'message'=>'Verifique el id del teetime']);
+        }   
     }
-
 }

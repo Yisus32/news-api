@@ -44,12 +44,13 @@ class ReservationController extends CrudController
     }
 
     public function _store(Request $data){
+
         if ($data->header('time') == 'expired') {
-            $temp_data = TempData::where('teetime_id',$data['teetime_id'])->first();
-            $temp_data->delete();
+            $this->service->restartTeetime($data['teetime_id'],$data['hole_id']);
             return response()->json(['status'=>408,'message'=>'El tiempo de reserva ha expirado'],408);
         }else{
             $data['status'] = 'reservado';
+            $this->service->restartTeetime($data['teetime_id'],$data['hole_id']);
             return $this->service->_store($data);
         }   
     }
@@ -72,11 +73,11 @@ class ReservationController extends CrudController
         return $this->service->resendInvitation($id,$reservation_id,$request);
    }
 
-   public function standByTeetime($id){
-     return $this->service->standByTeetime($id);
+   public function standByTeetime($id,$hole_id){
+     return $this->service->standByTeetime($id,$hole_id);
    }
 
-   public function restartTeetime($id){
-        return $this->service->restartTeetime($id);
+   public function restartTeetime($id,$hole_id){
+        return $this->service->restartTeetime($id,$hole_id);
     }
 }
