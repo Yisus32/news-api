@@ -238,7 +238,7 @@ class alq_carController extends CrudController
                                 return $query->where('alq_car.id_hole',$hol_id);
                             })
                             ->when($request->codegroup,function($query,$codegroup){
-                                return $query->where('group.codegroup','ilike',"$codegroup");
+                                return $query->where('group.cod','ilike',"$codegroup");
                             });
             if($band){
                 $operations = $operations->whereBetween('fecha',[$inicio,$fin]);
