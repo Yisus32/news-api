@@ -9,5 +9,5 @@ class TempData extends CrudModel
 {
     protected $guarded = ['id'];
     protected $table = 'temp_data';
-    protected $fillable = ['teetime_id','hole_id','created_at','updated_at'];
+    protected $fillable = ['teetime_id','hole_id','created_at','updated_at','ref_data'];
 }

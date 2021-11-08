@@ -325,12 +325,16 @@ class ReservationRepository extends CrudRepository
 
     }
 
-    public function standByTeetime($id,$hole_id){
+    public function standByTeetime(Request $request, $id,$hole_id){
         
+        $date = str_replace('-','',$request->date);
+        $time = str_replace(':','',$request->time);
+
         try {
         $temp_data = new TempData();
         $temp_data->teetime_id = $id;
         $temp_data->hole_id = $hole_id;
+        $temp_data->ref_data = $date.''.$time; 
         $temp_data->created_at = Carbon::now(env('APP_TIMEZONE'));
         $temp_data->save();
 
@@ -341,10 +345,14 @@ class ReservationRepository extends CrudRepository
         }
     }
 
-    public function restartTeetime($id,$hole_id){
+    public function restartTeetime(Request $request,$id,$hole_id){
         
+        $date = str_replace('-','',$request->date);
+        $time = str_replace(':','',$request->time);
+
         $temp_data = TempData::where('teetime_id',$id)
                              ->where('hole_id',(integer)$hole_id)
+                             ->where('ref_data',$date.''.$time)
                              ->first();
         if ($temp_data) {
             $temp_data->delete();
