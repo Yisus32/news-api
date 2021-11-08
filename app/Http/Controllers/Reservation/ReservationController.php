@@ -73,11 +73,11 @@ class ReservationController extends CrudController
         return $this->service->resendInvitation($id,$reservation_id,$request);
    }
 
-   public function standByTeetime($id,$hole_id){
-     return $this->service->standByTeetime($id,$hole_id);
+   public function standByTeetime(Request $request, $id,$hole_id){
+     return $this->service->standByTeetime($request, $id,$hole_id);
    }
 
-   public function restartTeetime($id,$hole_id){
-        return $this->service->restartTeetime($id,$hole_id);
+   public function restartTeetime(Request $request,$id,$hole_id){
+        return $this->service->restartTeetime($request,$id,$hole_id);
     }
 }
