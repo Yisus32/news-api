@@ -46,11 +46,11 @@ class ReservationController extends CrudController
     public function _store(Request $data){
 
         if ($data->header('time') == 'expired') {
-            $this->service->restartTeetime($data['teetime_id'],$data['hole_id']);
+            $this->service->restartTeetime($data,$data['teetime_id'],$data['hole_id']);
             return response()->json(['status'=>408,'message'=>'El tiempo de reserva ha expirado'],408);
         }else{
             $data['status'] = 'reservado';
-            $this->service->restartTeetime($data['teetime_id'],$data['hole_id']);
+            $this->service->restartTeetime($data,$data['teetime_id'],$data['hole_id']);
             return $this->service->_store($data);
         }   
     }
@@ -80,4 +80,7 @@ class ReservationController extends CrudController
    public function restartTeetime(Request $request,$id,$hole_id){
         return $this->service->restartTeetime($request,$id,$hole_id);
     }
+
+ 
+
 }
