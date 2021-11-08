@@ -41,27 +41,8 @@
 
 </div>
 <div>
-    <h5>Fecha de emision: <?= $date; ?></h5>
-    <h5>Usuario: <?= $username; ?></h5>
-    <table>
-        <thead>
-        <tr>
-            <?php foreach ($index as $title => $value):?>
-                <th><?php echo $title ?></th>
-            <?php endforeach ?>
-        </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($data as $key):?>
-            <tr>
-                <?php foreach ($index as $title):?>
-                    <td><?php echo is_array($key) ? $key[$title] ?? null : $key->$title ?? null?></td>
-                <?php endforeach ?>
-
-            </tr>
-        <?php endforeach ?>
-        </tbody>
-    </table>
+    <h5>Fecha de emision:?></h5>
+    <h5>Usuario:</h5>
 </div>
 </body>
 </html>

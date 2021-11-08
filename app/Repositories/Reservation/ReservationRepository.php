@@ -328,7 +328,7 @@ class ReservationRepository extends CrudRepository
     public function standByTeetime(Request $request, $id,$hole_id){
         
         $date = str_replace('-','',$request->date);
-        $time = str_replace(':','',$request->time);
+        $time = str_replace(':','',$request->start_hour);
 
         try {
         $temp_data = new TempData();
@@ -347,8 +347,9 @@ class ReservationRepository extends CrudRepository
 
     public function restartTeetime(Request $request,$id,$hole_id){
         
-        $date = str_replace('-','',$request->date);
-        $time = str_replace(':','',$request->time);
+        $date = str_replace('-','',Carbon::parse($request->date)->format('d-m-Y'));
+        $time = str_replace(':','',$request->start_hour);
+        
 
         $temp_data = TempData::where('teetime_id',$id)
                              ->where('hole_id',(integer)$hole_id)
