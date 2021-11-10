@@ -56,12 +56,12 @@ class ReservationController extends CrudController
         }   
     }
 
-    public function _update($id, $data){
+    public function _update($id, Request $data){
+       
         if ($data->header('time') == 'expired') {
             return response()->json(['status'=>408,'message'=>'El tiempo de reserva ha expirado'],408);
         }else{
             $data['status'] = 'reservado';
-            \DB::raw("DELETE FROM temp_data WHERE teetime_id = ".$data['teetime_id']);
             return $this->service->_update($id,$data);
         }
     }
@@ -98,7 +98,7 @@ class ReservationController extends CrudController
                   $data[] = $reservations;
              } 
         }
-
+        dd($data);
         $report->data($data);
         return $report->report("automatic","Reservaciones",null,null,false,1);
     }

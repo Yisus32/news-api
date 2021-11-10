@@ -42,17 +42,18 @@
 </div>
 <div>
     <table class="default" id="table_1">
+        <?php $i = 0; ?>
 
-        <?php foreach ($data as $d) {?> 
+        <?php foreach ($data as $d) { ?> 
             <?php if (!$d->isEmpty()) { ?>
                 <thead>
                     <tr>
                         <td>FECHA</td>
-                        <td colspan="3">SALIDA HOYO 2 </td>
+                        <td colspan="3">SALIDA <?= strtoupper($d[$i]->hole_name)?></td>
                     </tr>
                 </thead>
              <tr>
-                <td>HORA</td>
+                <td><?= $d[$i]->start_hour?></td>
                 <td>REF</td>
                 <td>PLAYERS</td>
                 <td>RESERVADO POR</td>
@@ -66,13 +67,20 @@
                     <?= $info['id'] ?> 
                 </td>
                 <td>
-                    <?= $info['guests'] ?> 
+                    <table>
+                        <?php foreach (json_decode($info['guests']) as $guest) {?>
+                           <tr>
+                                <td><?= $guest ?> </td>
+                           </tr>
+                        <?php } ?> 
+                    </table>
                 </td>
                 <td>
                     <?= $info['owner'] ?> 
                 </td>
             </tr>
-        <?php } 
+        <?php }
+            $i++; 
             }
         }?>
     </table>
