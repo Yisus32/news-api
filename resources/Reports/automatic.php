@@ -42,10 +42,22 @@
 </div>
 <div>
     <table class="default" id="table_1">
-        <?php $i = 0; ?>
+        <?php 
+            $i = 0; 
+        ?>
 
         <?php foreach ($data as $d) { ?> 
             <?php if (!$d->isEmpty()) { ?>
+
+                 <?php foreach (json_decode($d[$i]->guests) as $guest){
+                    $players[] = $guest;
+                } 
+
+                    foreach (json_decode($d[$i]->partners) as $partner) {
+                        $players[] = $partner;
+                    }
+                ?>
+
                 <thead>
                     <tr>
                         <td>FECHA</td>
@@ -68,9 +80,9 @@
                 </td>
                 <td>
                     <table>
-                        <?php foreach (json_decode($info['guests']) as $guest) {?>
+                        <?php foreach ($players as $player) {?>
                            <tr>
-                                <td><?= $guest ?> </td>
+                                <td><?= $player ?> </td>
                            </tr>
                         <?php } ?> 
                     </table>
