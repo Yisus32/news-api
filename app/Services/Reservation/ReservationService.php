@@ -43,6 +43,10 @@ class ReservationService extends CrudService
         }
    }
 
+   public function _update($id,$data){
+      return $this->repository->_update($id,$data);
+   }
+
    public function cancelReservation($id){
    		return $this->repository->cancelReservation($id);
    }
