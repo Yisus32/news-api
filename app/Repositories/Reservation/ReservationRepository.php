@@ -347,7 +347,7 @@ class ReservationRepository extends CrudRepository
 
     public function restartTeetime(Request $request,$id,$hole_id){
         
-        $date = str_replace('-','',Carbon::parse($request->date)->format('d-m-Y'));
+        $date = str_replace('-','',$request->date);
         $time = str_replace(':','',$request->start_hour);
         
 
