@@ -59,9 +59,11 @@ class ReservationController extends CrudController
     public function _update($id, Request $data){
        
         if ($data->header('time') == 'expired') {
+            $this->service->restartTeetime($data,$data['teetime_id'],$data['hole_id']);
             return response()->json(['status'=>408,'message'=>'El tiempo de reserva ha expirado'],408);
         }else{
             $data['status'] = 'reservado';
+            $this->service->restartTeetime($data,$data['teetime_id'],$data['hole_id']);
             return $this->service->_update($id,$data);
         }
     }
