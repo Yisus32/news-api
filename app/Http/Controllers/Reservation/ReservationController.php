@@ -50,7 +50,7 @@ class ReservationController extends CrudController
             $this->service->restartTeetime($data,$data['teetime_id'],$data['hole_id']);
             return response()->json(['status'=>408,'message'=>'El tiempo de reserva ha expirado'],408);
         }else{
-            $data['status'] = 'reservado';
+            $data['status'] = 'registrado';
             $this->service->restartTeetime($data,$data['teetime_id'],$data['hole_id']);
             return $this->service->_store($data);
         }   
@@ -62,7 +62,7 @@ class ReservationController extends CrudController
             $this->service->restartTeetime($data,$data['teetime_id'],$data['hole_id']);
             return response()->json(['status'=>408,'message'=>'El tiempo de reserva ha expirado'],408);
         }else{
-            $data['status'] = 'reservado';
+            $data['status'] = 'registrado';
             $this->service->restartTeetime($data,$data['teetime_id'],$data['hole_id']);
             return $this->service->_update($id,$data);
         }
@@ -100,7 +100,7 @@ class ReservationController extends CrudController
                   $data[] = $reservations;
              } 
         }
-        dd($data);
+        
         $report->data($data);
         return $report->report("automatic","Reservaciones",null,null,false,1);
     }
