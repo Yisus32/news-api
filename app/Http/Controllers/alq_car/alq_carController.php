@@ -465,12 +465,47 @@ public function rezero(Request $request)
     $r=$request->get('star');
     $f=$request->get('end');
 
-    $alqu=DB::table('alq_car')->whereBetween(DB::Raw('cast(alq_car.fecha as date)'), array($r, $f))
+    $alqu=DB::table('alq_car')
     ->join('group','group.id','=','alq_car.gro_id')
     ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
     ->join('holes','holes.id','=','alq_car.id_hole')
     ->leftJoin('guests','guests.id','=','alq_car.user_id')
-    ->select('guests.host_number as invnumsoc','guests.host_name as invnamesoc','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
+    ->select('guests.host_number as invnumsoc','guests.host_name as invnamesoc','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')
+    ->when($request->date, function($query, $interval){
+        $date = explode('_', $interval);
+        $date[0] = Carbon::parse($date[0])->format('Y-m-d');
+        $date[1] = Carbon::parse($date[1])->format('Y-m-d');
+        return $query->whereBetween(
+            DB::raw("TO_CHAR(users.created_at,'YYYY-MM-DD')"),[$date[0],$date[1]]);
+        })
+    ->when($request->num, function($query,$num){
+        //buscar por numero de socio
+        return $query->where('alq_car.user_num',$num);
+    })
+    ->when($request->nom, function($query,$nom){
+        //buscar por nombre
+        return $query->where('alq_car.user_name','ILIKE',$nom);
+    })
+    ->when($request->car, function($query,$car){
+        //buscar por carrito
+        return $query->where('alq_car.car_id','ILIKE',$car);
+    })
+    ->when($request->hora, function($query,$hora){
+        //buscar numero
+        return $query->where('alq_car.gro_id','ILIKE',$hora);
+    })
+    ->when($request->tipo_p,function($query,$tipo_p){
+        //Buscar por tipo de usuario
+        return $query->where('alq_car.tipo_p','ilike',$tipo_p);
+    })
+    ->when($request->hol_id,function($query,$hol_id){
+        //Buscar por id del hoyo
+        return $query->where('alq_car.id_hole',$hol_id);
+    })
+    ->when($request->codegroup,function($query,$codegroup){
+        return $query->where('group.cod','ilike',"$codegroup");
+    })
+    ->get(); 
   
     $excel=new Spreadsheet();
     $hoja=$excel->getActiveSheet();
