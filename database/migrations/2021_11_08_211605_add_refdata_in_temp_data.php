@@ -15,7 +15,7 @@ class AddRefdataInTempData extends Migration
     {
         Schema::table('temp_data', function (Blueprint $table) {
             $table->dropColumn('hole_id');
-            $table->string('ref_data')->unique()->nullable();
+            $table->string('ref_data')->unique();
         });
 
 

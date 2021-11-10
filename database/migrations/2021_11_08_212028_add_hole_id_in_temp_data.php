@@ -14,7 +14,7 @@ class AddHoleIdInTempData extends Migration
     public function up()
     {
         Schema::table('temp_data', function (Blueprint $table) {
-            $table->integer('hole_id');
+            $table->integer('hole_id')->nullable();
         });
     }
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Core\CrudController;
 use App\Core\ReportService;
 use App\Models\Guest;
+use App\Models\Hole;
 use App\Models\Reservation;
 use App\Services\Reservation\ReservationService;
 use Carbon\Carbon;
@@ -81,6 +82,25 @@ class ReservationController extends CrudController
         return $this->service->restartTeetime($request,$id,$hole_id);
     }
 
+    public function report(Request $request){
+        $report = new ReportService();
  
+        $holes = Hole::all();
+        
+        for ($i=1; $i <= count($holes); $i++) { 
+             $reservations = Reservation::select('reservations.*',
+                                                 'holes.name as hole_name')
+                                         ->where('status','registrado')
+                                         ->leftjoin('holes','holes.id','=','reservations.hole_id')
+                                         ->where('holes.id' ,$i)
+                                         ->get();
+             if ($reservations) {
+                  $data[] = $reservations;
+             } 
+        }
+
+        $report->data($data);
+        return $report->report("automatic","Reservaciones",null,null,false,1);
+    }
 
 }
