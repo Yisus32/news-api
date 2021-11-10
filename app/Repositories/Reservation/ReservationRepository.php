@@ -114,7 +114,7 @@ class ReservationRepository extends CrudRepository
             
             $this->model->createInvitation($stored);
             
-            return $stored;
+            return response()->json(['status' => 200, 'stored' => $stored]);
         }  
     }
 
@@ -128,7 +128,8 @@ class ReservationRepository extends CrudRepository
         if (is_int($check)) {
             return response()->json(['status'=>400, 'message'=> 'El dueño del juego no puede ser seleccionado como socio'],400);
         }else {
-            return parent::_update($id,$data);
+            $updated = parent::_update($id,$data);
+            return response()->json(['status' => 200, 'stored' => $updated]);
         }  
     }
 
