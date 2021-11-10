@@ -41,8 +41,41 @@
 
 </div>
 <div>
-    <h5>Fecha de emision:?></h5>
-    <h5>Usuario:</h5>
+    <table class="default" id="table_1">
+
+        <?php foreach ($data as $d) {?> 
+            <?php if (!$d->isEmpty()) { ?>
+                <thead>
+                    <tr>
+                        <td>FECHA</td>
+                        <td colspan="3">SALIDA HOYO 2 </td>
+                    </tr>
+                </thead>
+             <tr>
+                <td>HORA</td>
+                <td>REF</td>
+                <td>PLAYERS</td>
+                <td>RESERVADO POR</td>
+            </tr>
+            <?php foreach ($d as $info) {?>
+            <tr>
+                <td>
+                   TEE 028 
+                </td>
+                <td>
+                    <?= $info['id'] ?> 
+                </td>
+                <td>
+                    <?= $info['guests'] ?> 
+                </td>
+                <td>
+                    <?= $info['owner'] ?> 
+                </td>
+            </tr>
+        <?php } 
+            }
+        }?>
+    </table>
 </div>
 </body>
 </html>
