@@ -462,6 +462,7 @@ public function rezero(Request $request)
 
     if($request->date=0 and $request->nom=0 and $request->num=0 and $request->car=0 and $request->hora=0 and $request->tipo_p=0 and $request->hol_id=0 and $request->codegroup=0 )
     {
+      
         $alqu=DB::table('alq_car')
         ->join('group','group.id','=','alq_car.gro_id')
         ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
@@ -595,7 +596,7 @@ public function rezero(Request $request)
         $date[0] = Carbon::parse($date[0])->format('Y-m-d');
         $date[1] = Carbon::parse($date[1])->format('Y-m-d');
         return $query->whereBetween(
-            DB::raw("TO_CHAR(users.created_at,'YYYY-MM-DD')"),[$date[0],$date[1]]);
+            DB::raw("TO_CHAR(alq_car.created_at,'YYYY-MM-DD')"),[$date[0],$date[1]]);
         })
     ->when($request->num, function($query,$num){
         //buscar por numero de socio
@@ -617,7 +618,7 @@ public function rezero(Request $request)
         //Buscar por tipo de usuario
         return $query->where('alq_car.tipo_p','ilike',$tipo_p);
     })
-    ->when($request->hol_id,function($query,$hol_id){
+    ->when($request->j,function($query,$hol_id){
         //Buscar por id del hoyo
         return $query->where('alq_car.id_hole',$hol_id);
     })
@@ -625,6 +626,8 @@ public function rezero(Request $request)
         return $query->where('group.cod','ilike',"$codegroup");
     })
     ->get(); 
+
+    dd($alqu);
   
     $excel=new Spreadsheet();
     $hoja=$excel->getActiveSheet();
