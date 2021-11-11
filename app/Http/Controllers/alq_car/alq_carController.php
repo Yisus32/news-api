@@ -590,13 +590,13 @@ public function rezero(Request $request)
     ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
     ->join('holes','holes.id','=','alq_car.id_hole')
     ->leftJoin('guests','guests.id','=','alq_car.user_id')
-    ->select('guests.host_number as invnumsoc','guests.host_name as invnamesoc','guests.card_number as carnet','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')
-    ->when($request->date, function($query, $interval){
+    ->select('guests.host_number as invnumsoc','guests.host_name as invnamesoc','guests.card_number as carnet','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p','alq_car.created_at')
+    ->when($request->dat, function($query, $interval){
         $date = explode('_', $interval);
         $date[0] = Carbon::parse($date[0])->format('Y-m-d');
         $date[1] = Carbon::parse($date[1])->format('Y-m-d');
         return $query->whereBetween(
-            DB::raw("TO_CHAR(alq_car.date,'YYYY-MM-DD')"),[$date[0],$date[1]]);
+            DB::raw("TO_CHAR(alq_car.created_at,'YYYY-MM-DD')"),[$date[0],$date[1]]);
         })
     ->when($request->num, function($query,$num){
         //buscar por numero de socio
@@ -627,7 +627,7 @@ public function rezero(Request $request)
     })
     ->get(); 
 
-
+ //dd($alqu);
   
     $excel=new Spreadsheet();
     $hoja=$excel->getActiveSheet();
