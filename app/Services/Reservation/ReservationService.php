@@ -43,6 +43,10 @@ class ReservationService extends CrudService
         }
    }
 
+   public function _update($id,$data){
+      return $this->repository->_update($id,$data);
+   }
+
    public function cancelReservation($id){
    		return $this->repository->cancelReservation($id);
    }
@@ -51,11 +55,11 @@ class ReservationService extends CrudService
       return $this->repository->resendInvitation($id,$reservation_id,$request);
    }
 
-   public function standByTeetime($id,$hole_id){
-     return $this->repository->standByTeetime($id,$hole_id);
+   public function standByTeetime(Request $request,$id,$hole_id){
+     return $this->repository->standByTeetime($request,$id,$hole_id);
    }
 
-   public function restartTeetime($id,$hole_id){
-        return $this->repository->restartTeetime($id,$hole_id);
+   public function restartTeetime(Request $request,$id,$hole_id){
+        return $this->repository->restartTeetime($request,$id,$hole_id);
     }
 }

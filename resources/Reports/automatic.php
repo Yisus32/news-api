@@ -41,26 +41,60 @@
 
 </div>
 <div>
-    <h5>Fecha de emision: <?= $date; ?></h5>
-    <h5>Usuario: <?= $username; ?></h5>
-    <table>
-        <thead>
-        <tr>
-            <?php foreach ($index as $title => $value):?>
-                <th><?php echo $title ?></th>
-            <?php endforeach ?>
-        </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($data as $key):?>
-            <tr>
-                <?php foreach ($index as $title):?>
-                    <td><?php echo is_array($key) ? $key[$title] ?? null : $key->$title ?? null?></td>
-                <?php endforeach ?>
+    <table class="default" id="table_1">
+        <?php 
+            $i = 0; 
+        ?>
 
+        <?php foreach ($data as $d) { ?> 
+            <?php if (!$d->isEmpty()) { ?>
+
+                 <?php foreach (json_decode($d[$i]->guests) as $guest){
+                    $players[] = $guest;
+                } 
+
+                    foreach (json_decode($d[$i]->partners) as $partner) {
+                        $players[] = $partner;
+                    }
+                ?>
+
+                <thead>
+                    <tr>
+                        <td>FECHA</td>
+                        <td colspan="3">SALIDA <?= strtoupper($d[$i]->hole_name)?></td>
+                    </tr>
+                </thead>
+             <tr>
+                <td><?= $d[$i]->start_hour?></td>
+                <td>REF</td>
+                <td>PLAYERS</td>
+                <td>RESERVADO POR</td>
             </tr>
-        <?php endforeach ?>
-        </tbody>
+            <?php foreach ($d as $info) {?>
+            <tr>
+                <td>
+                   TEE 028 
+                </td>
+                <td>
+                    <?= $info['id'] ?> 
+                </td>
+                <td>
+                    <table>
+                        <?php foreach ($players as $player) {?>
+                           <tr>
+                                <td><?= $player ?> </td>
+                           </tr>
+                        <?php } ?> 
+                    </table>
+                </td>
+                <td>
+                    <?= $info['owner'] ?> 
+                </td>
+            </tr>
+        <?php }
+            $i++; 
+            }
+        }?>
     </table>
 </div>
 </body>

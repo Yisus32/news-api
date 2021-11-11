@@ -67,6 +67,36 @@ class ReservationRepository extends CrudRepository
         return $reservations;
     }
 
+    public function _show($id){
+        $reservations = Reservation::select(['reservations.*', 
+                                      'holes.name as hole_name', 
+                                      'teetimes.max_capacity', 
+                                      'teetimes.min_capacity', 
+                                      'teetimes.start_date as teetime_date_start', 
+                                      'teetimes.end_date as teetime_date_end',
+                                      'teetimes.start_hour as teetime_hour_start', 
+                                      'teetimes.end_hour as teetime_hour_end',
+                                      'teetimes.cancel_time as teetime_cancel_time'])
+                                ->where('reservations.id',$id)
+                                ->join('holes', 'holes.id', '=', 'reservations.hole_id')
+                                ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
+                                ->get();
+
+        foreach ($reservations as $reservation) {
+            $reservation['guests'] = json_decode($reservation['guests']);
+            $reservation['partners'] = json_decode($reservation['partners']);
+            $reservation['partners_name'] = json_decode($reservation['partners_name']);
+            
+            $reservation['teetime_cancel_time'] = $this->model->setCancelDate(
+            $reservation['teetime_date_start'], $reservation['teetime_hour_start'],
+            $reservation['teetime_cancel_time']);
+            $reservation['created_at'] = Carbon::parse($reservation['created_at'])->format('Y-m-d',env('APP_TIMEZONE'));
+            $reservation['updated_at'] = Carbon::parse($reservation['created_at'])->format('Y-m-d',env('APP_TIMEZONE'));
+        }
+
+        return $reservations;
+    }
+
     public function _store(Request $data){
 
         $data['guests'] = json_encode($data['guests']);
@@ -84,7 +114,7 @@ class ReservationRepository extends CrudRepository
             
             $this->model->createInvitation($stored);
             
-            return $stored;
+            return response()->json(['status' => 200, 'stored' => $stored]);
         }  
     }
 
@@ -98,7 +128,8 @@ class ReservationRepository extends CrudRepository
         if (is_int($check)) {
             return response()->json(['status'=>400, 'message'=> 'El dueño del juego no puede ser seleccionado como socio'],400);
         }else {
-            return parent::_update($id,$data);
+            $updated = parent::_update($id,$data);
+            return response()->json(['status' => 200, 'stored' => $updated]);
         }  
     }
 
@@ -325,12 +356,16 @@ class ReservationRepository extends CrudRepository
 
     }
 
-    public function standByTeetime($id,$hole_id){
+    public function standByTeetime(Request $request, $id,$hole_id){
         
+        $date = str_replace('-','',$request->date);
+        $time = str_replace(':','',$request->start_hour);
+
         try {
         $temp_data = new TempData();
         $temp_data->teetime_id = $id;
         $temp_data->hole_id = $hole_id;
+        $temp_data->ref_data = $date.''.$time; 
         $temp_data->created_at = Carbon::now(env('APP_TIMEZONE'));
         $temp_data->save();
 
@@ -341,10 +376,16 @@ class ReservationRepository extends CrudRepository
         }
     }
 
-    public function restartTeetime($id,$hole_id){
+    public function restartTeetime(Request $request,$id,$hole_id){
         
+        $date = str_replace('-','',$request->date);
+        $time = str_replace(':','',$request->start_hour);
+        $ref_data = $date.''.$time;
+        
+
         $temp_data = TempData::where('teetime_id',$id)
                              ->where('hole_id',(integer)$hole_id)
+                             ->where('ref_data',$ref_data)
                              ->first();
         if ($temp_data) {
             $temp_data->delete();
