@@ -460,7 +460,7 @@ public function rezero(Request $request)
    
    
 
-    if($request->star=0 and $request->nom=0 and $request->num=0 and $request->car=0 and $request->hora=0 and $request->tipo_p=0 and $request->hol_id=0 and $request->codegroup=0 )
+    if($request->date=0 and $request->nom=0 and $request->num=0 and $request->car=0 and $request->hora=0 and $request->tipo_p=0 and $request->hol_id=0 and $request->codegroup=0 )
     {
         $alqu=DB::table('alq_car')
         ->join('group','group.id','=','alq_car.gro_id')
@@ -582,7 +582,7 @@ public function rezero(Request $request)
     ->join('holes','holes.id','=','alq_car.id_hole')
     ->leftJoin('guests','guests.id','=','alq_car.user_id')
     ->select('guests.host_number as invnumsoc','guests.host_name as invnamesoc','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')
-    ->when($request->star, function($query, $interval){
+    ->when($request->date, function($query, $interval){
         $date = explode('_', $interval);
         $date[0] = Carbon::parse($date[0])->format('Y-m-d');
         $date[1] = Carbon::parse($date[1])->format('Y-m-d');
