@@ -596,7 +596,7 @@ public function rezero(Request $request)
         $date[0] = Carbon::parse($date[0])->format('Y-m-d');
         $date[1] = Carbon::parse($date[1])->format('Y-m-d');
         return $query->whereBetween(
-            DB::raw("TO_CHAR(alq_car.created_at,'YYYY-MM-DD')"),[$date[0],$date[1]]);
+            DB::raw("TO_CHAR(alq_car.date,'YYYY-MM-DD')"),[$date[0],$date[1]]);
         })
     ->when($request->num, function($query,$num){
         //buscar por numero de socio
@@ -627,7 +627,7 @@ public function rezero(Request $request)
     })
     ->get(); 
 
-    dd($alqu);
+
   
     $excel=new Spreadsheet();
     $hoja=$excel->getActiveSheet();
