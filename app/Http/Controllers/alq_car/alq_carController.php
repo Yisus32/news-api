@@ -458,9 +458,7 @@ class alq_carController extends CrudController
 public function rezero(Request $request)
 {
    
-    if (empty($request->star)) {
-        return Response()->json(["error" => true, "message" => "la fecha es requerida"],400);
-    }
+   
 
     if($request->date=0 and $request->nom=0 and $request->num=0 and $request->car=0 and $request->hora=0 and $request->tipo_p=0 and $request->hol_id=0 and $request->codegroup=0 )
     {
