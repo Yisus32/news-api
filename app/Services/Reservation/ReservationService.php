@@ -44,7 +44,15 @@ class ReservationService extends CrudService
    }
 
    public function _update($id,$data){
-      return $this->repository->_update($id,$data);
+
+      $check = $this->repository->checkCapacity($data['partners'],$data['guests'],$data['guests_email'],$data['teetime_id']);
+
+      if (is_int($check)) {
+        return $this->repository->_update($id,$data);
+      }else{
+        return $check;
+      }
+      
    }
 
    public function cancelReservation($id){
