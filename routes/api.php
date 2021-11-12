@@ -10,6 +10,7 @@
 |
 */
 
+use App\Http\Mesh\UserService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Router;
@@ -228,3 +229,13 @@ $router->put('invitations/{id}', 'Invitation\InvitationController@_update');
 $router->delete('invitations/{id}', 'Invitation\InvitationController@_destroy');
 
 
+$router->get('probando',function(Request $request){
+    $req = new UserService;
+    $user = $req->getUserById($request->id);
+    return $user;
+});
+$router->get('probando2',function(Request $request){
+    $req = new UserService;
+    $user = $req->getUsersById($request->id);
+    return $user;
+});

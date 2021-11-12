@@ -61,7 +61,7 @@ class UserService extends ServicesMesh
 
             $client = json_decode($response->getBody(), true);
 
-            return $client['Usuario'] ?? ["id" => null];
+            return $client['value'] ?? ["id" => null];
 
         } catch (Exception $exception) {
             Log::critical($exception->getMessage());
