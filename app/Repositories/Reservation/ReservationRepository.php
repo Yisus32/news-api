@@ -169,7 +169,7 @@ class ReservationRepository extends CrudRepository
         $teetime = Teetime::where('id',$teetime_id)->first();
 
         if ($guests_email != null) {
-            $guests_email = explode(' ', $guests_email);
+            $guests_email = explode(',', $guests_email);
         }
         
         if ($teetime) {
