@@ -65,6 +65,22 @@ class Reservation extends CrudModel
         return $check;
     }
 
+    public function isAdmin($user,$owner,$partners,$guests){
+        foreach (json_decode($partners) as $partner) {
+            $players[] = $partner;
+        }
+
+        foreach (json_decode($guests) as $guest) {
+            $players[] = $guest;
+        }
+
+        $players[] = $owner;
+
+        $check = array_search($user, $players);
+
+        return $check;
+    }
+
     public function createInvitation($stored){
 
         if ($stored['guests'] != null) {

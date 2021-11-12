@@ -104,11 +104,18 @@ class ReservationRepository extends CrudRepository
         $data['partners'] = json_encode($data['partners']);
         $data['partners_name'] = json_encode($data['partners_name']);
         $data['status'] = 'registrado';
+        
+        $operator = $data->header("id");
+        $is_admin = $data->header("is_admin");
 
         $check = $this->model->checkPartners($data['owner'], $data['partners']);
+        $check2 = $this->model->isAdmin($operator,$data['owner'],$data['partners'],$data['guests']);
 
         if (is_int($check)) {
             return response()->json(['status'=>400, 'message'=> 'El dueño del juego no puede ser seleccionado como socio'],400);
+        }elseif(is_int($check2) && $is_admin){
+            return response()->json(['status'=>400, 'message'=> 'El usuario administrador no puede participar en la partida'],400);
+
         }else {
             
             $stored = parent::_store($data);
