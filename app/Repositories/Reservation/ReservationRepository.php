@@ -62,6 +62,7 @@ class ReservationRepository extends CrudRepository
             $reservation['teetime_cancel_time']);
             $reservation['created_at'] = Carbon::parse($reservation['created_at'])->format('Y-m-d',env('APP_TIMEZONE'));
             $reservation['updated_at'] = Carbon::parse($reservation['created_at'])->format('Y-m-d',env('APP_TIMEZONE'));
+            $reservation['teetime_date_start'] = Carbon::parse($reservation['teetime_date_start'].' '.$reservation['teetime_hout_start'])->format('d-m-Y h:i A');
         }
 
         return $reservations;
