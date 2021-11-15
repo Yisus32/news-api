@@ -218,38 +218,6 @@ class ReservationRepository extends CrudRepository
         }
     }
 
-
-    public function resendInvitation($id, $reservation_id, Request $request){
-             $teetime = Teetime::where('id',$teetime_id)->first();
-
-        if ($guests_email != null) {
-            $guests_email = explode(' ', $guests_email);
-        }
-        
-        if ($teetime) {
-             $partners = count($partners);
-             $guests_email == "" ? $guests_email = [] : $guests_email;
-             $guests = count($guests) + count($guests_email);
-             $players = $partners + $guests + 1;
-        
-            switch ($players) {
-                case $players > $teetime['max_capacity']:
-                    return response()->json(['status'=>400,'message'=>'La cantidad de jugadores es mayor a la capacidad maxima'],400);
-                    break;
-
-                case $players < $teetime['min_capacity']:
-                    return response()->json(['status'=>400,'message'=>'La cantidad de jugadores es menor a la capacidad minima'],400);
-                    break;
-                
-                default:
-                    return 1;
-                    break;
-            }
-        }else{
-            return response()->json(['status'=>404,'message'=>'Puede que la programacion no exista o no incumple con los parametros'],404);
-        }
-    }
-
     public function multiResendInvitation($id, $reservation_id, Request $request){
         if(\Validator::make($request->all(), ['type' => 'required'])->fails()){
             return response()->json(array(  
@@ -322,7 +290,8 @@ class ReservationRepository extends CrudRepository
         }
 
     }
-    public function resendInvitation_2($id, $reservation_id, Request $request){
+    public function resendInvitation($id, $reservation_id, Request $request){
+    
         $type = $request->type;
         $exist_mail = Guest::where('email',$request->email)->first();
         $invitation = Invitation::select(['reservations.owner_name',
@@ -346,7 +315,7 @@ class ReservationRepository extends CrudRepository
             
 
         if ($exist_mail) {
-            $receipt_url = 'https://qarubick2teetime.zippyttech.com/accept/invitation/'.$invitation->invitation_id;
+            $receipt_url = 'https://'.env('FRONT_URL').'/accept/invitation/'.$invitation->invitation_id;
         }else{
             
             $email = $request->email;
@@ -354,7 +323,7 @@ class ReservationRepository extends CrudRepository
             $owner_number = explode(' ', $invitation->reservation_owner_name)[0];
             $owner_name = explode(' ', $invitation->reservation_owner_name)[1];
              
-            $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/%20/'.$email.'/'.$owner_id.'/'.$owner_name.'/'.$owner_number.'/'.$reservation_id;
+            $receipt_url = 'https://'.env('FRONT_URL').'/guest/register-guest/%20/'.$email.'/'.$owner_id.'/'.$owner_name.'/'.$owner_number.'/'.$reservation_id;
         }
 
         $date = $invitation->teetime_start_date;
