@@ -102,6 +102,16 @@ class Reservation extends CrudModel
                 $invitation->save();
             } 
         }
+
+        if ($stored['guests_email'] != null) {
+            $guests_email = explode(',', $stored['guests_email']);
+            foreach ($guests_email as $guest) {
+                $invitation = new Invitation;
+                $invitation->reservation_id = $stored->id;
+                $invitation->guest_email = $guest;
+                $invitation->save();
+            } 
+        }
         
         return $invitation; 
     }

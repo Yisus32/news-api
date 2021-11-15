@@ -18,6 +18,7 @@ dev_build_job:
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=1;g" .env
     - sed -i -e "s;^\s*APP_URL=.*;APP_URL=devrubick2teetime.zippyttech.com;g" .env
+    - sed -i -e "s;^\s*FRONT_URL=.*;FRONT_URL=devapp.zippyttech.com;g" .env
     - docker build -t devrubick2teetime-api .
   when: on_success
   tags:
@@ -73,6 +74,7 @@ qa_build_job:
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=1;g" .env
     - sed -i -e "s;^\s*APP_URL=.*;APP_URL=qarubick2teetime.zippyttech.com;g" .env
+    - sed -i -e "s;^\s*FRONT_URL=.*;FRONT_URL=qarubick2.zippyttech.com;g" .env
     - docker build -t qarubick2teetime-api .
   when: on_success
   tags:
@@ -212,6 +214,7 @@ cdg_build_job:
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
     - sed -i -e "s;^\s*APP_URL=.*;APP_URL=teetime-cdg.zippyttech.com;g" .env
+    - sed -i -e "s;^\s*FRONT_URL=.*;FRONT_URL=teetime-cdg.zippyttech.com;g" .env
     - docker build -t teetime-api .
   when: on_success
   tags:
