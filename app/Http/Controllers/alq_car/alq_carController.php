@@ -9,19 +9,15 @@ use App\Services\alq_car\alq_carService;
 use Illuminate\Support\Facades\DB;
 use App\Core\ReportService;
 use Carbon\Carbon;
+use App\Http\Mesh\ServicesMesh;
+use App\Http\Mesh\UserService;
+use App\Http\Mesh\UsuService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Log;
-use phpDocumentor\Reflection\Types\Self_;
-use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
-use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
+
 
 
 /** @property alq_carService $service */
@@ -33,7 +29,9 @@ class alq_carController extends CrudController
     private static $returnRaw = false;
     public function __construct(alq_carService $service)
     {
+
         parent::__construct($service);
+
         $this->validateStore = [
             'car_id' => 'required',
             'hol_id' => 'required',
@@ -621,7 +619,7 @@ public function topday($year,$month,$i,$tipo)
 {
     $outputs = DB::table('alq_car')->select(['user_id','user_name',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id','user_name'])
     ->where('tipo_p',$tipo)->whereYear('created_at', $year) ->whereMonth('created_at',$month)
-    ->whereDay('created_at', $i)->limit('10')->get();
+    ->whereDay('created_at', $i)->limit('10')->orderBy('recuento','desc')->get();
 
     return $outputs;
 }
@@ -634,14 +632,18 @@ public function topmes($year, $i,$tipo)
     {
         $ust=DB::table('alq_car')->select(['user_id','user_name',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id','user_name'])
         ->where('tipo_p',$tipo)->whereYear('created_at', $year)->whereMonth('created_at',$i)
-        ->limit('10')->get();
+        ->limit('10')->orderBy('recuento','desc')->get();
 
         return $ust;
     }
 
     public function indicador(Request $request)
     {
-        
+       
+        $ser=new UsuService();
+        $resp=$ser->_get('2782');
+        dd($resp);
+       
     }
 
     
