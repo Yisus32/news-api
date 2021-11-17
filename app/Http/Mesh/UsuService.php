@@ -34,6 +34,18 @@ class UsuService extends ServicesMesh
             return false;
         }
     }
+
+    public function simpleget($id){
+        try{
+            $url = $this->pach.'/get/user/simple/'.$id;
+            $response = $this->client->request('GET', $url);
+            return json_decode($response->getBody());
+        }catch (Exception $e) {
+            Log::critical('_get- '.$e);
+            return false;
+        }
+    }
+
     public function _sendNotification($id_user, $title, $body){
         try{
             $url = $this->pach.'/nt/send/tokens';
