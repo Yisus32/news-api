@@ -658,10 +658,11 @@ public function topmes($year, $i,$tipo)
 
             foreach ($resp as $key)
             {
-                $ids->clase=$key->clase_usuario;
+                //$ids->clase=$key->clase_usuario;
                 $ids->categoria=$key->category_type_name;
             }
         }
+        //dd($resp);
             
            
      $cont = [];
