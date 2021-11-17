@@ -630,7 +630,7 @@ public function topday($year,$month,$i,$tipo)
     ->where('tipo_p',$tipo)->whereYear('created_at', $year) ->whereMonth('created_at',$month)
     ->whereDay('created_at', $i)->limit('10')->orderBy('recuento','desc')->get();
 
-    return $outputs;
+    return ["list"=>$outputs,"total"=>count($outputs)];
 }
 
 
@@ -643,7 +643,7 @@ public function topmes($year, $i,$tipo)
         ->where('tipo_p',$tipo)->whereYear('created_at', $year)->whereMonth('created_at',$i)
         ->limit('10')->orderBy('recuento','desc')->get();
 
-        return $ust;
+        return ["list"=>$ust,"total"=>count($ust)];
     }
 
     public function indicador(Request $request)
