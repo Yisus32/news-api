@@ -560,8 +560,8 @@ public function rezero(Request $request)
     foreach($alqu as $rows)
     {
         //aqui busco el usuario
-        $resp=$ser->simpleget(28);
-        dd($resp);
+        $resp=$ser->simpleget($rows->user_id);
+        //dd($resp);
         foreach ($resp as $key)
             {
                 $rows->clase=$key->clase_usuario;
@@ -644,6 +644,7 @@ public function topmes($year, $i,$tipo)
         ->limit('10')->orderBy('recuento','desc')->get();
 
         return ["list"=>$ust,"total"=>count($ust)];
+
     }
 
     public function indicador(Request $request)
