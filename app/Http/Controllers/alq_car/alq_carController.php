@@ -655,7 +655,7 @@ public function topmes($year, $i,$tipo)
         foreach($ronda as $ids)
         {
             $resp=$ser->simpleget($ids->user_id);
-
+            return $resp;
             foreach ($resp as $key)
             {
                 $ids->clase=$key->clase_usuario;
