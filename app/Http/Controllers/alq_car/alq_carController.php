@@ -561,10 +561,10 @@ public function rezero(Request $request)
     {
         //aqui busco el usuario
         $resp=$ser->simpleget($rows->user_id);
-        foreach ($resp as $key)
-            {
+        /*foreach ($resp as $key)
+            /{
                 $rows->clase=$key->clase_usuario;
-                $rows->categoria=$key->category_type_name;
+                $rows->categoria=$key->category_type_name;*/
             
         $hoja->setCellValue('A'.$fila,$rows->fecha);
         $hoja->setCellValue('B'.$fila,$rows->user_num);
@@ -609,7 +609,7 @@ public function rezero(Request $request)
 
 
         $fila++;
-            }
+            //}
     }
 
 
