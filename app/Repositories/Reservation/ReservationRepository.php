@@ -151,6 +151,9 @@ class ReservationRepository extends CrudRepository
         }else {
 
             $updated = parent::_update($id,$data);
+
+            $this->model->createInvitation($updated);
+
             return response()->json(['status' => 200, 'stored' => $updated]);
         }  
     }
@@ -290,54 +293,39 @@ class ReservationRepository extends CrudRepository
         }
 
     }
-    public function resendInvitation($id, $reservation_id, Request $request){
+    public function resendInvitation($reservation_id, Request $request){
     
         $type = $request->type;
         $exist_mail = Guest::where('email',$request->email)->first();
-        $invitation = Invitation::select(['reservations.owner_name',
-                                          'teetimes.start_hour as teetime_start_hour',                           
-                                          'teetimes.start_date as teetime_start_date',
-                                          'invitations.id as invitation_id',
-                                          'reservations.owner as reservation_owner_id',
-                                          'reservations.owner_name as reservation_owner_name'])
-                                ->where('invitations.reservation_id',$reservation_id)
-                                ->when($type == 'partner', function ($query,$request) use ($id) {
-                                        
-                                        $query->where('invitations.partner',$id);
-                                    })
-                                ->when($type == 'guest', function ($query,$request) use ($id) {
-                                      
-                                        $query->where('invitations.guest',$id);
-                                    })
-                                ->leftjoin('reservations','reservations.id','=','invitations.reservation_id')
-                                ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
-                                ->first();
-            
-
+        
         if ($exist_mail) {
-            $receipt_url = 'https://'.env('FRONT_URL').'/accept/invitation/'.$invitation->invitation_id;
+            $invitation = Invitation::where('reservation_id',$reservation_id)
+                                    ->where('guest_email',$request->email)
+                                    ->first();
+        
+            $receipt_url = 'https://'.env('FRONT_URL').'/api/accept/invitation/'.$invitation->id;
         }else{
             
             $email = $request->email;
-            $owner_id = $invitation->reservation_owner_id;
-            $owner_number = explode(' ', $invitation->reservation_owner_name)[0];
-            $owner_name = explode(' ', $invitation->reservation_owner_name)[1];
+            $_owner_id = $request->owner_id;
+            $_owner_number = explode(' ', $request->owner_name)[0];
+            $_owner_name = explode(' ', $request->owner_name)[1];
              
-            $receipt_url = 'https://'.env('FRONT_URL').'/guest/register-guest/%20/'.$email.'/'.$owner_id.'/'.$owner_name.'/'.$owner_number.'/'.$reservation_id;
+            $receipt_url = 'https://'.env('FRONT_URL').'/guest/register-guest/%20/'.$email.'/'.$_owner_id.'/'.$_owner_name.'/'.$_owner_number.'/'.$reservation_id;
         }
 
-        $date = $invitation->teetime_start_date;
-        $time = $invitation->teetime_start_hour;
+        $date = $request->teetime_start_date;
+        $time = $request->teetime_start_hour;
         $name = $request->name ?? 'invitado';
-        $partner = $invitation->owner_name;
+        $partner = $request->owner_name;
+        $hole = $request->hole_name;
         $subject = "Invitación Teetime";
         
-        $message = "Estimado $name, el socio $partner lo ha invitado a un juego en el club de golf de Panamá el día ". 
-                    Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". 
-                    Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
+        $message = "Estimado $name, el socio $partner lo ha invitado a un juego en el club de golf de Panamá
+                    en el $hole el día ".Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
                     $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
         
-
+                
         if (filter_var($request->email,FILTER_VALIDATE_EMAIL)) {
             $mailer = new NotificationService;
             $mailer->sendEmail($request->email,$subject,$message,6,"notificaciones@zippyttech.com");

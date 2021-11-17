@@ -19,12 +19,14 @@ class InvitationController extends CrudController
 
     public function accept_invitation($id){
         $invitation = Invitation::find($id);
-
+        
         if (!$invitation) {
             return Response()->json(["error" => true ,"message" => "Invitación no encontrada"], 404);
         }
 
         $invitation->status = "aceptado";
+
+        $invitation->save();
 
         $reservation = Reservation::find($invitation->reservation_id);
 
