@@ -35,6 +35,7 @@ class ReservationRepository extends CrudRepository
     }
     
     public function _index($request = null, $user = null){
+
         $owner = $request->owner;
         $reservations = Reservation::select(['reservations.*', 
                                       'holes.name as hole_name', 
@@ -50,6 +51,7 @@ class ReservationRepository extends CrudRepository
                                 })
                                 ->join('holes', 'holes.id', '=', 'reservations.hole_id')
                                 ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
+                                ->with('invitations')
                                 ->get();
 
         foreach ($reservations as $reservation) {
