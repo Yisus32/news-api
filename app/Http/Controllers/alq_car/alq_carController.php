@@ -655,7 +655,7 @@ public function topmes($year, $i,$tipo)
         foreach($ronda as $ids)
         {
             $resp=$ser->simpleget($ids->user_id);
-
+            return $resp;
             foreach ($resp as $key)
             {
                 $ids->clase=$key->clase_usuario;
@@ -664,11 +664,26 @@ public function topmes($year, $i,$tipo)
         }
             
            
+     $cont = [];
+    $c2 = 0;
+    foreach ($ronda as $user){
         
-        return response()->json($ronda);
+        //if(array_key_exists('categoria', $user)){
+            if(array_key_exists($user['categoria'], $cont)){
+                $c2 = $cont[$user['categoria']];
+            }else{
+                $c2 = $cont[$user['categoria']] = 0;
+            }
+            
+
+            $cont[$user['categoria']] = $c2 + 1;
+        //}
         
     }
-
+    return ["list"=>$cont,"total"=>count($cont)];
+        
+    }
+ 
     
 
 
