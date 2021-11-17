@@ -561,6 +561,7 @@ public function rezero(Request $request)
     {
         //aqui busco el usuario
         $resp=$ser->simpleget($rows->user_id);
+        dd($resp);
         foreach ($resp as $key)
             {
                 $rows->clase=$key->clase_usuario;
