@@ -93,7 +93,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
         $router->put('reservations/cancel/{id}', 'Reservation\ReservationController@cancelReservation');
         $router->post('reservations/register/{id}', 'Reservation\ReservationController@reservation_register');
-        $router->get('reservations/resend/{id}/{reservation_id}','Reservation\ReservationController@resendInvitation');
+        $router->patch('reservations/resend/{reservation_id}','Reservation\ReservationController@resendInvitation');
         $router->get('reservations/multi/resend/{id}/{reservation_id}','Reservation\ReservationController@multiResendInvitation');
 
         /** routes para Guest **/ 
@@ -186,6 +186,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('alq_cars/fill/date','alq_car\alq_carController@filter_by_date');
         $router->get('alq_cars/top/{year}/{month}/{i}/{tipo}', 'alq_car\alq_carController@topday');
         $router->get('alq_cars/mes/top/{year}/{i}/{tipo}', 'alq_car\alq_carController@topmes');
+        $router->get('alq_cars/indicadores/list', 'alq_car\alq_carController@indicador');
         $router->post('alq_cars', 'alq_car\alq_carController@sav');
         $router->put('alq_cars/{id}', 'alq_car\alq_carController@_update');
         $router->delete('alq_cars/{id}', 'alq_car\alq_carController@_delete');

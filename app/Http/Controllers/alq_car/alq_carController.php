@@ -9,19 +9,15 @@ use App\Services\alq_car\alq_carService;
 use Illuminate\Support\Facades\DB;
 use App\Core\ReportService;
 use Carbon\Carbon;
+use App\Http\Mesh\ServicesMesh;
+use App\Http\Mesh\UserService;
+use App\Http\Mesh\UsuService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Log;
-use phpDocumentor\Reflection\Types\Self_;
-use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
-use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
+
 
 
 /** @property alq_carService $service */
@@ -33,7 +29,9 @@ class alq_carController extends CrudController
     private static $returnRaw = false;
     public function __construct(alq_carService $service)
     {
+
         parent::__construct($service);
+
         $this->validateStore = [
             'car_id' => 'required',
             'hol_id' => 'required',
@@ -558,13 +556,21 @@ public function rezero(Request $request)
     
     
     $fila=2;
-
+    $ser=new UsuService();
     foreach($alqu as $rows)
     {
+        //aqui busco el usuario
+        $resp=$ser->simpleget($rows->user_id);
+        //dd($resp);
+        foreach ($resp as $key)
+            {
+                $rows->clase=$key->clase_usuario;
+                $rows->categoria=$key->category_type_name;
+            
         $hoja->setCellValue('A'.$fila,$rows->fecha);
         $hoja->setCellValue('B'.$fila,$rows->user_num);
-        $hoja->setCellValue('C'.$fila,'');
-        $hoja->setCellValue('D'.$fila,'');
+        $hoja->setCellValue('C'.$fila,$rows->categoria);
+        $hoja->setCellValue('D'.$fila,$rows->clase);
         if($rows->invnumsoc!==null)
         {
             $hoja->setCellValue('E'.$fila,$rows->invnumsoc);
@@ -604,6 +610,7 @@ public function rezero(Request $request)
 
 
         $fila++;
+            }
     }
 
 
@@ -621,9 +628,9 @@ public function topday($year,$month,$i,$tipo)
 {
     $outputs = DB::table('alq_car')->select(['user_id','user_name',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id','user_name'])
     ->where('tipo_p',$tipo)->whereYear('created_at', $year) ->whereMonth('created_at',$month)
-    ->whereDay('created_at', $i)->limit('10')->get();
+    ->whereDay('created_at', $i)->limit('10')->orderBy('recuento','desc')->get();
 
-    return $outputs;
+    return ["list"=>$outputs,"total"=>count($outputs)];
 }
 
 
@@ -634,16 +641,50 @@ public function topmes($year, $i,$tipo)
     {
         $ust=DB::table('alq_car')->select(['user_id','user_name',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id','user_name'])
         ->where('tipo_p',$tipo)->whereYear('created_at', $year)->whereMonth('created_at',$i)
-        ->limit('10')->get();
+        ->limit('10')->orderBy('recuento','desc')->get();
 
-        return $ust;
+        return ["list"=>$ust,"total"=>count($ust)];
+
     }
 
     public function indicador(Request $request)
     {
+        $ronda=alq_car::all();
+        $ser=new UsuService();
+       
+        foreach($ronda as $ids)
+        {
+            $resp=$ser->simpleget($ids->user_id);
+
+            foreach ($resp as $key)
+            {
+                //$ids->clase=$key->clase_usuario;
+                $ids->categoria=$key->category_type_name;
+            }
+        }
+        //dd($resp);
+            
+           
+     $cont = [];
+    $c2 = 0;
+    foreach ($ronda as $user){
+        
+        //if(array_key_exists('categoria', $user)){
+            if(array_key_exists($user['categoria'], $cont)){
+                $c2 = $cont[$user['categoria']];
+            }else{
+                $c2 = $cont[$user['categoria']] = 0;
+            }
+            
+
+            $cont[$user['categoria']] = $c2 + 1;
+        //}
         
     }
-
+    return ["list"=>$cont,"total"=>count($cont)];
+        
+    }
+ 
     
 
 
