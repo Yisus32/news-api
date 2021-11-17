@@ -37,7 +37,7 @@ class UsuService extends ServicesMesh
 
     public function simpleget($id){
         try{
-            $url = $this->pach.'get/user/simple/'.$id;
+            $url = $this->pach.'us/get/user/simple/'.$id;
             $response = $this->client->request('GET', $url);
             return json_decode($response->getBody());
         }catch (Exception $e) {
