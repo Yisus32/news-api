@@ -560,7 +560,7 @@ public function rezero(Request $request)
     foreach($alqu as $rows)
     {
         //aqui busco el usuario
-        $resp=$ser->simpleget($rows->user_id);
+        $resp=$ser->simpleget(28);
         dd($resp);
         foreach ($resp as $key)
             {
