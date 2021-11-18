@@ -305,7 +305,7 @@ class ReservationRepository extends CrudRepository
                                     ->where('guest_email',$request->email)
                                     ->first();
         
-            $receipt_url = 'https://'.env('FRONT_URL').'/api/accept/invitation/'.$invitation->id;
+            $receipt_url = 'https://'.env('APP_URL').'/api/accept/invitation/'.$invitation->id;
         }else{
             
             $email = $request->email;
