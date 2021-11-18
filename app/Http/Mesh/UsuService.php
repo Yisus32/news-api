@@ -64,4 +64,10 @@ class UsuService extends ServicesMesh
             return false;
         }
     }
+
+    public function RondasQA(){
+        $url = 'qarubick2teetime.zippyttech.com/api/alq_cars';
+            $response = $this->client->request('GET', $url,$this->headers);
+            return json_decode($response->getBody());
+    }
 }
