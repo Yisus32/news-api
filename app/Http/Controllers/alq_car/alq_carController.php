@@ -569,8 +569,8 @@ public function rezero(Request $request)
             
         $hoja->setCellValue('A'.$fila,$rows->fecha);
         $hoja->setCellValue('B'.$fila,$rows->user_num);
-        $hoja->setCellValue('C'.$fila,$rows->categoria);
-        $hoja->setCellValue('D'.$fila,$rows->clase);
+        $hoja->setCellValue('C'.$fila,'');
+        $hoja->setCellValue('D'.$fila,'');
         if($rows->invnumsoc!==null)
         {
             $hoja->setCellValue('E'.$fila,$rows->invnumsoc);
