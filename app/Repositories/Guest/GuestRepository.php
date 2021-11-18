@@ -79,6 +79,11 @@ class GuestRepository extends CrudRepository
 
         $guest->documents = $documents;
 
+        if (isset($data['flag'])) {
+            $this->model->createInvitation($data,$guest);
+        }
+        
+        
         return $guest;
     }
 
