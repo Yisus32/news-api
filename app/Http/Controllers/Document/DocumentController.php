@@ -426,7 +426,7 @@ class DocumentController extends CrudController
      * @return Exception|string|bool
      * @version 1.0
     */
-    public function validateDate($string, $date = ''){
+     public function validateDate($string, $date = ''){
         if($date != ''){
             $date = str_replace(' 00:00:00', '', $date);
             $string = str_replace('\n', ' ', $string);
@@ -502,6 +502,39 @@ class DocumentController extends CrudController
             $date = $dateArray[0].' '.$mes.' '.$dateArray[2];
             $dateFormat = str_replace(['/', '.', ' '], '-', $date);
             if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', ' '], '/', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', '/'], ' ', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
+            $date = $mes.' '.$dateArray[2];
+            $dateFormat = str_replace(['/', '.', ' '], '-', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', ' '], '/', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', '/'], ' ', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
+
+
+
+
+
+
+
+            $date = substr($dateArray[2], 0,-2).$dateArray[1].$dateArray[0];
+            $dateFormat = str_replace(['/', '.', ' '], '-', $date);
+            if(strpos($string, $dateFormat) != false ) {
                 return true;
             }
             $dateFormat = str_replace(['-', '.', ' '], '/', $date);
