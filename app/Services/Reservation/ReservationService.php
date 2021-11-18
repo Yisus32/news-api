@@ -43,19 +43,31 @@ class ReservationService extends CrudService
         }
    }
 
+   public function _update($id,$data){
+
+      $check = $this->repository->checkCapacity($data['partners'],$data['guests'],$data['guests_email'],$data['teetime_id']);
+
+      if (is_int($check)) {
+        return $this->repository->_update($id,$data);
+      }else{
+        return $check;
+      }
+      
+   }
+
    public function cancelReservation($id){
    		return $this->repository->cancelReservation($id);
    }
 
-   public function resendInvitation($id,$reservation_id,Request $request){
-      return $this->repository->resendInvitation($id,$reservation_id,$request);
+   public function resendInvitation($reservation_id,Request $request){
+      return $this->repository->resendInvitation($reservation_id,$request);
    }
 
-   public function standByTeetime($id){
-     return $this->repository->standByTeetime($id);
+   public function standByTeetime(Request $request,$id,$hole_id){
+     return $this->repository->standByTeetime($request,$id,$hole_id);
    }
 
-   public function restartTeetime($id){
-        return $this->repository->restartTeetime($id);
+   public function restartTeetime(Request $request,$id,$hole_id){
+        return $this->repository->restartTeetime($request,$id,$hole_id);
     }
 }
