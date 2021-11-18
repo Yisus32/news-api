@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Core\CrudModel;
+use App\Models\Invitation;
 
 class Guest extends CrudModel
 {
@@ -32,4 +33,15 @@ class Guest extends CrudModel
         return $this->hasMany(Document::class,'guest_id','id');
     }
 
+    public function createInvitation($data,$guest){
+       
+            $invitation = new Invitation;
+            $invitation->reservation_id = $data['reservation_id'];
+            $invitation->guest_email = $guest['email'];
+            $invitation->status = 'aceptado';
+            $invitation->save();
+            return $invitation; 
+
+        return [];
+    }
 }
