@@ -665,7 +665,21 @@ public function topmes($year, $i,$tipo)
             }
         }
 
-        return ["list"=>$ronda,"total"=>count($ronda)];
+        $cont = [];
+    $c2 = 0;
+    $cuenta=0;
+    foreach ($ronda as $ronditas){
+            if(array_key_exists('categoria', $ronditas)){
+                $cuenta++;
+              if(array_key_exists($ronditas->categoria, $cont)){
+                  $c2 = $cont[$ronditas->categoria];
+              }else{
+                  $c2 = $cont[$ronditas->categoria] = 0;
+              }
+              $cont[$ronditas->categoria] = $c2 + 1;
+            }   
+    }
+        return ["list"=>$cont,"total"=>$cuenta];
     }
  
     
