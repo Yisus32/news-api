@@ -667,8 +667,10 @@ public function topmes($year, $i,$tipo)
 
         $cont = [];
     $c2 = 0;
+    $cuenta=0;
     foreach ($ronda as $ronditas){
             if(array_key_exists('categoria', $ronditas)){
+                $cuenta++;
               if(array_key_exists($ronditas->categoria, $cont)){
                   $c2 = $cont[$ronditas->categoria];
               }else{
@@ -677,7 +679,7 @@ public function topmes($year, $i,$tipo)
               $cont[$ronditas->categoria] = $c2 + 1;
             }   
     }
-        return ["list"=>$cont,"total"=>count($cont)];
+        return ["list"=>$cont,"total"=>$cuenta];
     }
  
     
