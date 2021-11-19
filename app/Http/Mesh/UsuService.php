@@ -70,4 +70,16 @@ class UsuService extends ServicesMesh
             $response = $this->client->request('GET', $url,$this->headers);
             return json_decode($response->getBody());
     }
+
+    public function getcategory(){
+        try{
+            $url = $this->pach.'/us/get/user/api/ext';
+            $response = $this->client->request('GET', $url);
+            return json_decode($response->getBody());
+        }catch (Exception $e) {
+            Log::critical('getcategory- '.$e);
+            return false;
+        }
+    }
+
 }

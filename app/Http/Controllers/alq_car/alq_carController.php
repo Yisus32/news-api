@@ -649,40 +649,23 @@ public function topmes($year, $i,$tipo)
 
     public function indicador(Request $request)
     {
-        $ronda=alq_car::all();
+        $ronda=DB::table('alq_car')->select(['user_id',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id'])
+        ->orderBy('recuento','desc')->get();
         $ser=new UsuService();
-       
-        foreach($ronda as $ids)
-        {
-            $resp=$ser->simpleget($ids->user_id);
+        $resp=$ser->getcategory();
 
-            foreach ($resp as $key)
+        foreach($ronda as $ronditas)
+        {
+            foreach($resp as $tuser)
             {
-                //$ids->clase=$key->clase_usuario;
-                $ids->categoria=$key->category_type_name;
+                if($ronditas->user_id==$tuser->id)
+                {
+                    $ronditas->categoria=$tuser->category_type_name;
+                }
             }
         }
-        //dd($resp);
-            
-           
-     $cont = [];
-    $c2 = 0;
-    foreach ($ronda as $user){
-        
-        //if(array_key_exists('categoria', $user)){
-            if(array_key_exists($user['categoria'], $cont)){
-                $c2 = $cont[$user['categoria']];
-            }else{
-                $c2 = $cont[$user['categoria']] = 0;
-            }
-            
 
-            $cont[$user['categoria']] = $c2 + 1;
-        //}
-        
-    }
-    return ["list"=>$cont,"total"=>count($cont)];
-        
+        return ["list"=>$ronda,"total"=>count($ronda)];
     }
  
     
