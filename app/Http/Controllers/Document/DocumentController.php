@@ -525,13 +525,6 @@ class DocumentController extends CrudController
             if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
                 return true;
             }
-
-
-
-
-
-
-
             $date = substr($dateArray[2], 0,-2).$dateArray[1].$dateArray[0];
             $dateFormat = str_replace(['/', '.', ' '], '-', $date);
             if(strpos($string, $dateFormat) != false ) {
