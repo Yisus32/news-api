@@ -102,6 +102,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('guests', 'Guest\GuestController@_store');
         $router->post('guests/email', 'Guest\GuestController@email');
         $router->put('guests/{id}', 'Guest\GuestController@_update');
+        $router->get('guests/confirmation/{id}', 'Guest\GuestController@acceptInvitation');
         $router->delete('guests/{id}', 'Guest\GuestController@_delete');
 
             /** routes para group **/ 
