@@ -499,6 +499,20 @@ public function rezero(Request $request)
     ->get(); 
 
  //dd($alqu);
+ $ser=new UsuService();
+        $resp=$ser->getcategory();
+
+        foreach($alqu as $ronditas)
+        {
+            foreach($resp as $tuser)
+            {
+                if($ronditas->user_id==$tuser->id)
+                {
+                    $ronditas->categoria=$tuser->category_type_name;
+                    $ronditas->clase=$tuser->fk_clase;
+                }
+            }
+        }
   
     $excel=new Spreadsheet();
     $hoja=$excel->getActiveSheet();
@@ -559,18 +573,28 @@ public function rezero(Request $request)
     $ser=new UsuService();
     foreach($alqu as $rows)
     {
-        //aqui busco el usuario
-       // $resp=$ser->simpleget($rows->user_id);
-        //dd($resp);
-       // foreach ($resp as $key)
-            //{
-               // $rows->clase=$key->clase_usuario;
-               // $rows->categoria=$key->category_type_name;
             
         $hoja->setCellValue('A'.$fila,$rows->fecha);
         $hoja->setCellValue('B'.$fila,$rows->user_num);
-        $hoja->setCellValue('C'.$fila,'');
-        $hoja->setCellValue('D'.$fila,'');
+        if(array_key_exists('categoria', $rows))
+        {
+            $hoja->setCellValue('C'.$fila,$rows->categoria);
+        }
+        else
+        {
+            $hoja->setCellValue('C'.$fila,'');
+        }
+
+        if(array_key_exists('clase', $rows))
+        {
+            $hoja->setCellValue('D'.$fila,$rows->clase);
+        }
+        else
+        {
+            $hoja->setCellValue('D'.$fila,'');
+        }
+       
+    
         if($rows->invnumsoc!==null)
         {
             $hoja->setCellValue('E'.$fila,$rows->invnumsoc);
@@ -610,7 +634,7 @@ public function rezero(Request $request)
 
 
         $fila++;
-            //}
+            
     }
 
 
