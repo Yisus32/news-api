@@ -11,6 +11,7 @@ use App\Core\ImageService;
 use App\Models\Guest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Mesh\NotificationService;
 
 /** @property Guest $model */
 class GuestRepository extends CrudRepository
@@ -81,6 +82,8 @@ class GuestRepository extends CrudRepository
 
         if (isset($data['flag'])) {
             $this->model->createInvitation($data,$guest);
+        }else{
+            $this->sendInvitationMail($guest);
         }
         
         
@@ -113,5 +116,21 @@ class GuestRepository extends CrudRepository
         }
 
         return $guest;
+    }
+
+    public function sendInvitationMail($stored){
+       $mailer = new NotificationService;
+        $receipt_url =env('APP_URL').'/api/guests/confirmation/'.$stored->id;
+         
+        if ($stored->email) {
+            $subject = "Invitación de registro";
+            $message = "Estimado $stored->full_name el socio $stored->host_name lo ha registrado en el <b>Club de Golf Panamá</b>
+            . Debe hacer click en el siguiente enlace para confirmar su invitación.
+            <br> <br> <a href='".$receipt_url."' target='_blank'>Haga click para registrarse</a>";
+      
+            $mailer = new NotificationService;
+            $mailer->sendEmail($stored->email,$subject,$message,6,"notificaciones@zippyttech.com");
+        
+        }
     }
 }
