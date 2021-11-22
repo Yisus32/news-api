@@ -509,7 +509,7 @@ public function rezero(Request $request)
                 if($ronditas->user_id==$tuser->id)
                 {
                     $ronditas->categoria=$tuser->category_type_name;
-                    $ronditas->clase=$tuser->fk_clase;
+                    $ronditas->clase=$tuser->clase_usuario;
                 }
             }
         }
