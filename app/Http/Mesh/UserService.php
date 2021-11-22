@@ -22,7 +22,7 @@ class UserService extends ServicesMesh
     {
         try {
             $client = new Client();
-            $response = $client->get(env('USERS_API').'get/user/' . $id);
+            $response = $client->get(env('USERS_API').'/us/get/user/' . $id);
 
             if ($response->getStatusCode() !== 200){
                 Log::critical($response->getStatusCode() . ":   " .  $response->getBody());
