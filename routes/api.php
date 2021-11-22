@@ -10,6 +10,7 @@
 |
 */
 
+use App\Http\Mesh\UserService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Router;
@@ -186,6 +187,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('alq_cars/fill/date','alq_car\alq_carController@filter_by_date');
         $router->get('alq_cars/top/{year}/{month}/{i}/{tipo}', 'alq_car\alq_carController@topday');
         $router->get('alq_cars/mes/top/{year}/{i}/{tipo}', 'alq_car\alq_carController@topmes');
+        $router->get('alq_cars/indicadores/list', 'alq_car\alq_carController@indicador');
         $router->post('alq_cars', 'alq_car\alq_carController@sav');
         $router->put('alq_cars/{id}', 'alq_car\alq_carController@_update');
         $router->delete('alq_cars/{id}', 'alq_car\alq_carController@_delete');
@@ -229,3 +231,13 @@ $router->put('invitations/{id}', 'Invitation\InvitationController@_update');
 $router->delete('invitations/{id}', 'Invitation\InvitationController@_destroy');
 
 
+$router->get('probando',function(Request $request){
+    $req = new UserService;
+    $user = $req->getUserById($request->id);
+    return $user;
+});
+$router->get('probando2',function(Request $request){
+    $req = new UserService;
+    $user = $req->getUsersById($request->id);
+    return $user;
+});

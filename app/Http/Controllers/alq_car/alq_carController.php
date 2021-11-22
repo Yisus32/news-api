@@ -9,19 +9,15 @@ use App\Services\alq_car\alq_carService;
 use Illuminate\Support\Facades\DB;
 use App\Core\ReportService;
 use Carbon\Carbon;
+use App\Http\Mesh\ServicesMesh;
+use App\Http\Mesh\UserService;
+use App\Http\Mesh\UsuService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Log;
-use phpDocumentor\Reflection\Types\Self_;
-use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
-use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
+
 
 
 /** @property alq_carService $service */
@@ -33,7 +29,9 @@ class alq_carController extends CrudController
     private static $returnRaw = false;
     public function __construct(alq_carService $service)
     {
+
         parent::__construct($service);
+
         $this->validateStore = [
             'car_id' => 'required',
             'hol_id' => 'required',
@@ -186,11 +184,11 @@ class alq_carController extends CrudController
     public function specialFilter(Request $request)
     {
         $band = false;
-        if($request->has(['fecha_ini','fecha_fin'])){
+        if($request->fecha_ini != null && $request->fecha_ini != '' && $request->fecha_fin != null && $request->fecha_fin != ''){
             $band = true;
 
-            $inicio = Carbon::parse($request->fecha_ini);
-            $fin = Carbon::parse($request->fecha_fin);
+            $inicio = Carbon::parse($request->fecha_ini)->startOfDay();
+            $fin = Carbon::parse($request->fecha_fin)->endOfDay();
         }
         $operations =DB::table('alq_car')
                         ->join('group','group.id','=','alq_car.gro_id')
@@ -235,7 +233,10 @@ class alq_carController extends CrudController
                             })
                             ->when($request->hol_id,function($query,$hol_id){
                                 //Buscar por id del hoyo
-                                return $query->where('alq_car.hol_id',$hol_id);
+                                return $query->where('alq_car.id_hole',$hol_id);
+                            })
+                            ->when($request->codegroup,function($query,$codegroup){
+                                return $query->where('group.cod','ilike',"$codegroup");
                             });
             if($band){
                 $operations = $operations->whereBetween('fecha',[$inicio,$fin]);
@@ -455,19 +456,63 @@ class alq_carController extends CrudController
 public function rezero(Request $request)
 {
    
-    if (empty($request->star)) {
-        return Response()->json(["error" => true, "message" => "la fecha es requerida"],400);
-    }
-    $now = Carbon::now()->timezone("America/Panama");
-    $r=$request->get('star');
-    $f=$request->get('end');
-
-    $alqu=DB::table('alq_car')->whereBetween(DB::Raw('cast(alq_car.fecha as date)'), array($r, $f))
+    $alqu=DB::table('alq_car')
     ->join('group','group.id','=','alq_car.gro_id')
     ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
     ->join('holes','holes.id','=','alq_car.id_hole')
     ->leftJoin('guests','guests.id','=','alq_car.user_id')
-    ->select('guests.host_number as invnumsoc','guests.host_name as invnamesoc','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
+    ->select('guests.host_number as invnumsoc','guests.host_name as invnamesoc','guests.card_number as carnet','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p','alq_car.created_at')
+    ->when($request->dat, function($query, $interval){
+        $date = explode('_', $interval);
+        $date[0] = Carbon::parse($date[0])->format('Y-m-d');
+        $date[1] = Carbon::parse($date[1])->format('Y-m-d');
+        return $query->whereBetween(
+            DB::raw("TO_CHAR(alq_car.created_at,'YYYY-MM-DD')"),[$date[0],$date[1]]);
+        })
+    ->when($request->num, function($query,$num){
+        //buscar por numero de socio
+        return $query->where('alq_car.user_num',$num);
+    })
+    ->when($request->nom, function($query,$nom){
+        //buscar por nombre
+        return $query->where('alq_car.user_name','ILIKE',$nom);
+    })
+    ->when($request->car, function($query,$car){
+        //buscar por carrito
+        return $query->where('alq_car.car_id','ILIKE',$car);
+    })
+    ->when($request->hora, function($query,$hora){
+        //buscar numero
+        return $query->where('alq_car.gro_id','ILIKE',$hora);
+    })
+    ->when($request->tipo_p,function($query,$tipo_p){
+        //Buscar por tipo de usuario
+        return $query->where('alq_car.tipo_p','ilike',$tipo_p);
+    })
+    ->when($request->j,function($query,$hol_id){
+        //Buscar por id del hoyo
+        return $query->where('alq_car.id_hole',$hol_id);
+    })
+    ->when($request->codegroup,function($query,$codegroup){
+        return $query->where('group.cod','ilike',"$codegroup");
+    })
+    ->get(); 
+
+ //dd($alqu);
+ $ser=new UsuService();
+        $resp=$ser->getcategory();
+
+        foreach($alqu as $ronditas)
+        {
+            foreach($resp as $tuser)
+            {
+                if($ronditas->user_id==$tuser->id)
+                {
+                    $ronditas->categoria=$tuser->category_type_name;
+                    $ronditas->clase=$tuser->clase_usuario;
+                }
+            }
+        }
   
     $excel=new Spreadsheet();
     $hoja=$excel->getActiveSheet();
@@ -525,13 +570,31 @@ public function rezero(Request $request)
     
     
     $fila=2;
-
+    $ser=new UsuService();
     foreach($alqu as $rows)
     {
+            
         $hoja->setCellValue('A'.$fila,$rows->fecha);
         $hoja->setCellValue('B'.$fila,$rows->user_num);
-        $hoja->setCellValue('C'.$fila,'');
-        $hoja->setCellValue('D'.$fila,'');
+        if(array_key_exists('categoria', $rows))
+        {
+            $hoja->setCellValue('C'.$fila,$rows->categoria);
+        }
+        else
+        {
+            $hoja->setCellValue('C'.$fila,'');
+        }
+
+        if(array_key_exists('clase', $rows))
+        {
+            $hoja->setCellValue('D'.$fila,$rows->clase);
+        }
+        else
+        {
+            $hoja->setCellValue('D'.$fila,'');
+        }
+       
+    
         if($rows->invnumsoc!==null)
         {
             $hoja->setCellValue('E'.$fila,$rows->invnumsoc);
@@ -552,7 +615,14 @@ public function rezero(Request $request)
         
         $hoja->setCellValue('G'.$fila,$rows->user_name);
         $hoja->setCellValue('H'.$fila,$rows->tipo_p);
-        $hoja->setCellValue('I'.$fila,'N/A');
+        if($rows->carnet!==null)
+        {
+            $hoja->setCellValue('I'.$fila,$rows->carnet);
+        }
+        else
+        {
+            $hoja->setCellValue('I'.$fila,'N/A');
+        }
         $hoja->setCellValue('J'.$fila,'1');
         $hoja->setCellValue('K'.$fila,$rows->codegroup);
         $hoja->setCellValue('L'.$fila,$rows->namehole);
@@ -564,6 +634,7 @@ public function rezero(Request $request)
 
 
         $fila++;
+            
     }
 
 
@@ -572,6 +643,7 @@ public function rezero(Request $request)
         $writer=IOFactory::createWriter($excel,'Xlsx');
         $writer->save("php://output");
         exit;
+
     
 }
 
@@ -580,9 +652,9 @@ public function topday($year,$month,$i,$tipo)
 {
     $outputs = DB::table('alq_car')->select(['user_id','user_name',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id','user_name'])
     ->where('tipo_p',$tipo)->whereYear('created_at', $year) ->whereMonth('created_at',$month)
-    ->whereDay('created_at', $i)->limit('10')->get();
+    ->whereDay('created_at', $i)->limit('10')->orderBy('recuento','desc')->get();
 
-    return $outputs;
+    return ["list"=>$outputs,"total"=>count($outputs)];
 }
 
 
@@ -593,11 +665,47 @@ public function topmes($year, $i,$tipo)
     {
         $ust=DB::table('alq_car')->select(['user_id','user_name',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id','user_name'])
         ->where('tipo_p',$tipo)->whereYear('created_at', $year)->whereMonth('created_at',$i)
-        ->limit('10')->get();
+        ->limit('10')->orderBy('recuento','desc')->get();
 
-        return $ust;
+        return ["list"=>$ust,"total"=>count($ust)];
+
     }
 
+    public function indicador(Request $request)
+    {
+        $ronda=DB::table('alq_car')->select(['user_id',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id'])
+        ->orderBy('recuento','desc')->get();
+        $ser=new UsuService();
+        $resp=$ser->getcategory();
+
+        foreach($ronda as $ronditas)
+        {
+            foreach($resp as $tuser)
+            {
+                if($ronditas->user_id==$tuser->id)
+                {
+                    $ronditas->categoria=$tuser->category_type_name;
+                }
+            }
+        }
+
+        $cont = [];
+    $c2 = 0;
+    $cuenta=0;
+    foreach ($ronda as $ronditas){
+            if(array_key_exists('categoria', $ronditas)){
+                $cuenta++;
+              if(array_key_exists($ronditas->categoria, $cont)){
+                  $c2 = $cont[$ronditas->categoria];
+              }else{
+                  $c2 = $cont[$ronditas->categoria] = 0;
+              }
+              $cont[$ronditas->categoria] = $c2 + 1;
+            }   
+    }
+        return ["list"=>$cont,"total"=>$cuenta];
+    }
+ 
     
 
 
