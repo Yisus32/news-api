@@ -26,7 +26,7 @@ class AccountService
     {
         try {
             $client = new Client();
-            $response = $client->get(env('USERS_API').'ac/list/');
+            $response = $client->get(env('USERS_API').'/us/ac/list/');
 
             if ($response->getStatusCode() !== 200){
                 Log::critical($response->getStatusCode() . ":   " .  $response->getBody());
