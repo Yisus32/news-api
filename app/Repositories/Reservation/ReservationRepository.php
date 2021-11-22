@@ -158,7 +158,7 @@ class ReservationRepository extends CrudRepository
 
             $this->model->createInvitation($updated);
 
-            $this->multiSendInvitation($stored);
+            $this->multiSendInvitation($updated);
 
             return response()->json(['status' => 200, 'stored' => $updated]);
         }  
