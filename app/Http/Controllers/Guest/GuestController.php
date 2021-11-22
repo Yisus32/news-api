@@ -37,12 +37,8 @@ class GuestController extends CrudController
         $name =  $request->full_name;
         $email = $request->email;
         $email = filter_var($email,FILTER_VALIDATE_EMAIL);
-
-        $owner_name = $request->owner_name;
-        $owner_id = $request->host_id;
-        $owner_number = $request->host_number;
       
-        $receipt_url = 'https://'.env('FRONT_URL')."/guest/register-guest/$name/$email/$owner_id/$owner_name/$owner_number/%20";
+        $receipt_url = 'https://'.env('FRONT_URL')."/guest/register-guest";
 
         if ($email) {
             $message = "Estimado $name el socio $owner_name lo ha invitado a registrarse al <b>Club de Golf Panamá</b>
