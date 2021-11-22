@@ -126,6 +126,8 @@ class ReservationRepository extends CrudRepository
             $stored = parent::_store($data);
             
             $this->model->createInvitation($stored);
+
+            $this->multiSendInvitation($stored);
             
             return response()->json(['status' => 200, 'stored' => $stored]);
         }  
@@ -223,78 +225,78 @@ class ReservationRepository extends CrudRepository
         }
     }
 
-    public function multiResendInvitation($id, $reservation_id, Request $request){
-        if(\Validator::make($request->all(), ['type' => 'required'])->fails()){
-            return response()->json(array(  
-                'success' => false,
-                'message' => 'Requiere el tipo',
-                'value'   => null,
-                'count'   => 0
-            ));
-        }else{
-            $type = $request->type;
-        }
-        $invitation = Invitation::select(
-            'reservations.owner_name',
-            'teetimes.start_hour as teetime_start_hour',                           
-            'teetimes.start_date as teetime_start_date',
-            'invitations.id as invitation_id',
-            'reservations.owner as reservation_owner_id',
-            'reservations.owner_name as reservation_owner_name')
-        ->where('invitations.reservation_id',$reservation_id)
-        ->when($type == 'partner', function ($query, $request) use ($id) {
-            $query->where('invitations.partner',$id);
-        })
-        ->when($type == 'guest', function ($query, $request) use ($id) {
-            $query->where('invitations.guest',$id);
-        })
-        ->leftjoin('reservations','reservations.id','=','invitations.reservation_id')
-        ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
-        ->first();
-        if(!empty($invitation)){
-           $exist_mail = Guest::where('email',$request->email)->first();
-            if(empty($exist_mail)){
-                if(str_contains(env('APP_URL'), "https://")){
-                    $receipt_url = env('APP_URL').'/accept/invitation/'.$invitation->invitation_id;
-                }else{
-                    $receipt_url = "https://".env('APP_URL').'/accept/invitation/'.$invitation->invitation_id;
-                }
-            }else{
-                $owner_id     = $invitation->reservation_owner_id;
-                $owner_number = explode(' ', $invitation->reservation_owner_name)[0];
-                $owner_name   = explode(' ', $invitation->reservation_owner_name)[1];
-             
-                $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/%20/'.$email.'/'.$owner_id.'/'.$owner_name.'/'.$owner_number.'/'.$reservation_id;
-            } 
-            $date    = $invitation->teetime_start_date;
-            $time    = $invitation->teetime_start_hour;
-            $name    = $request->name ?? 'invitado';
-            $partner = $invitation->owner_name;
-            $subject = "Invitación Teetime";
-            $message = "Estimado ".$name.", el socio ".$partner." lo ha invitado a un juego en el club de golf de Panamá el día <b>".Carbon::parse($date)->format('d-m-Y')."</b> a las <b>".Carbon::parse($time)->format('h:i A')."</b>.Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> 
-                <a href='".$receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
-           
-            if (filter_var($request->email,FILTER_VALIDATE_EMAIL)) {
-                $mailer = new NotificationService;
-                $mailer->sendEmail($request->email,$subject,$message,6,"notificaciones@zippyttech.com");
+    public function multiSendInvitation($stored){
+         
+         $pattern = "/[a-z\d._%+-]+@[a-z\d.-]+\.[a-z]{2,4}\b/i";
+         $mailer = new NotificationService;
+
+        if ($stored['partners_name'] != null) {
+            foreach (explode(',',$stored['partners_name']) as $partner) {
+             preg_match ($pattern,$partner,$matches);
+             $emails[] = $matches[0];
             }
-            return response()->json(array(  
-                'success' => true,
-                'message' => "La invitacion ha sido reenviado",
-                'value'   => null,
-                'count'   => 0
-            )); 
-            //return response()->json(["status"=>200,"message"=>],200);
-        }else{
-            return response()->json(array(  
-                'success' => false,
-                'message' => 'Requiere el tipo',
-                'value'   => null,
-                'count'   => 0
-            )); 
+
         }
 
+        if ($stored['guests_name'] != null) {     
+             foreach (explode(',',$stored['guests_name']) as $guest) {
+             preg_match ($pattern,$guest,$matches);
+             $emails[] = $matches[0];
+            }
+        }
+
+        if ($stored['guests_email'] != null) {     
+             foreach (explode(',',$stored['guests_email']) as $_guest) {
+             $_guests[] = $_guest;
+            }
+        }
+
+        if (isset($emails)) {
+            foreach ($emails as $email){
+                $invitation = Invitation::where('reservation_id',$stored->id)
+                                    ->where('guest_email',$email)
+                                    ->first();
+        
+                $receipt_url = env('APP_URL').'/api/accept/invitation/'.$invitation->id;
+
+                $subject = "invitacion a teetime";
+                $message = "Estimado $email, el socio $stored->owner_name lo ha invitado a un juego en el club de golf de Panamá el día ".Carbon::parse($stored->date)->format('d-m-Y')." a las ".Carbon::parse($stored->start_hour)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
+                    $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
+        
+                
+                if (filter_var($email,FILTER_VALIDATE_EMAIL)) {
+                    $mailer->sendEmail($email,$subject,$message,6,"notificaciones@zippyttech.com");
+                }
+            }   
+        }
+
+        if (isset($_guests)) {
+            foreach ($_guests as $other){
+                $invitation = Invitation::where('reservation_id',$stored->id)
+                                    ->where('guest_email',$other)
+                                    ->first();
+        
+                $email = $other;
+                $_owner_id = $stored->owner;
+                $_owner_number = explode(' ', $stored->owner_name)[0];
+                $_owner_name = explode(' ', $stored->owner_name)[1];
+                $reservation_id = $stored->id;
+
+                $receipt_url = 'https://'.env('FRONT_URL').'/guest/register-guest/%20/'.$email.'/'.$_owner_id.'/'.$_owner_name.'/'.$_owner_number.'/'.$reservation_id;
+
+                $subject = "invitacion a teetime";
+                $message = "Estimado $email, el socio $stored->owner_name lo ha invitado a un juego en el club de golf de Panamá el día ".Carbon::parse($stored->date)->format('d-m-Y')." a las ".Carbon::parse($stored->start_hour)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
+                    $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
+        
+               
+                if (filter_var($other,FILTER_VALIDATE_EMAIL)) {
+                    $mailer->sendEmail($other,$subject,$message,6,"notificaciones@zippyttech.com");
+                }
+            } 
+
+        }
     }
+
     public function resendInvitation($reservation_id, Request $request){
     
         $type = $request->type;
