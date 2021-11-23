@@ -214,7 +214,7 @@ class TeetimeRepository extends CrudRepository
                 }
                 $teetime->holes_name = $array;
 
-                if ($request->header('role') != "admin") {
+               if ($request->header('role') != "admin") {
                     $end = Carbon::now($request->header("timezone"));
                     $end->addHours($teetime->available);
                     
@@ -305,7 +305,6 @@ class TeetimeRepository extends CrudRepository
                                                     ->where('date', '=', "$date_save[0]")
                                                     ->where('start_hour', '=', "$date_save[1]")
                                                     ->where('status', '=', 'registrado')
-                                                    ->orWhere('status', '=', 'reservado')
                                                     ->where('hole_id', '=', "$hole")
                                                     ->where('date', '=', "$date_save[0]")
                                                     ->where('start_hour', '=', "$date_save[1]")
