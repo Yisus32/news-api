@@ -172,7 +172,7 @@ class TeetimeRepository extends CrudRepository
 
         $start_day = Carbon::now(env('APP_TIMEZONE'))->format('Y-m-d');
  
-        $end_day = Teetime::max("end_date");
+        $end_day = Carbon::now(env('APP_TIMEZONE'))->addDay()->format('Y-m-d');
 
         if (isset($start_day) and isset($end_day)) {
             $teetimes = Teetime::whereBetween('start_date', [$start_day, $end_day])
