@@ -167,6 +167,7 @@ class TeetimeRepository extends CrudRepository
     }
 
     //devuelve espacios disponibles en un teetime
+    //comentario para commit
 
     public function available(Request $request){
 
