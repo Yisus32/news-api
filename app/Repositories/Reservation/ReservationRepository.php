@@ -232,7 +232,7 @@ class ReservationRepository extends CrudRepository
          $pattern = "/[a-z\d._%+-]+@[a-z\d.-]+\.[a-z]{2,4}\b/i";
          $mailer = new NotificationService;
 
-        if ($stored['partners_name'] != null) {
+        if ($stored['partners_name'] != null && $stored['partners_name'] != '""') {
             foreach (explode(',',$stored['partners_name']) as $partner) {
              preg_match ($pattern,$partner,$matches);
              $emails[] = $matches[0];
@@ -240,14 +240,14 @@ class ReservationRepository extends CrudRepository
 
         }
 
-        if ($stored['guests_name'] != null) {     
+        if ($stored['guests_name'] != null && $stored['guests_name'] != '""') {     
              foreach (explode(',',$stored['guests_name']) as $guest) {
              preg_match ($pattern,$guest,$matches);
              $emails[] = $matches[0];
             }
         }
 
-        if ($stored['guests_email'] != null) {     
+        if ($stored['guests_email'] != null && $stored['guests_email'] != '""') {     
              foreach (explode(',',$stored['guests_email']) as $_guest) {
              $_guests[] = $_guest;
             }
