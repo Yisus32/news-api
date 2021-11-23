@@ -703,7 +703,16 @@ public function topmes($year, $i,$tipo)
               $cont[$ronditas->categoria] = $c2 + 1;
             }   
     }
-        return ["list"=>$cont,"total"=>$cuenta];
+
+    $vista = [];
+    foreach($cont as $c=>$l){
+      $vista[] = [
+          "name"=>$c,
+          "value"=>$l
+      ];
+    }
+          return ["list"=>$vista,"total"=>$cuenta];
+        //return ["list"=>$cont,"total"=>$cuenta];
     }
  
     
