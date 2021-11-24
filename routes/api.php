@@ -46,6 +46,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
             $router->get('/game_log', 'game_log\game_logController@report');
             $router->get('/alq_car', 'alq_car\alq_carController@rezero');
             $router->post('/automatic', 'ReportController@automatic');
+            $router->get('/alq_car/top/day/{year}/{month}/{i}/{tipo}', 'alq_car\alq_carController@topdayreport');
+            $router->get('/alq_car/mes/top/{year}/{i}/{tipo}', 'alq_car\alq_carController@topmesreport');
         });
     });
 
