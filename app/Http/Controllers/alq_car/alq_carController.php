@@ -363,7 +363,7 @@ public function rezero(Request $request)
     $excel->getActiveSheet()->getStyle('A:P')
     ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
     $excel->getActiveSheet()->getStyle('A:P')
-    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
     
     
     $fila=2;
