@@ -360,10 +360,10 @@ public function rezero(Request $request)
     $excel->getActiveSheet()->getColumnDimension('P')->setWidth(350, 'px');
     
 
-    $excel->getActiveSheet()->getStyle('A1:P1')
+    $excel->getActiveSheet()->getStyle('A:P')
     ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-    $excel->getActiveSheet()->getStyle('A1:P1')
-    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $excel->getActiveSheet()->getStyle('A:P')
+    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
     
     
     $fila=2;
