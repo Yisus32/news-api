@@ -670,5 +670,107 @@ public function topmesreport($year,$i,$tipo,Request $request)
     
 }
 
+public function rondastiporeport()
+{
+   
+    $excel=new Spreadsheet();
+    $hoja=$excel->getActiveSheet();
+    $hoja->setTitle("Rondas segun tipo de socio");
+    $hoja->mergeCells('A1:B1');
+    $hoja->setCellValue('A1','Rondas segun tipo de socio');
+    $hoja->setCellValue('A2','TIPO DE SOCIO');
+    $hoja->setCellValue('B2','RONDA');
+
+    $excel->getActiveSheet()->getStyle('A1:B1')->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()->setRGB('12AE0D');
+
+    $excel->getActiveSheet()->getStyle('A2:B2')->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()->setRGB('0066CC');
+
+    $excel->getActiveSheet()->getStyle('A1:B1')->getFont()
+        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE,'size'=>18, 'color' => [ 'rgb' => 'ffffff' ] ] );
+
+    $excel->getActiveSheet()->getStyle('A2:B2')->getFont()
+        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );
+        $excel->getActiveSheet()->getRowDimension('1')->setRowHeight(50, 'pt');
+    $excel->getActiveSheet()->getRowDimension('2')->setRowHeight(50, 'pt');
+
+    $excel->getActiveSheet()->getColumnDimension('A')->setWidth(160, 'px');
+    $excel->getActiveSheet()->getColumnDimension('B')->setWidth(170, 'px');
+
+    
+
+    $excel->getActiveSheet()->getStyle('A:B')
+    ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $excel->getActiveSheet()->getStyle('A:B')
+    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+   
+    
+    
+    $fila=3;
+    $ronda=DB::table('alq_car')->select(['user_id',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id'])
+    ->orderBy('recuento','desc')->get();
+    $ser=new UsuService();
+    $resp=$ser->getcategory();
+
+    foreach($ronda as $ronditas)
+    {
+        foreach($resp as $tuser)
+        {
+            if($ronditas->user_id==$tuser->id)
+            {
+                $ronditas->categoria=$tuser->category_type_name;
+            }
+        }
+    }
+
+    $cont = [];
+$c2 = 0;
+$cuenta=0;
+foreach ($ronda as $ronditas){
+        if(array_key_exists('categoria', $ronditas)){
+            $cuenta++;
+          if(array_key_exists($ronditas->categoria, $cont)){
+              $c2 = $cont[$ronditas->categoria];
+          }else{
+              $c2 = $cont[$ronditas->categoria] = 0;
+          }
+          $cont[$ronditas->categoria] = $c2 + 1;
+        }   
+}
+
+$vista = [];
+foreach($cont as $c=>$l){
+  $vista[] = [
+      "name"=>$c,
+      "value"=>$l
+  ];
+
+  $hoja->setCellValue('A'.$fila,$c);
+  $hoja->setCellValue('B'.$fila,$l);
+ 
+  $fila++;
+}     
+
+       
+       
+       
+       
+            
+    
+
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="reporte rondas tipo.xlsx"');
+        $writer=IOFactory::createWriter($excel,'Xlsx');
+        $writer->save("php://output");
+        exit;
+
+    
+}
+
 }
 
