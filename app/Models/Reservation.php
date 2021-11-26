@@ -105,27 +105,33 @@ class Reservation extends CrudModel
         
         $checkInvitation = Invitation::where('reservation_id',$stored['id'])->get();
         
-        if ($checkInvitation->isEmpty()) {
-            foreach ($emails as $email) {
-                $invitation = new Invitation;
-                $invitation->reservation_id = $stored->id;
-                $invitation->guest_email = $email;
-                $invitation->save();
+       if (isset($emails)) {
+            if ($checkInvitation->isEmpty()) {
+                foreach ($emails as $email) {
+                    $invitation = new Invitation;
+                    $invitation->reservation_id = $stored->id;
+                    $invitation->guest_email = $email;
+                    $invitation->save();
             } 
-        }else{
-            foreach ($checkInvitation as $check) {
-                $invitation = Invitation::where('id',$check['id'])->first();
-                $invitation->delete();
-            } 
+            }else{
+                foreach ($checkInvitation as $check) {
+                    $invitation = Invitation::where('id',$check['id'])->first();
+                    $invitation->delete();
+                } 
 
-            foreach($emails as $email){    
-                $invitation = new Invitation;
-                $invitation->reservation_id = $stored->id;
-                $invitation->guest_email = $email;
-                $invitation->save();
+                foreach($emails as $email){    
+                    $invitation = new Invitation;
+                    $invitation->reservation_id = $stored->id;
+                    $invitation->guest_email = $email;
+                    $invitation->save();
+                }
             }
-        }
-        
-        return $invitation; 
+
+            return $invitation;
+       }else{
+            return [];
+       }
+         
+         
     }
 }
