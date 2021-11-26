@@ -360,10 +360,10 @@ public function rezero(Request $request)
     $excel->getActiveSheet()->getColumnDimension('P')->setWidth(350, 'px');
     
 
-    $excel->getActiveSheet()->getStyle('A1:P1')
+    $excel->getActiveSheet()->getStyle('A:P')
     ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-    $excel->getActiveSheet()->getStyle('A1:P1')
-    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $excel->getActiveSheet()->getStyle('A:P')
+    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
     
     
     $fila=2;
@@ -468,10 +468,57 @@ public function topmes($year, $i,$tipo)
 
     }
 
-    public function indicador(Request $request)
+    public function indicadormes($year,$i)
     {
         $ronda=DB::table('alq_car')->select(['user_id',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id'])
-        ->orderBy('recuento','desc')->get();
+        ->whereYear('created_at', $year)->whereMonth('created_at',$i)->orderBy('recuento','desc')->get();
+        $ser=new UsuService();
+        $resp=$ser->getcategory();
+
+        foreach($ronda as $ronditas)
+        {
+            foreach($resp as $tuser)
+            {
+                if($ronditas->user_id==$tuser->id)
+                {
+                    $ronditas->categoria=$tuser->category_type_name;
+                }
+            }
+        }
+
+        $cont = [];
+    $c2 = 0;
+    $cuenta=0;
+    foreach ($ronda as $ronditas){
+            if(array_key_exists('categoria', $ronditas)){
+                $cuenta++;
+              if(array_key_exists($ronditas->categoria, $cont)){
+                  $c2 = $cont[$ronditas->categoria];
+              }else{
+                  $c2 = $cont[$ronditas->categoria] = 0;
+              }
+              $cont[$ronditas->categoria] = $c2 + 1;
+            }   
+    }
+
+    $vista = [];
+    foreach($cont as $c=>$l){
+      $vista[] = [
+          "name"=>$c,
+          "value"=>$l
+      ];
+    }
+          return ["list"=>$vista,"total"=>$cuenta];
+        //return ["list"=>$cont,"total"=>$cuenta];
+    }
+ 
+
+
+    public function indicadorday($year,$month,$i)
+    {
+        $ronda=DB::table('alq_car')->select(['user_id',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id'])
+        ->whereYear('created_at', $year) ->whereMonth('created_at',$month)
+        ->whereDay('created_at', $i)->orderBy('recuento','desc')->get();
         $ser=new UsuService();
         $resp=$ser->getcategory();
 
