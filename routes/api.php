@@ -190,7 +190,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('alq_cars/fill/date','alq_car\alq_carController@filter_by_date');
         $router->get('alq_cars/top/{year}/{month}/{i}/{tipo}', 'alq_car\alq_carController@topday');
         $router->get('alq_cars/mes/top/{year}/{i}/{tipo}', 'alq_car\alq_carController@topmes');
-        $router->get('alq_cars/indicadores/list', 'alq_car\alq_carController@indicador');
+        $router->get('alq_cars/indicadores/list/mes/{year}/{i}', 'alq_car\alq_carController@indicadormes');
+        $router->get('alq_cars/indicadores/list/day/{year}/{month}/{i}', 'alq_car\alq_carController@indicadorday');
         $router->post('alq_cars', 'alq_car\alq_carController@sav');
         $router->put('alq_cars/{id}', 'alq_car\alq_carController@_update');
         $router->delete('alq_cars/{id}', 'alq_car\alq_carController@_delete');
