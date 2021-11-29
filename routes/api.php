@@ -49,7 +49,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
             $router->post('/automatic', 'ReportController@automatic');
             $router->get('/alq_car/top/day/{year}/{month}/{i}/{tipo}', 'alq_car\alq_carController@topdayreport');
             $router->get('/alq_car/mes/top/{year}/{i}/{tipo}', 'alq_car\alq_carController@topmesreport');
-            $router->get('/alq_cars/indicadores', 'alq_car\alq_carController@rondastiporeport');
+            $router->get('/alq_cars/indicadores/day/{year}/{month}/{i}', 'alq_car\alq_carController@rondastiporeportday');
+            $router->get('/alq_cars/indicadores/mes/{year}/{i}', 'alq_car\alq_carController@rondastiporeportmes');
         });
     });
 
