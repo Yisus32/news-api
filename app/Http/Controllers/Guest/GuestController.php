@@ -16,13 +16,13 @@ class GuestController extends CrudController
     }
 
     public function _store(Request $request)
-    {
-        if (!isset($request->status)) {
-            $request->status = 'No confirmado';
-            $request["status"] = 'No confirmado';
-        }
+    {       
+            if (!isset($request->status)) {
+                $request->status = 'No confirmado';
+                $request["status"] = 'No confirmado';
+            }
 
-        return parent::_store($request);
+            return parent::_store($request);
     }
 
     public function email(Request $request){
