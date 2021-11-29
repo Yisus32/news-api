@@ -45,7 +45,7 @@ class GuestService extends CrudService
         }
         
 
-        return $this->repository->_store($request);
+        return response()->json(["status"=>200,"guest"=>$this->repository->_store($request)],200);
         } catch (\Exception $e) {
             return response()->json(['error'=>true,'message'=>'El numero de carnet se encuentra en uso'],422);
         }
