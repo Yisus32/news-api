@@ -27,7 +27,9 @@ class GuestService extends CrudService
     }
 
     public function _store(Request $request){
-        if (isset($request->identifier)) {
+
+        try {
+            if (isset($request->identifier)) {
             $guest_exist = Guest::whereRaw('LOWER(identifier) like ?', strtolower($request->identifier))->first();
 
             if($guest_exist){
@@ -43,10 +45,15 @@ class GuestService extends CrudService
         }
         
 
-        return parent::_store($request);
+        return response()->json(["status"=>200,"guest"=>$this->repository->_store($request)],200);
+        } catch (\Exception $e) {
+            return response()->json(['error'=>true,'message'=>'El numero de carnet se encuentra en uso'],422);
+        }
+        
     }
     public function _update($id, Request $request){
-        if (isset($request->identifier)) {
+        try {
+            if (isset($request->identifier)) {
             $guest_exist = Guest::whereRaw('LOWER(identifier) like ?', strtolower($request->identifier))->first();
 
             if($guest_exist and $guest_exist->id != $id){
@@ -61,7 +68,11 @@ class GuestService extends CrudService
             }
         }
 
-        return parent::_update($id, $request);
+             return response()->json(["status"=>200,"message"=>"guest Modificado","guest"=>$this->repository->_update($id, $request)],200);
+        } catch (\Exception $e) {
+            return response()->json(['error'=>true,'message'=>'El numero de carnet se encuentra en uso'],422);
+        }
+        
     }
 
     public function _delete($id)
