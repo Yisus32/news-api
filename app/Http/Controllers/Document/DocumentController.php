@@ -69,8 +69,7 @@ class DocumentController extends CrudController
                 'count'   => 0
             ));
         }
-        if(\Validator::make($request->all(), ['n_document' => 'required'])->fails() 
-            || \Validator::make($request->all(), ['n_pasaport' => 'required'])->fails() ){
+        if(\Validator::make($request->all(), ['n_document' => 'required'])->fails()){
             return response()->json(array( 
                 'success' => false,
                 'message' => 'Se requiere el número de documento ',
@@ -93,14 +92,9 @@ class DocumentController extends CrudController
                     'count'   => 0
                 ));
             }
-            $document->name  = $request->full_name;
-            if($request->n_document != ''){
-                $document->document  = $request->n_document;
-            }
-            if($request->n_pasaport != ''){
-                $document->document  = $request->n_pasaport;
-            }
-            $document->state = 'Aceptado';
+            $document->name      = $request->full_name;
+            $document->document  = $request->n_document;
+            $document->state     = 'Aceptado';
             if($this->getBase64ImageSize($request->input('front_image')) > 1){
                 return response()->json(array( 
                     'success' => false,
