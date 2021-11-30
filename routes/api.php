@@ -174,6 +174,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('documents/validate', 'Document\DocumentController@_validate');
         $router->post('validate', 'Document\DocumentController@_validate_document');
         $router->post('documents/create', 'Document\DocumentController@_create');
+        $router->post('name', 'Document\DocumentController@validateName');
         /** routes para bitatoalla **/ 
         $router->get('bitatoallas/toalla', 'bitatoalla\bitatoallaController@bita');
         $router->post('bitatoallas/obs', 'bitatoalla\bitatoallaController@reception');

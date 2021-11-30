@@ -856,6 +856,7 @@ class DocumentController extends CrudController
      * @return Exception|string|bool
      * @version 1.0
     */
+
     public function validateName($string, $full_name = ''){
         if($full_name != ""){
             $string = str_replace('\n', ' ', $string);
@@ -864,7 +865,7 @@ class DocumentController extends CrudController
             if(!empty($porciones)){
                 $val = count($porciones);
                 foreach ($porciones as $por) {
-                    if(strpos($string, $por) === false){
+                    if(strrpos($string, $por) === false){
                         $val--; 
                     }
                 }
