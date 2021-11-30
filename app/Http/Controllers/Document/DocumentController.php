@@ -28,6 +28,117 @@ class DocumentController extends CrudController
             "required" => "El campo ' :attribute ' es requerido"
         ];
     }
+    /**
+   * Función que permite crear un documento
+   *
+   * @author foskert@gmail.com
+   * @param Request $request
+   * @return JsonResponse
+   * @version 1.0
+   */
+    public function _create(Request $request){
+        if(\Validator::make($request->all(), ['guest_id' => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere el ID del invitado',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        if(\Validator::make($request->all(), ['type' => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere el tipo de documento',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        if(\Validator::make($request->all(), ['full_name' => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere el nombre completo',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        if(\Validator::make($request->all(), ['front_image'  => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere de la imagen de frente del documento de identidad',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        if(\Validator::make($request->all(), ['n_document' => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere el número de documento ',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        try{
+            $document = new Document();
+            $type = strtolower($request->type);
+            if($type == "dni"){
+                $document->type = 'DNI';
+            }else if($type == 'pasaporte'){
+                $document->type = 'Pasaporte';
+            }else{
+                return response()->json(array( 
+                    'success' => false,
+                    'message' => 'Tipo de documento no válido',
+                    'value'   => null,
+                    'count'   => 0
+                ));
+            }
+            $document->name        = $request->full_name;
+            $document->type        = 'DNI';
+            $document->document    = $request->n_document;
+            $document->state       = 'Aceptado';
+            if($this->getBase64ImageSize($request->input('front_image')) > 1){
+                return response()->json(array( 
+                    'success' => false,
+                    'message' => 'La imagen frontal supera el tamaño máximo disponible',
+                    'value'   => null ,
+                    'count'   => 0
+                ));
+            }else{
+                 $document->front_image = $this->loadImage($request->front_image, '/invitado/'.$type, 'DOCUMENT_FRONT', 'invitado');
+                if(!$document->front_image){
+                    return response()->json(array(  
+                        'success'=> false,
+                        'message'=> 'No se proceso la carga de la imagen frontal',
+                        'value'  =>  $document->front_image,
+                        'count'  => 0
+                    ));
+                }   
+            }
+            if($document->save()){
+                return response()->json(array( 
+                    'success' => true,
+                    'message' => 'Registro exitoso',
+                    'value'   => $document, 
+                    'count'   => 1
+                ));
+            }else{
+                return response()->json(array( 
+                    'success' => false,
+                    'message' => 'No se logro el registro del documento',
+                    'value'   => $document, 
+                    'count'   => 0
+                ));
+            }
+        }catch (Exception $e) {
+            Log::critical('USCDCCD0001-'.$e->getMessage());
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Error USCDCCD0001 '.$e,
+                'value'   => null,
+                'count'   => 0
+            ));
+        }  
+    }
      /**
      * Función que permite crear un documento y validarlo para los invitados
      *
@@ -63,7 +174,6 @@ class DocumentController extends CrudController
         }
         
         try{
-            $document = new Document();
             $type = strtolower($request->type);
             if($type == "dni"){
                 if(\Validator::make($request->all(), ['n_document' => 'required'])->fails()){
@@ -85,43 +195,12 @@ class DocumentController extends CrudController
                     );
                 }
                 if(is_bool($porAceptacion) && $porAceptacion == true){
-                    $document->name        = $request->full_name;
-                    $document->type        = 'DNI';
-                    $document->document    = $request->n_document;
-                    $document->state       = 'Aceptado';
-                    if($this->getBase64ImageSize($request->input('front_image')) > 1){
-                        return response()->json(array( 
-                            'success' => false,
-                            'message' => 'La imagen frontal supera el tamaño máximo disponible',
-                            'value'   => null ,
-                            'count'   => 0
-                        ));
-                    }else{
-                         $document->front_image = $this->loadImage($request->front_image, '/invitado/dni', 'DOCUMENT_FRONT', 'invitado');
-                        if(!$document->front_image){
-                            return response()->json(array(  
-                                'success'=> false,
-                                'message'=> 'No se proceso la carga de la imagen frontal',
-                                'value'  =>  $document->front_image,
-                                'count'  => 0
-                            ));
-                        }   
-                    }
-                    if($document->save()){
-                        return response()->json(array( 
-                            'success' => true,
-                            'message' => 'Registro exitoso',
-                            'value'   => $document, 
-                            'count'   => 1
-                        ));
-                    }else{
-                        return response()->json(array( 
-                            'success' => false,
-                            'message' => 'No se logro el registro del documento',
-                            'value'   => $document, 
-                            'count'   => 0
-                        ));
-                    }
+                    return response()->json(array( 
+                        'success' => true,
+                        'message' => 'El DNI fue aceptado',
+                        'value'   => 'Aceptado', 
+                        'count'   => 1
+                    ));
                 }else{
                     return response()->json(array( 
                         'success' => false,
@@ -150,44 +229,12 @@ class DocumentController extends CrudController
                     );
                 }
                 if(is_bool($porAceptacion) &&  $porAceptacion == true){
-                    $document->name        = $request->full_name;
-                    $document->type        = 'Pasaporte';
-                    $document->document    = $request->n_pasaport;
-                    $document->state       = 'Aceptado';
-                    if($this->getBase64ImageSize($request->input('front_image')) > 1){
-                        return response()->json(array( 
-                            'success' => false,
-                            'message' => 'La imagen frontal supera el tamaño máximo disponible',
-                            'value'   => null ,
-                            'count'   => 0
-                        ));
-                    }else{
-                        $front_image = $this->loadImage($request->front_image, '/invitado/pasaporte', 'DOCUMENT_FRONT', 'Invitado');
-                        if(!$front_image){
-                            return response()->json(array(  
-                                'success'=> false,
-                                'message'=> 'No se proceso la carga de la imagen',
-                                'value'  => $front_image,
-                                'count'  => 0
-                            ));
-                        }   
-                    }                            
-                    $document->front_image = $front_image;
-                    if($document->save()){
-                        return response()->json(array( 
-                            'success' => true,
-                            'message' => 'Registro exitoso',
-                            'value'   => $document, 
-                            'count'   => 1
-                        ));
-                    }else{
-                        return response()->json(array( 
-                            'success' => false,
-                            'message' => 'Error en el registro',
-                            'value'   => $document, 
-                            'count'   => 0
-                        ));
-                    }
+                    return response()->json(array( 
+                        'success' => true,
+                        'message' => 'El pasaporte fue aceptado',
+                        'value'   => 'Aceptado', 
+                        'count'   => 1
+                    ));
                 }else{
                     return response()->json(array( 
                         'success' => false,
