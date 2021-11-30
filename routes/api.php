@@ -172,7 +172,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('documents/{id}',      'Document\DocumentController@_update');
         $router->delete('documents/{id}',   'Document\DocumentController@_delete');
         $router->post('documents/validate', 'Document\DocumentController@_validate');
-
+        $router->post('validate', 'Document\DocumentController@_validate_document');
         /** routes para bitatoalla **/ 
         $router->get('bitatoallas/toalla', 'bitatoalla\bitatoallaController@bita');
         $router->post('bitatoallas/obs', 'bitatoalla\bitatoallaController@reception');
