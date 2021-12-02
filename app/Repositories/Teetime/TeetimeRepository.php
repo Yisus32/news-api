@@ -177,7 +177,7 @@ class TeetimeRepository extends CrudRepository
     public function paginate_days(){
         
         $start_day = Carbon::now(env('APP_TIMEZONE'))->format('Y-m-d');
-        $end_day = Teetime::max('available_time');
+        $end_day = Teetime::max('end_date');
 
         $period = CarbonPeriod::create($start_day, $end_day);
 
@@ -189,10 +189,10 @@ class TeetimeRepository extends CrudRepository
     }
 
     public function available(Request $request){
-
-        $start_day = Carbon::now(env('APP_TIMEZONE'))->format('Y-m-d');
- 
-        $end_day = Carbon::now(env('APP_TIMEZONE'))->addDay()->format('Y-m-d'); //Teetime:max('end_date');
+        //new------------------------------------
+        $start_day = $request->date;
+        $end_day = $request->date;
+        //--------------------------------------
 
         if (isset($start_day) and isset($end_day)) {
             $teetimes = Teetime::whereBetween('start_date', [$start_day, $end_day])
@@ -205,6 +205,15 @@ class TeetimeRepository extends CrudRepository
                                 ->get();
 
             foreach ($teetimes as $teetime) {
+                //new---------------------------------------------------------------------------------
+                $fecha = Carbon::createFromFormat('Y-m-d H:i:s',$teetime['start_date'].' '.$teetime['start_hour']);
+                
+                $diferencia = $fecha->subHour($teetime['available'])->format('Y-m-d H:i:s');
+
+                
+                $disponibilidad = Carbon::createFromFormat('Y-m-d H:i:s',$teetime['available_time']);
+                //-------------------------------------------------------------------------------------
+                
               //  $teetime = Teetime::find(17);
                 if ($teetime->start_date < $start_day) {
                     $teetime->start_date = $start_day;
@@ -245,8 +254,13 @@ class TeetimeRepository extends CrudRepository
              //   return $teetime;
 
             }
-
-            return $teetimes;
+                
+            if (isset($diferencia) && $diferencia <= Carbon::now()->format('Y-m-d H:i:s')) {
+                return $teetimes;
+            }else{
+                return Response()->json(["error"=>true, "message"=>"No hay disponibilidad para esta fecha"], 404);
+            }
+            
         }
             
         

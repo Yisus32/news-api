@@ -409,9 +409,10 @@ class ReservationRepository extends CrudRepository
                                     return $query->where('reservations.guests_name','ILIKE','%'.$guest.'%')
                                                  ->orWhere('reservations.guests_email','ILIKE','%'.$guest.'%');
                                 })
+                                ->with('invitations')
                                 ->get();
 
-        return $teetime;
+        return ["list"=>$teetime,"total"=>count($teetime)];
 
     }
 }
