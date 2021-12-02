@@ -403,8 +403,9 @@ class ReservationRepository extends CrudRepository
                                     return $query->where('reservations.owner',$owner);
                                 })
                                 ->when($request->player, function ($query,$player) {
-                                    return $query->where('reservations.guests_name',$player)
-                                                 ->orWhere('reservations.partners_name','ILIKE','%'.$player.'%');
+                                    return $query->where('reservations.guests_name','%'.$player.'%')
+                                                 ->orWhere('reservations.partners_name','ILIKE','%'.$player.'%')
+                                                 ->orWhere('reservations.guests_name','ILIKE','%'.$player.'%');
                                 })
                                 ->get();
 
