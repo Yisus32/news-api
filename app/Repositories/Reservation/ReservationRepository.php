@@ -401,11 +401,13 @@ class ReservationRepository extends CrudRepository
                                 })
                                 ->when($request->owner, function ($query,$owner) {
                                     return $query->where('reservations.owner',$owner);
+                                })}
+                                ->when($request->partner, function ($query, $partner) {
+                                    return $query->where('reservations.partners_name','ILIKE','%'.$partner.'%')
                                 })
-                                ->when($request->player, function ($query,$player) {
-                                    return $query->where('reservations.guests_name','%'.$player.'%')
-                                                 ->orWhere('reservations.partners_name','ILIKE','%'.$player.'%')
-                                                 ->orWhere('reservations.guests_name','ILIKE','%'.$player.'%');
+                                ->when($request->guest, function ($query,$guest) {
+                                    return $query->where('reservations.guests_name','ILIKE','%'.$guest.'%')
+                                                 ->orWhere('reservations.guests_email','ILIKE','%'.$guest.'%');
                                 })
                                 ->get();
 

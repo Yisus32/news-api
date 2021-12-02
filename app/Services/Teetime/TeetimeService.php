@@ -126,4 +126,8 @@ class TeetimeService extends CrudService
         
     }
 
+    public function paginate_days(){
+        return $this->repository->paginate_days();
+    }
+
 }
