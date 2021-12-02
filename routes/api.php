@@ -35,6 +35,13 @@ $router->group(['prefix' => 'api'], function (Router $router) {
      *routes with report prefix
      * rutas con el prefijo report
     */
+
+    $router->group(['prefix' => 'search'], function () use ($router) {
+         $router->get('advance', 'Reservation\ReservationController@advanceFilter');
+         $router->get('guests/{full_name}', 'Guest\GuestController@searchByName');
+
+    });
+   
     $router->group(['prefix' => 'report'], function () use ($router) {
         $router->post('/automatic', 'ReportController@automatic');
 
@@ -240,4 +247,8 @@ $router->get('probando2',function(Request $request){
     $req = new UserService;
     $user = $req->getUsersById($request->id);
     return $user;
-});
+}); 
+/** routes para Filter **/ 
+ 
+
+

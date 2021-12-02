@@ -133,4 +133,10 @@ class GuestRepository extends CrudRepository
         
         }
     }
+
+    public function searchByName($full_name){
+        $full_name = str_replace('%20',' ', $full_name);
+        $guest = Guest::where('full_name','ILIKE','%'.$full_name.'%')->get();
+        return $guest;
+    }
 }

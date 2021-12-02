@@ -70,4 +70,8 @@ class ReservationService extends CrudService
    public function restartTeetime(Request $request,$id,$hole_id){
         return $this->repository->restartTeetime($request,$id,$hole_id);
     }
+
+    public function advanceFilter(Request $request){
+      return $this->repository->advanceFilter($request);
+    }
 }
