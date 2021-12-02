@@ -421,9 +421,13 @@ class ReservationRepository extends CrudRepository
                                 ->with('invitations')
                                 ->get();
 
-            $teetime['teetime_cancel_time'] = $this->model->setCancelDate(
-            $teetime['teetime_date_start'], $teetime['teetime_hour_start'],
-            $teetime['teetime_cancel_time']);
+            foreach ($teetime as $t) {
+                $t['teetime_cancel_time'] = $this->model->setCancelDate(
+                $t['teetime_date_start'], $t['teetime_hour_start'],
+                $t['teetime_cancel_time']);
+            }
+            
+            
 
         return ["list"=>$teetime,"total"=>count($teetime)];
 
