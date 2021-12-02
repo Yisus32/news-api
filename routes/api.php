@@ -39,6 +39,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
     $router->group(['prefix' => 'search'], function () use ($router) {
          $router->get('advance', 'Reservation\ReservationController@advanceFilter');
          $router->get('guests/{full_name}', 'Guest\GuestController@searchByName');
+         $router->get('paginateDays', 'Teetime\TeetimeController@paginate_days');
 
     });
    
