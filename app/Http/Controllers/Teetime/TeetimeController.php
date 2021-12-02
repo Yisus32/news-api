@@ -80,4 +80,8 @@ class TeetimeController extends CrudController
         return "send";
         
     }
+
+    public function paginate_days(){
+        return $this->service->paginate_days();
+    }
 }
