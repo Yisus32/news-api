@@ -379,4 +379,36 @@ class ReservationRepository extends CrudRepository
             return response()->json(['status'=>400,'message'=>'Verifique el id del teetime']);
         }   
     }
+
+    public function advanceFilter(Request $request){
+        $teetime  = Reservation::select('reservations.*','teetimes.*')
+                                ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
+                                ->when($request->t_date, function ($query,$t_date){
+                                    $start_date = explode('_', $t_date)[0];
+                                    $end_date = explode('_', $t_date)[1];
+
+                                    return $query->where('teetimes.start_date','>=',$start_date)
+                                                 ->where('teetimes.start_date','<=',$end_date)
+                                                 ->where('teetimes.start_hour','>=','00:00:00')
+                                                 ->where('teetimes.start_hour','<=','23:59:59');
+                                })
+                                ->when($request->r_date, function ($query,$r_date){
+                                    $r_start_date = explode('_', $r_date)[0];
+                                    $r_end_date = explode('_',$r_date)[1];
+
+                                    return $query->where('reservations.created_at','>=',$r_start_date.' 00:00:00')
+                                                 ->where('reservations.created_at','<=',$r_end_date.' 23:59:59');
+                                })
+                                ->when($request->owner, function ($query,$owner) {
+                                    return $query->where('reservations.owner',$owner);
+                                })
+                                ->when($request->player, function ($query,$player) {
+                                    return $query->where('reservations.guests_name',$player)
+                                                 ->orWhere('reservations.partners_name','ILIKE','%'.$player.'%');
+                                })
+                                ->get();
+
+        return $teetime;
+
+    }
 }

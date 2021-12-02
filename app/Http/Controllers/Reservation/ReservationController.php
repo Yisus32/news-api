@@ -105,4 +105,8 @@ class ReservationController extends CrudController
         return $report->report("automatic","Reservaciones",null,null,false,1);
     }
 
+    public function advanceFilter(Request $request){
+        return $this->service->advanceFilter($request);
+    }
+
 }

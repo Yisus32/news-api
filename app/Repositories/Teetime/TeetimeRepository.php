@@ -12,6 +12,7 @@ use App\Models\Hole;
 use App\Models\Reservation;
 use App\Models\Teetime;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -111,6 +112,10 @@ class TeetimeRepository extends CrudRepository
             $days = $data["days"];
             $data["days"] = $this->model->formatTypeArray($data["days"]);
         }
+
+        $start_date = Carbon::createFromFormat('Y-m-d H:i:s', $data['start_date'].' '.$data['start_hour']);
+        $data['available_time'] = Carbon::parse($start_date->modify('-'.$data['available'].' hours'))
+                                        ->format('Y-m-d H:i:s',env('APP_TIMEZONE'));
         $teetime = parent::_store($data);
 
         $break_times = $data['break_times'] ?? [];
@@ -168,6 +173,20 @@ class TeetimeRepository extends CrudRepository
 
     //devuelve espacios disponibles en un teetime
     //comentario para commit
+
+    public function paginate_days(){
+        
+        $start_day = Carbon::now(env('APP_TIMEZONE'))->format('Y-m-d');
+        $end_day = Teetime::max('available_time');
+
+        $period = CarbonPeriod::create($start_day, $end_day);
+
+        foreach ($period as $p) {
+            $dates[] = $p->format('Y-m-d');
+        }
+
+        return $dates;
+    }
 
     public function available(Request $request){
 
@@ -352,8 +371,6 @@ class TeetimeRepository extends CrudRepository
             
         
         return $reservation;
-    }
-
-    
+    } 
 
 }

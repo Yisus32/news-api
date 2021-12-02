@@ -87,4 +87,8 @@ class GuestService extends CrudService
 
     }
 
+    public function searchByName($full_name){
+        return $this->repository->searchByName($full_name);
+    }
+
 }
