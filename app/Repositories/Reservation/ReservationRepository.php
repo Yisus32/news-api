@@ -381,8 +381,17 @@ class ReservationRepository extends CrudRepository
     }
 
     public function advanceFilter(Request $request){
-        $teetime  = Reservation::select('reservations.*','teetimes.*')
+        $teetime  = Reservation::select(['reservations.*', 
+                                      'holes.name as hole_name', 
+                                      'teetimes.max_capacity', 
+                                      'teetimes.min_capacity', 
+                                      'teetimes.start_date as teetime_date_start', 
+                                      'teetimes.end_date as teetime_date_end',
+                                      'teetimes.start_hour as teetime_hour_start', 
+                                      'teetimes.end_hour as teetime_hour_end',
+                                      'teetimes.cancel_time as teetime_cancel_time'])
                                 ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
+                                ->leftjoin('holes', 'holes.id', '=', 'reservations.hole_id')
                                 ->when($request->t_date, function ($query,$t_date){
                                     $start_date = explode('_', $t_date)[0];
                                     $end_date = explode('_', $t_date)[1];
