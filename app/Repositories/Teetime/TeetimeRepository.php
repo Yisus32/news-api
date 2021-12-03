@@ -219,9 +219,9 @@ class TeetimeRepository extends CrudRepository
                     $teetime->start_date = $start_day;
                 }
 
-                if ($teetime->end_date > $end_day) {
+                /**if ($teetime->end_date > $end_day) {
                     $teetime->end_date = $end_day;
-                }
+                }**/
 
                 $days = $teetime->days;
 
