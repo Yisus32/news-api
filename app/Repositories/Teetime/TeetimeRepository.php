@@ -211,7 +211,7 @@ class TeetimeRepository extends CrudRepository
                 $diferencia = $fecha->subHour($teetime['available'])->format('Y-m-d H:i:s');
 
                 
-                $disponibilidad = Carbon::createFromFormat('Y-m-d H:i:s',$teetime['available_time']);
+                //$disponibilidad = Carbon::createFromFormat('Y-m-d H:i:s',$teetime['available_time']);
                 //-------------------------------------------------------------------------------------
                 
               //  $teetime = Teetime::find(17);
