@@ -397,8 +397,8 @@ class ReservationRepository extends CrudRepository
                                     $end_date = explode('_', $t_date)[1];
 
                                     return $query->where('teetimes.start_date','>=',$start_date)
-                                                 ->where('teetimes.start_date','<=',$end_date)
-                                                 
+                                                 ->where('teetimes.start_date','<=',$end_date);
+
                                 })
                                 ->when($request->r_date, function ($query,$r_date){
                                     $r_start_date = explode('_', $r_date)[0];
