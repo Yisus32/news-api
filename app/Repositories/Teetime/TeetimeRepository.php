@@ -258,7 +258,7 @@ class TeetimeRepository extends CrudRepository
             if (isset($diferencia) && $diferencia <= Carbon::now()->format('Y-m-d H:i:s')) {
                 return $teetimes;
             }else{
-                return Response()->json(["error"=>true, "message"=>"No hay disponibilidad para esta fecha"], 404);
+                return abort(404,"No hay teetimes disponibles aun");
             }
             
         }
