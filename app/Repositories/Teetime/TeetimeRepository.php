@@ -195,12 +195,16 @@ class TeetimeRepository extends CrudRepository
         //--------------------------------------
 
         if (isset($start_day) and isset($end_day)) {
-            $teetimes = Teetime::whereBetween('start_date', [$start_day, $end_day])
+            /*$teetimes = Teetime::whereBetween('start_date', [$start_day, $end_day])
                                 ->OrwhereBetween('end_date', [$start_day, $end_day])
                                 ->Orwhere('start_date', '<', $start_day)
                                 ->where('end_date', '>', $start_day)
                                 ->Orwhere('start_date', '<', $end_day)
                                 ->where('end_date', '>', $end_day)
+                                ->orderBy('start_date')
+                                ->get();*/
+
+            $teetimes = Teetime::where('end_date', '>', $start_day)
                                 ->orderBy('start_date')
                                 ->get();
 
