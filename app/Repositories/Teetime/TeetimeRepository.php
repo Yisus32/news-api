@@ -204,7 +204,8 @@ class TeetimeRepository extends CrudRepository
                                 ->orderBy('start_date')
                                 ->get();*/
 
-            $teetimes = Teetime::where('start_date', $start_day)
+            $teetimes = Teetime::where('start_date', '>', $start_day)
+                                ->where('end_date','<',$start_date)
                                 ->orderBy('start_date')
                                 ->get();
 
