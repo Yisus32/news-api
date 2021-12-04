@@ -195,20 +195,16 @@ class TeetimeRepository extends CrudRepository
         //--------------------------------------
 
         if (isset($start_day) and isset($end_day)) {
-            /*$teetimes = Teetime::whereBetween('start_date', [$start_day, $end_day])
+            $teetimes = Teetime::whereBetween('start_date', [$start_day, $end_day])
                                 ->OrwhereBetween('end_date', [$start_day, $end_day])
                                 ->Orwhere('start_date', '<', $start_day)
                                 ->where('end_date', '>', $start_day)
                                 ->Orwhere('start_date', '<', $end_day)
                                 ->where('end_date', '>', $end_day)
                                 ->orderBy('start_date')
-                                ->get();*/
-
-            $teetimes = Teetime::where('start_date', '>', $start_day)
-                                ->where('end_date','<',$start_date)
-                                ->orderBy('start_date')
                                 ->get();
 
+    
             foreach ($teetimes as $teetime) {
                 //new---------------------------------------------------------------------------------
                 $fecha = Carbon::createFromFormat('Y-m-d H:i:s',$teetime['start_date'].' '.$teetime['start_hour']);
