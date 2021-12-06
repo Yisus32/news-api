@@ -289,6 +289,7 @@ class TeetimeRepository extends CrudRepository
         $start_date = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->start_hour,env('APP_TIMEZONE'));
         $x = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->start_hour,env('APP_TIMEZONE'));
         $cancel_time = $x->subHours($request->cancel_time)->format('Y-m-d H:i:s');
+        $break_time_end_hour = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->bt_end_hour,env('APP_TIMEZONE'));
 
 
 
@@ -308,7 +309,7 @@ class TeetimeRepository extends CrudRepository
         }
         
 
-        $slots = abs(((($diff_services_hours*60)/$interval) - (($diff_break_hours*60)/$interval)));
+        $slots = abs(((($diff_services_hours*60)/$interval) - (($diff_break_hours*60)/$interval))-1);
 
         for ($i=0; $i < $slots ; $i++) { 
 
@@ -317,7 +318,7 @@ class TeetimeRepository extends CrudRepository
             }
 
             if ($bt_start_hour && ($start_date->format('H:i:s') >= $bt_start_hour->format('H:i:s'))){
-                 $start_date = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->bt_end_hour,env('APP_TIMEZONE'))->addMinutes($interval);
+                 $start_date = $break_time_end_hour->addMinutes($interval);
             }
             
             for ($j=0; $j <$n_holes ; $j++) { 
