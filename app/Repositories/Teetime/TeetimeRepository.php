@@ -195,12 +195,16 @@ class TeetimeRepository extends CrudRepository
         //--------------------------------------
 
         if (isset($start_day) and isset($end_day)) {
-            $teetimes = Teetime::whereBetween('start_date', [$start_day, $end_day])
+            $teetimes = Teetime::select('teetimes.*',
+                                        'break_times.start_hour as bt_start_hour',
+                                        'break_times.end_hour as bt_end_hour')
+                                ->whereBetween('start_date', [$start_day, $end_day])
                                 ->OrwhereBetween('end_date', [$start_day, $end_day])
                                 ->Orwhere('start_date', '<', $start_day)
                                 ->where('end_date', '>', $start_day)
                                 ->Orwhere('start_date', '<', $end_day)
                                 ->where('end_date', '>', $end_day)
+                                ->leftjoin('break_times','break_times.teetime_id','=','teetimes.id')
                                 ->orderBy('start_date')
                                 ->get();
 
@@ -270,9 +274,80 @@ class TeetimeRepository extends CrudRepository
        
     }
 
+    public function create_reservations(Teetime $request,$holes,$days,$limit = null){
+       
+       
+        $start_hour = Carbon::createFromFormat('H:i:s',$request->start_hour,env('APP_TIMEZONE'));  
+        $end_hour = Carbon::createFromFormat('H:i:s',$request->end_hour);
+        $bt_start_hour = $request->bt_start_hour != null ? Carbon::createFromFormat('H:i:s',$request->bt_start_hour,env('APP_TIMEZONE')) : 0;
+        $bt_end_hour = $request->bt_end_hour != null ? Carbon::createFromFormat('H:i:s',$request->bt_end_hour,env('APP_TIMEZONE')) : 0;
+        $interval = $request->time_interval;
+        
+        $n_holes = count($holes);
+        $n_days = count($days);
+        
+        $start_date = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->start_hour,env('APP_TIMEZONE'));
+        $x = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->start_hour,env('APP_TIMEZONE'));
+        $cancel_time = $x->subHours($request->cancel_time)->format('Y-m-d H:i:s');
+
+
+
+        
+         //AGREGAR INTERVALO A CADA FECHA IMPORTANTE
+         //AGREGAR ARRAY DE BREAK_TIMES AL FINAL DE CADA ARRAY
+         //   
+        $diff_services_hours = $end_hour->diffInHours($start_hour,true);
+
+        if ($bt_start_hour && $bt_end_hour) {
+            
+            $diff_break_hours = $bt_end_hour->diffInHours($bt_start_hour,true);
+
+        }else{
+
+            $diff_break_hours = 0;
+        }
+        
+
+        $slots = abs(((($diff_services_hours*60)/$interval) - (($diff_break_hours*60)/$interval)));
+
+        for ($i=0; $i < $slots ; $i++) { 
+            for ($j=0; $j <$n_holes ; $j++) { 
+                
+            if (($start_date->format('H:i:s') < $bt_start_hour->format('H:i:s'))) {
+                 $start_date = $start_date; 
+            }
+
+            if (($start_date->format('H:i:s') >= $bt_start_hour->format('H:i:s'))){
+                //var_dump($start_date->format('H:i:s').' '.$bt_start_hour->format('H:i:s'));
+                 $start_date = $bt_end_hour->addMinutes($interval);
+            }
+            
+            
+
+                $reservation[] = [
+                                  "hole_id" => $holes[$j],
+                                  "date" => $start_date->format('Y-m-d'),
+                                  "start_hour" => $start_date->format('H:i:s'),
+                                  "available_time" => $request->available_time,
+                                  "cancel_time" => $cancel_time
+                                ]; 
+            }
+            
+            //SUBIR CAMBIOS 
+            if (($start_date->format('H:i:s') < $bt_start_hour->format('H:i:s'))) {
+                 $start_date->addMinutes($interval);
+            }
+
+            
+                                          
+        }
+
+        return $reservation;
+    }
+
 
     //funcion para crear las reservaciones sin reservar de un teetime
-    private function create_reservations(Teetime $request, $holes, $days, $limit = null){
+    /**private function create_reservations(Teetime $request, $holes, $days, $limit = null){
         $reservation = array();
         $day_name = array(0 => "Sunday", 1 => "Monday", 2 => "Tuesday", 3 => "Wednesday", 4 => "Thursday", 5 => "Friday", 6 => "Saturday");
         //ciclo para dejar los dias que no hay servicio
@@ -386,6 +461,6 @@ class TeetimeRepository extends CrudRepository
             
         
         return $reservation;
-    } 
+    }**/ 
 
 }
