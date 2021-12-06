@@ -289,7 +289,11 @@ class TeetimeRepository extends CrudRepository
         $start_date = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->start_hour,env('APP_TIMEZONE'));
         $x = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->start_hour,env('APP_TIMEZONE'));
         $cancel_time = $x->subHours($request->cancel_time)->format('Y-m-d H:i:s');
-        $break_time_end_hour = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->bt_end_hour,env('APP_TIMEZONE'));
+        
+        if ($bt_end_hour) {
+            $break_time_end_hour = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->bt_end_hour,env('APP_TIMEZONE'));
+        }
+        
 
 
 
