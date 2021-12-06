@@ -379,4 +379,56 @@ class ReservationRepository extends CrudRepository
             return response()->json(['status'=>400,'message'=>'Verifique el id del teetime']);
         }   
     }
+
+    public function advanceFilter(Request $request){
+        $teetime  = Reservation::select(['reservations.*', 
+                                      'holes.name as hole_name', 
+                                      'teetimes.max_capacity', 
+                                      'teetimes.min_capacity', 
+                                      'teetimes.start_date as teetime_date_start', 
+                                      'teetimes.end_date as teetime_date_end',
+                                      'teetimes.start_hour as teetime_hour_start', 
+                                      'teetimes.end_hour as teetime_hour_end',
+                                      'teetimes.cancel_time as teetime_cancel_time'])
+                                ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
+                                ->leftjoin('holes', 'holes.id', '=', 'reservations.hole_id')
+                                ->when($request->t_date, function ($query,$t_date){
+                                    $start_date = explode('_', $t_date)[0];
+                                    $end_date = explode('_', $t_date)[1];
+
+                                    return $query->where('teetimes.start_date','>=',$start_date)
+                                                 ->where('teetimes.start_date','<=',$end_date);
+
+                                })
+                                ->when($request->r_date, function ($query,$r_date){
+                                    $r_start_date = explode('_', $r_date)[0];
+                                    $r_end_date = explode('_',$r_date)[1];
+
+                                    return $query->where('reservations.created_at','>=',$r_start_date.' 00:00:00')
+                                                 ->where('reservations.created_at','<=',$r_end_date.' 23:59:59');
+                                })
+                                ->when($request->owner, function ($query,$owner) {
+                                    return $query->where('reservations.owner',$owner);
+                                })
+                                ->when($request->partner, function ($query, $partner) {
+                                    return $query->where('reservations.partners_name','ILIKE','%'.$partner.'%');
+                                })
+                                ->when($request->guest, function ($query,$guest) {
+                                    return $query->where('reservations.guests_name','ILIKE','%'.$guest.'%')
+                                                 ->orWhere('reservations.guests_email','ILIKE','%'.$guest.'%');
+                                })
+                                ->with('invitations')
+                                ->get();
+
+            foreach ($teetime as $t) {
+                $t['teetime_cancel_time'] = $this->model->setCancelDate(
+                $t['teetime_date_start'], $t['teetime_hour_start'],
+                $t['teetime_cancel_time']);
+            }
+            
+            
+
+        return ["list"=>$teetime,"total"=>count($teetime)];
+
+    }
 }

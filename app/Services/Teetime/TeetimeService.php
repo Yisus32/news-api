@@ -120,10 +120,14 @@ class TeetimeService extends CrudService
             return response()->json([$teetime], 200);
 
         }catch (\Exception $e){
-            return $this->errorException($e);
+            return response()->json(["error"=>true,"message"=>"No existen reservaciones disponibles"],404);
         }
 
         
+    }
+
+    public function paginate_days(){
+        return $this->repository->paginate_days();
     }
 
 }

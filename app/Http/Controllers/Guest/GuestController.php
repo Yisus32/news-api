@@ -65,4 +65,8 @@ class GuestController extends CrudController
         exit();
     }
 
+    public function searchByName($full_name){
+       return $this->service->searchByName($full_name);
+    }
+
 }

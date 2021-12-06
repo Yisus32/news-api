@@ -12,6 +12,7 @@ use App\Models\Hole;
 use App\Models\Reservation;
 use App\Models\Teetime;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -111,6 +112,10 @@ class TeetimeRepository extends CrudRepository
             $days = $data["days"];
             $data["days"] = $this->model->formatTypeArray($data["days"]);
         }
+
+        $start_date = Carbon::createFromFormat('Y-m-d H:i:s', $data['start_date'].' '.$data['start_hour']);
+        $data['available_time'] = Carbon::parse($start_date->modify('-'.$data['available'].' hours'))
+                                        ->format('Y-m-d H:i:s',env('APP_TIMEZONE'));
         $teetime = parent::_store($data);
 
         $break_times = $data['break_times'] ?? [];
@@ -169,31 +174,59 @@ class TeetimeRepository extends CrudRepository
     //devuelve espacios disponibles en un teetime
     //comentario para commit
 
-    public function available(Request $request){
-
+    public function paginate_days(){
+        
         $start_day = Carbon::now(env('APP_TIMEZONE'))->format('Y-m-d');
- 
-        $end_day = Carbon::now(env('APP_TIMEZONE'))->addDay()->format('Y-m-d'); //Teetime:max('end_date');
+        $end_day = Teetime::max('end_date');
+
+        $period = CarbonPeriod::create($start_day, $end_day);
+
+        foreach ($period as $p) {
+            $dates[] = $p->format('Y-m-d');
+        }
+
+        return $dates;
+    }
+
+    public function available(Request $request){
+        //new------------------------------------
+        $start_day = $request->date;
+        $end_day = $request->date;
+        //--------------------------------------
 
         if (isset($start_day) and isset($end_day)) {
-            $teetimes = Teetime::whereBetween('start_date', [$start_day, $end_day])
+            $teetimes = Teetime::select('teetimes.*',
+                                        'break_times.start_hour as bt_start_hour',
+                                        'break_times.end_hour as bt_end_hour')
+                                ->whereBetween('start_date', [$start_day, $end_day])
                                 ->OrwhereBetween('end_date', [$start_day, $end_day])
                                 ->Orwhere('start_date', '<', $start_day)
                                 ->where('end_date', '>', $start_day)
                                 ->Orwhere('start_date', '<', $end_day)
                                 ->where('end_date', '>', $end_day)
+                                ->leftjoin('break_times','break_times.teetime_id','=','teetimes.id')
                                 ->orderBy('start_date')
                                 ->get();
 
+    
             foreach ($teetimes as $teetime) {
+                //new---------------------------------------------------------------------------------
+                $fecha = Carbon::createFromFormat('Y-m-d H:i:s',$teetime['start_date'].' '.$teetime['start_hour']);
+                
+                $diferencia = $fecha->subHour($teetime['available'])->format('Y-m-d H:i:s');
+
+                
+                //$disponibilidad = Carbon::createFromFormat('Y-m-d H:i:s',$teetime['available_time']);
+                //-------------------------------------------------------------------------------------
+                
               //  $teetime = Teetime::find(17);
                 if ($teetime->start_date < $start_day) {
                     $teetime->start_date = $start_day;
                 }
 
-                if ($teetime->end_date > $end_day) {
+                /**if ($teetime->end_date > $end_day) {
                     $teetime->end_date = $end_day;
-                }
+                }**/
 
                 $days = $teetime->days;
 
@@ -226,8 +259,13 @@ class TeetimeRepository extends CrudRepository
              //   return $teetime;
 
             }
-
-            return $teetimes;
+                
+            if (isset($diferencia) && $diferencia <= Carbon::now()->format('Y-m-d H:i:s')) {
+                return $teetimes;
+            }else{
+                return abort(404,"No hay teetimes disponibles aun");
+            }
+            
         }
             
         
@@ -236,9 +274,87 @@ class TeetimeRepository extends CrudRepository
        
     }
 
+    public function create_reservations(Teetime $request,$holes,$days,$limit = null){
+       
+       
+        $start_hour = Carbon::createFromFormat('H:i:s',$request->start_hour,env('APP_TIMEZONE'));  
+        $end_hour = Carbon::createFromFormat('H:i:s',$request->end_hour);
+        $bt_start_hour = $request->bt_start_hour != null ? Carbon::createFromFormat('H:i:s',$request->bt_start_hour,env('APP_TIMEZONE')) : 0;
+        $bt_end_hour = $request->bt_end_hour != null ? Carbon::createFromFormat('H:i:s',$request->bt_end_hour,env('APP_TIMEZONE')) : 0;
+        $interval = $request->time_interval;
+        
+        $n_holes = count($holes);
+        $n_days = count($days);
+        
+        $start_date = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->start_hour,env('APP_TIMEZONE'));
+        $x = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->start_hour,env('APP_TIMEZONE'));
+        $cancel_time = $x->subHours($request->cancel_time)->format('Y-m-d H:i:s');
+        
+        if ($bt_end_hour) {
+            $break_time_end_hour = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->bt_end_hour,env('APP_TIMEZONE'));
+        }
+        
+
+
+
+        
+         //AGREGAR INTERVALO A CADA FECHA IMPORTANTE
+         //AGREGAR ARRAY DE BREAK_TIMES AL FINAL DE CADA ARRAY
+         //   
+        $diff_services_hours = $end_hour->diffInHours($start_hour,true);
+
+        if ($bt_start_hour && $bt_end_hour) {
+            
+            $diff_break_hours = $bt_end_hour->diffInHours($bt_start_hour,true);
+
+        }else{
+
+            $diff_break_hours = 0;
+        }
+        
+
+        $slots = abs(((($diff_services_hours*60)/$interval) - (($diff_break_hours*60)/$interval))-1);
+
+        for ($i=0; $i < $slots ; $i++) { 
+
+            if ($bt_start_hour && ($start_date->format('H:i:s') < $bt_start_hour->format('H:i:s'))) {
+                 $start_date = $start_date; 
+            }
+
+            if ($bt_start_hour && ($start_date->format('H:i:s') >= $bt_start_hour->format('H:i:s'))){
+                 $start_date = $break_time_end_hour->addMinutes($interval);
+            }
+            
+            for ($j=0; $j <$n_holes ; $j++) { 
+            
+                $reservation[] = [
+                                  "hole_id" => $holes[$j],
+                                  "date" => $start_date->format('Y-m-d'),
+                                  "start_hour" => $start_date->format('H:i:s'),
+                                  "available_time" => $request->available_time,
+                                  "cancel_time" => $cancel_time
+                                ]; 
+            }
+            
+            //SUBIR CAMBIOS 
+            if ($bt_start_hour && ($start_date->format('H:i:s') < $bt_start_hour->format('H:i:s'))) {
+                 $start_date->addMinutes($interval);
+            }
+
+            if (!$bt_start_hour && !$bt_end_hour) {
+                $start_date->addMinutes($interval);
+            }
+
+            
+                                          
+        }
+
+        return $reservation;
+    }
+
 
     //funcion para crear las reservaciones sin reservar de un teetime
-    private function create_reservations(Teetime $request, $holes, $days, $limit = null){
+    /**private function create_reservations(Teetime $request, $holes, $days, $limit = null){
         $reservation = array();
         $day_name = array(0 => "Sunday", 1 => "Monday", 2 => "Tuesday", 3 => "Wednesday", 4 => "Thursday", 5 => "Friday", 6 => "Saturday");
         //ciclo para dejar los dias que no hay servicio
@@ -352,8 +468,6 @@ class TeetimeRepository extends CrudRepository
             
         
         return $reservation;
-    }
-
-    
+    }**/ 
 
 }
