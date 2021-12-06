@@ -317,7 +317,7 @@ class TeetimeRepository extends CrudRepository
             }
 
             if ($bt_start_hour && ($start_date->format('H:i:s') >= $bt_start_hour->format('H:i:s'))){
-                 $start_date = $bt_end_hour->addMinutes($interval);
+                 $start_date = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->bt_end_hour,env('APP_TIMEZONE'))->addMinutes($interval);
             }
             
             for ($j=0; $j <$n_holes ; $j++) { 
