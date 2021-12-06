@@ -311,19 +311,17 @@ class TeetimeRepository extends CrudRepository
         $slots = abs(((($diff_services_hours*60)/$interval) - (($diff_break_hours*60)/$interval)));
 
         for ($i=0; $i < $slots ; $i++) { 
-            for ($j=0; $j <$n_holes ; $j++) { 
-                
-            if (($start_date->format('H:i:s') < $bt_start_hour->format('H:i:s'))) {
+
+            if ($bt_start_hour && ($start_date->format('H:i:s') < $bt_start_hour->format('H:i:s'))) {
                  $start_date = $start_date; 
             }
 
-            if (($start_date->format('H:i:s') >= $bt_start_hour->format('H:i:s'))){
-                //var_dump($start_date->format('H:i:s').' '.$bt_start_hour->format('H:i:s'));
+            if ($bt_start_hour && ($start_date->format('H:i:s') >= $bt_start_hour->format('H:i:s'))){
                  $start_date = $bt_end_hour->addMinutes($interval);
             }
             
+            for ($j=0; $j <$n_holes ; $j++) { 
             
-
                 $reservation[] = [
                                   "hole_id" => $holes[$j],
                                   "date" => $start_date->format('Y-m-d'),
@@ -334,8 +332,12 @@ class TeetimeRepository extends CrudRepository
             }
             
             //SUBIR CAMBIOS 
-            if (($start_date->format('H:i:s') < $bt_start_hour->format('H:i:s'))) {
+            if ($bt_start_hour && ($start_date->format('H:i:s') < $bt_start_hour->format('H:i:s'))) {
                  $start_date->addMinutes($interval);
+            }
+
+            if (!$bt_start_hour && !$bt_end_hour) {
+                $start_date->addMinutes($interval);
             }
 
             
