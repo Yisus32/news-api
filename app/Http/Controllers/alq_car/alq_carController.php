@@ -259,7 +259,7 @@ public function rezero(Request $request)
     ->join('holes','holes.id','=','alq_car.id_hole')
     ->leftJoin('guests','guests.id','=','alq_car.user_id')
     ->select('guests.host_number as invnumsoc','guests.host_name as invnamesoc','guests.card_number as carnet','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p','alq_car.created_at')
-    ->orderBy('date','codegroup')
+    ->orderBy('date')->orderBy('codegroup')
     ->when($request->dat, function($query, $interval){
         $date = explode('_', $interval);
         $date[0] = Carbon::parse($date[0])->format('Y-m-d');
