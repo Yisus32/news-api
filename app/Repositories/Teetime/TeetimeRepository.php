@@ -333,7 +333,7 @@ class TeetimeRepository extends CrudRepository
                                   "hole_id" => $holes[$j],
                                   "date" => $start_date->format('Y-m-d'),
                                   "start_hour" => $start_date->format('H:i:s'),
-                                  "available_time" => $available_time,
+                                  "available_time" => $available_time->format('Y-m-d H:i:s'),
                                   "cancel_time" => $cancel_time
                                 ]; 
             }
