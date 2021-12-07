@@ -257,21 +257,23 @@ class TeetimeRepository extends CrudRepository
                     $teetime->slot = $this->create_reservations($teetime, $holes, $days);
                 }
              //   return $teetime;
+            }
 
-            }
-                
-            if (isset($diferencia) && $diferencia <= Carbon::now()->format('Y-m-d H:i:s')) {
-                return $teetimes;
+            if ($request->header('role') != "admin" && !$teetimes->isEmpty()) {
+                if (isset($diferencia) && $diferencia <= Carbon::now()->format('Y-m-d H:i:s')) {
+                    return $teetimes;
+                }else{
+                    return abort(404,"No hay disponibilidad aún para este día");
+                }
+            }elseif($request->header('role') == "admin" && !$teetimes->isEmpty()){
+               
+                    return $teetimes;
             }else{
-                return abort(404,"No hay teetimes disponibles aun");
+                return abort(404,"No existen registros de teetime");
             }
-            
         }
-            
-        
+             
         return Response()->json(["error"=>true, "message"=>"no existen registros de teetime"], 404);
-        
-       
     }
 
     public function create_reservations(Teetime $request,$holes,$days,$limit = null){
