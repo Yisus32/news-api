@@ -87,20 +87,18 @@ class ReservationController extends CrudController
     public function report(Request $request){
         $report = new ReportService();
  
-        $holes = Hole::all();
-        
-        for ($i=1; $i <= count($holes); $i++) { 
-             $reservations = Reservation::select('reservations.*',
-                                                 'holes.name as hole_name')
+        $holes = Reservation::all();
+       
+         
+        foreach ($holes as $hole) {
+           $data = Reservation::select('reservations.*',
+                                        'holes.name as hole_name')
                                          ->where('status','registrado')
                                          ->leftjoin('holes','holes.id','=','reservations.hole_id')
-                                         ->where('holes.id' ,$i)
+                                         ->where('holes.id',$hole->hole_id)
                                          ->get();
-             if ($reservations) {
-                  $data[] = $reservations;
-             } 
-        }
-        
+        }     
+             
         $report->data($data);
         return $report->report("automatic","Reservaciones",null,null,false,1);
     }
