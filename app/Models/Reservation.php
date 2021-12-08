@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Core\CrudModel;
 use Carbon\Carbon;
+use App\Models\Invitation;
 
 class Reservation extends CrudModel
 {
@@ -65,28 +66,72 @@ class Reservation extends CrudModel
         return $check;
     }
 
+    public function isAdmin($user,$owner,$partners,$guests){
+        foreach (json_decode($partners) as $partner) {
+            $players[] = $partner;
+        }
+
+        foreach (json_decode($guests) as $guest) {
+            $players[] = $guest;
+        }
+
+        $players[] = $owner;
+
+        $check = array_search($user, $players);
+
+        return $check;
+    }
+
     public function createInvitation($stored){
 
-        if ($stored['guests'] != null) {
-            $guests = json_decode($stored['guests']);
-            foreach ($guests as $guest) {
-                $invitation = new Invitation;
-                $invitation->reservation_id = $stored->id;
-                $invitation->guest = $guest;
-                $invitation->save();
-            }   
+       
+        $pattern = "/[a-z\d._%+-]+@[a-z\d.-]+\.[a-z]{2,4}\b/i";
+        
+        if ($stored['partners_name'] != null && $stored['partners_name'] != '""') {
+            foreach (explode(',',$stored['partners_name']) as $partner) {
+             preg_match ($pattern,$partner,$matches);
+             $emails[] = $matches[0];
+            }
+
         }
 
-        if ($stored['partners'] != null) {
-            $partners = json_decode($stored['partners']);
-            foreach ($partners as $partner) {
-                $invitation = new Invitation;
-                $invitation->reservation_id = $stored->id;
-                $invitation->partner = $partner;
-                $invitation->save();
-            } 
-        }
+        if ( $stored['guests_name'] != null && $stored['guests_name'] != '""') {
+             
+             foreach (explode(',',$stored['guests_name']) as $guest) {
+             preg_match ($pattern,$guest,$matches);
+             $emails[] = $matches[0];
+            }
+        } 
         
-        return $invitation; 
+        $checkInvitation = Invitation::where('reservation_id',$stored['id'])->get();
+        
+       if (isset($emails)) {
+            if ($checkInvitation->isEmpty()) {
+                foreach ($emails as $email) {
+                    $invitation = new Invitation;
+                    $invitation->reservation_id = $stored->id;
+                    $invitation->guest_email = $email;
+                    $invitation->save();
+            } 
+            }else{
+                foreach ($checkInvitation as $check) {
+                    $invitation = Invitation::where('id',$check['id'])->first();
+                    $invitation->delete();
+                } 
+
+                foreach($emails as $email){    
+                    $invitation = new Invitation;
+                    $invitation->reservation_id = $stored->id;
+                    $invitation->guest_email = $email;
+                    $invitation->save();
+                }
+            }
+
+            return $invitation;
+       }else{
+            return [];
+       }
+         
+         
     }
 }

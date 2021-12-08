@@ -28,6 +28,239 @@ class DocumentController extends CrudController
             "required" => "El campo ' :attribute ' es requerido"
         ];
     }
+    /**
+   * Función que permite crear un documento
+   *
+   * @author foskert@gmail.com
+   * @param Request $request
+   * @return JsonResponse
+   * @version 1.0
+   */
+    public function _create(Request $request){
+        if(\Validator::make($request->all(), ['guest_id' => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere el ID del invitado',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        if(\Validator::make($request->all(), ['type' => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere el tipo de documento',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        if(\Validator::make($request->all(), ['full_name' => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere el nombre completo',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        if(\Validator::make($request->all(), ['front_image'  => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere de la imagen de frente del documento de identidad',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        if(\Validator::make($request->all(), ['n_document' => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere el número de documento ',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        try{
+            $document = new Document();
+            $type = strtolower($request->type);
+            if($type == "dni"){
+                $document->type = 'DNI';
+            }else if($type == 'pasaporte'){
+                $document->type = 'Pasaporte';
+            }else{
+                return response()->json(array( 
+                    'success' => false,
+                    'message' => 'Tipo de documento no válido',
+                    'value'   => null,
+                    'count'   => 0
+                ));
+            }
+            $document->name      = $request->full_name;
+            $document->document  = $request->n_document;
+            $document->state     = 'Aceptado';
+            if($this->getBase64ImageSize($request->input('front_image')) > 1){
+                return response()->json(array( 
+                    'success' => false,
+                    'message' => 'La imagen frontal supera el tamaño máximo disponible',
+                    'value'   => null ,
+                    'count'   => 0
+                ));
+            }else{
+                 $document->front_image = $this->loadImage($request->front_image, '/invitado/'.$type, 'DOCUMENT_FRONT', 'invitado');
+                if(!$document->front_image){
+                    return response()->json(array(  
+                        'success'=> false,
+                        'message'=> 'No se proceso la carga de la imagen frontal',
+                        'value'  =>  $document->front_image,
+                        'count'  => 0
+                    ));
+                }   
+            }
+            if($document->save()){
+                return response()->json(array( 
+                    'success' => true,
+                    'message' => 'Registro exitoso',
+                    'value'   => $document, 
+                    'count'   => 1
+                ));
+            }else{
+                return response()->json(array( 
+                    'success' => false,
+                    'message' => 'No se logro el registro del documento',
+                    'value'   => $document, 
+                    'count'   => 0
+                ));
+            }
+        }catch (Exception $e) {
+            Log::critical('USCDCCD0001-'.$e->getMessage());
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Error USCDCCD0001 '.$e,
+                'value'   => null,
+                'count'   => 0
+            ));
+        }  
+    }
+     /**
+     * Función que permite crear un documento y validarlo para los invitados
+     *
+     * @author foskert@gmail.com
+     * @param Request $request
+     * @return JsonResponse
+     * @version 1.0
+     */
+    public function _validate_document(Request $request){
+        if(\Validator::make($request->all(), ['type' => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere el tipo de documento',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        if(\Validator::make($request->all(), ['full_name' => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere el nombre completo',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        if(\Validator::make($request->all(), ['front_image'  => 'required'])->fails()){
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Se requiere de la imagen de frente del documento de identidad',
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        
+        try{
+            $type = strtolower($request->type);
+            if($type == "dni"){
+                if(\Validator::make($request->all(), ['n_document' => 'required'])->fails()){
+                    return response()->json(array( 
+                        'success' => false,
+                        'message' => 'Se requiere el numero de documento DNI',
+                        'value'   => null,
+                        'count'   => 0
+                    ));
+                }
+                $string = $this->googleOCR($request->front_image);
+                $porAceptacion = false;
+                if(!empty($string->responses[0]->textAnnotations[0]->description)){
+                    $value = $string->responses[0]->textAnnotations[0]->description;
+                    $porAceptacion = $this->_DNI(
+                        $value, 
+                        $request->full_name, 
+                        $request->n_document
+                    );
+                }
+                if(is_bool($porAceptacion) && $porAceptacion == true){
+                    return response()->json(array( 
+                        'success' => true,
+                        'message' => 'El DNI fue aceptado',
+                        'value'   => 'Aceptado', 
+                        'count'   => 1
+                    ));
+                }else{
+                    return response()->json(array( 
+                        'success' => false,
+                        'message' => 'El documento no satisface los parámetros de validación necesarios debido a que '.$porAceptacion,
+                        'value'   => null, 
+                        'count'   => 0
+                    ));
+                }
+            }else if($type == 'pasaporte'){
+                if(\Validator::make($request->all(), ['n_pasaport' => 'required'])->fails()){
+                    return response()->json(array( 
+                        'success' => false,
+                        'message' => 'Se requiere el número del pasaporte',
+                        'value'   => null,
+                        'count'   => 0
+                    ));
+                }
+                $string = $this->googleOCR($request->front_image);
+                $porAceptacion = false;
+                if(!empty($string->responses[0]->textAnnotations[0]->description)){
+                    $value = $string->responses[0]->textAnnotations[0]->description;
+                    $porAceptacion = $this->_Pasaporte(
+                        $value, 
+                        $request->full_name, 
+                        $request->n_pasaport
+                    );
+                }
+                if(is_bool($porAceptacion) &&  $porAceptacion == true){
+                    return response()->json(array( 
+                        'success' => true,
+                        'message' => 'El pasaporte fue aceptado',
+                        'value'   => 'Aceptado', 
+                        'count'   => 1
+                    ));
+                }else{
+                    return response()->json(array( 
+                        'success' => false,
+                        'message' => 'El pasaporte no satisface los parámetros de validación necesarios debido a que '.$porAceptacion,
+                        'value'   => null, 
+                        'count'   => 0
+                    ));
+                } 
+            }else{
+                return response()->json(array( 
+                    'success' => false,
+                    'message' => 'Tipo de documento no válido',
+                    'value'   => null,
+                    'count'   => 0
+                ));
+            }
+        }catch (Exception $e) {
+            Log::critical('USCDCCD0001-'.$e->getMessage());
+            return response()->json(array( 
+                'success' => false,
+                'message' => 'Error USCDCCD0001 '.$e,
+                'value'   => null,
+                'count'   => 0
+            ));
+        }
+        
+    }
      /**
      * Función que permite crear un documento y validarlo para los invitados
      *
@@ -363,6 +596,34 @@ class DocumentController extends CrudController
         }     
     } 
     /**
+     * Función que valida el documento DNI sin fechas  
+     *
+     * @author foskert@gmail.com
+     * @param String $string
+     * @param String $full_name
+     * @param String $document
+     * @return Exception|string|bool
+     * @version 1.0
+    */
+    public function _DNI($string, $full_name = '', $document = ''){ 
+        $document = preg_replace("/[^0-9]/", "", $document);
+        $string = str_replace('\n', ' ', $string);
+        $number = str_replace(['-', '.', ','], '', $string);
+        $value = strtolower($string);
+        if(strpos($number, $document) === false) {
+            return 'el N° de documento no valido';
+        }else{
+            if($full_name != ''){
+                if($this->validateName($string, $full_name) == false){
+                    return 'el nombre del invitado suministrado no satisface los parámetros';
+                }
+            }else{
+                return 'no se puede obtener el nombre del invitado';
+            }
+            return true;
+        }     
+    } 
+    /**
      * Función que valida el documento Pasaporte
      *
      * @author foskert@gmail.com
@@ -418,6 +679,38 @@ class DocumentController extends CrudController
         }     
     }
     /**
+     * Función que valida el documento Pasaporte
+     *
+     * @author foskert@gmail.com
+     * @param String $string
+     * @param String $full_name
+     * @param String $document
+     * @param String $n_pasaport
+     * @return Exception|string|bool
+     * @version 1.0
+    */ 
+    public function _Pasaporte($string = "", $full_name = "",  $n_pasaport = ""){
+        $string = str_replace('\n', ' ', $string);
+        $valueDocument = str_replace(['-', '.', ',', '<', '>', '/', '\n'], '', $string);
+        $value = strtolower($string);
+       
+        if($full_name != ''){
+            if($this->validateName($string, $full_name) == false){
+                return 'el nombre del invitado suministrado no satisface los parámetros';
+            }
+        }else{
+            return 'no se puede obtener el nombre del invitado';
+        }
+        
+        if($n_pasaport != ""){
+            if(strpos($string, $n_pasaport) == false){
+                return 'el número de pasaporte no es valido';
+            }
+        }
+        return true;            
+            
+    }
+    /**
      * Función que valida cualquier fecha en el documento  
      *
      * @author foskert@gmail.com
@@ -426,7 +719,7 @@ class DocumentController extends CrudController
      * @return Exception|string|bool
      * @version 1.0
     */
-    public function validateDate($string, $date = ''){
+     public function validateDate($string, $date = ''){
         if($date != ''){
             $date = str_replace(' 00:00:00', '', $date);
             $string = str_replace('\n', ' ', $string);
@@ -525,6 +818,32 @@ class DocumentController extends CrudController
             if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
                 return true;
             }
+            $date = substr($dateArray[2], 0,-2).$dateArray[1].$dateArray[0];
+            $dateFormat = str_replace(['/', '.', ' '], '-', $date);
+            if(strpos($string, $dateFormat) != false ) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', ' '], '/', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', '/'], ' ', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
+            $date = $mes.' '.$dateArray[2];
+            $dateFormat = str_replace(['/', '.', ' '], '-', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', ' '], '/', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
+            $dateFormat = str_replace(['-', '.', '/'], ' ', $date);
+            if(strpos($string, $dateFormat) != false || strpos($string, substr($dateFormat, 0,-4).substr($dateFormat, -2)) != false) {
+                return true;
+            }
         }
         return false ;
     }
@@ -537,6 +856,7 @@ class DocumentController extends CrudController
      * @return Exception|string|bool
      * @version 1.0
     */
+
     public function validateName($string, $full_name = ''){
         if($full_name != ""){
             $string = str_replace('\n', ' ', $string);
@@ -545,7 +865,7 @@ class DocumentController extends CrudController
             if(!empty($porciones)){
                 $val = count($porciones);
                 foreach ($porciones as $por) {
-                    if(strpos($string, $por) === false){
+                    if(strrpos($string, $por) === false){
                         $val--; 
                     }
                 }

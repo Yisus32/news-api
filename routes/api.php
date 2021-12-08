@@ -10,6 +10,7 @@
 |
 */
 
+use App\Http\Mesh\UserService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Router;
@@ -34,6 +35,14 @@ $router->group(['prefix' => 'api'], function (Router $router) {
      *routes with report prefix
      * rutas con el prefijo report
     */
+
+    $router->group(['prefix' => 'search'], function () use ($router) {
+         $router->get('advance', 'Reservation\ReservationController@advanceFilter');
+         $router->get('guests/{full_name}', 'Guest\GuestController@searchByName');
+         $router->get('paginateDays', 'Teetime\TeetimeController@paginate_days');
+
+    });
+   
     $router->group(['prefix' => 'report'], function () use ($router) {
         $router->post('/automatic', 'ReportController@automatic');
 
@@ -96,7 +105,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
 
         $router->put('reservations/cancel/{id}', 'Reservation\ReservationController@cancelReservation');
         $router->post('reservations/register/{id}', 'Reservation\ReservationController@reservation_register');
-        $router->get('reservations/resend/{id}/{reservation_id}','Reservation\ReservationController@resendInvitation');
+        $router->patch('reservations/resend/{reservation_id}','Reservation\ReservationController@resendInvitation');
         $router->get('reservations/multi/resend/{id}/{reservation_id}','Reservation\ReservationController@multiResendInvitation');
 
         /** routes para Guest **/ 
@@ -106,6 +115,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('guests', 'Guest\GuestController@_store');
         $router->post('guests/email', 'Guest\GuestController@email');
         $router->put('guests/{id}', 'Guest\GuestController@_update');
+        $router->get('guests/confirmation/{id}', 'Guest\GuestController@acceptInvitation');
         $router->delete('guests/{id}', 'Guest\GuestController@_delete');
 
             /** routes para group **/ 
@@ -170,7 +180,9 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('documents/{id}',      'Document\DocumentController@_update');
         $router->delete('documents/{id}',   'Document\DocumentController@_delete');
         $router->post('documents/validate', 'Document\DocumentController@_validate');
-
+        $router->post('validate', 'Document\DocumentController@_validate_document');
+        $router->post('documents/create', 'Document\DocumentController@_create');
+        $router->post('name', 'Document\DocumentController@validateName');
         /** routes para bitatoalla **/ 
         $router->get('bitatoallas/toalla', 'bitatoalla\bitatoallaController@bita');
         $router->post('bitatoallas/obs', 'bitatoalla\bitatoallaController@reception');
@@ -232,5 +244,19 @@ $router->get('invitations/{id}', 'Invitation\InvitationController@_show');
 $router->post('invitations', 'Invitation\InvitationController@_store');
 $router->put('invitations/{id}', 'Invitation\InvitationController@_update');
 $router->delete('invitations/{id}', 'Invitation\InvitationController@_destroy');
+
+
+$router->get('probando',function(Request $request){
+    $req = new UserService;
+    $user = $req->getUserById($request->id);
+    return $user;
+});
+$router->get('probando2',function(Request $request){
+    $req = new UserService;
+    $user = $req->getUsersById($request->id);
+    return $user;
+}); 
+/** routes para Filter **/ 
+ 
 
 

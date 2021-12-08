@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Core\CrudController;
 use App\Core\ReportService;
 use App\Models\Guest;
+use App\Models\Hole;
 use App\Models\Reservation;
 use App\Services\Reservation\ReservationService;
 use Carbon\Carbon;
@@ -46,21 +47,23 @@ class ReservationController extends CrudController
     public function _store(Request $data){
 
         if ($data->header('time') == 'expired') {
-            $this->service->restartTeetime($data['teetime_id'],$data['hole_id']);
+            $this->service->restartTeetime($data,$data['teetime_id'],$data['hole_id']);
             return response()->json(['status'=>408,'message'=>'El tiempo de reserva ha expirado'],408);
         }else{
-            $data['status'] = 'reservado';
-            $this->service->restartTeetime($data['teetime_id'],$data['hole_id']);
+            $data['status'] = 'registrado';
+            $this->service->restartTeetime($data,$data['teetime_id'],$data['hole_id']);
             return $this->service->_store($data);
         }   
     }
 
-    public function _update($id, $data){
+    public function _update($id, Request $data){
+       
         if ($data->header('time') == 'expired') {
+            $this->service->restartTeetime($data,$data['teetime_id'],$data['hole_id']);
             return response()->json(['status'=>408,'message'=>'El tiempo de reserva ha expirado'],408);
         }else{
-            $data['status'] = 'reservado';
-            \DB::raw("DELETE FROM temp_data WHERE teetime_id = ".$data['teetime_id']);
+            $data['status'] = 'registrado';
+            $this->service->restartTeetime($data,$data['teetime_id'],$data['hole_id']);
             return $this->service->_update($id,$data);
         }
     }
@@ -69,15 +72,41 @@ class ReservationController extends CrudController
         return $this->service->cancelReservation($id);
    }
 
-   public function resendInvitation($id,$reservation_id,Request $request){
-        return $this->service->resendInvitation($id,$reservation_id,$request);
+   public function resendInvitation($reservation_id,Request $request){
+        return $this->service->resendInvitation($reservation_id,$request);
    }
 
-   public function standByTeetime($id,$hole_id){
-     return $this->service->standByTeetime($id,$hole_id);
+   public function standByTeetime(Request $request, $id,$hole_id){
+     return $this->service->standByTeetime($request, $id,$hole_id);
    }
 
-   public function restartTeetime($id,$hole_id){
-        return $this->service->restartTeetime($id,$hole_id);
+   public function restartTeetime(Request $request,$id,$hole_id){
+        return $this->service->restartTeetime($request,$id,$hole_id);
     }
+
+    public function report(Request $request){
+        $report = new ReportService();
+ 
+        $holes = Hole::all();
+        
+        for ($i=1; $i <= count($holes); $i++) { 
+             $reservations = Reservation::select('reservations.*',
+                                                 'holes.name as hole_name')
+                                         ->where('status','registrado')
+                                         ->leftjoin('holes','holes.id','=','reservations.hole_id')
+                                         ->where('holes.id' ,$i)
+                                         ->get();
+             if ($reservations) {
+                  $data[] = $reservations;
+             } 
+        }
+        
+        $report->data($data);
+        return $report->report("automatic","Reservaciones",null,null,false,1);
+    }
+
+    public function advanceFilter(Request $request){
+        return $this->service->advanceFilter($request);
+    }
+
 }

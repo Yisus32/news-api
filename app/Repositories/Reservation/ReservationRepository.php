@@ -35,6 +35,7 @@ class ReservationRepository extends CrudRepository
     }
     
     public function _index($request = null, $user = null){
+
         $owner = $request->owner;
         $reservations = Reservation::select(['reservations.*', 
                                       'holes.name as hole_name', 
@@ -48,6 +49,38 @@ class ReservationRepository extends CrudRepository
                                 ->when($owner, function ($query,$owner) {
                                     return $query->where('reservations.owner',$owner);
                                 })
+                                ->join('holes', 'holes.id', '=', 'reservations.hole_id')
+                                ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
+                                ->with('invitations')
+                                ->get();
+
+        foreach ($reservations as $reservation) {
+            $reservation['guests'] = json_decode($reservation['guests']);
+            $reservation['partners'] = json_decode($reservation['partners']);
+            $reservation['partners_name'] = json_decode($reservation['partners_name']);
+            
+            $reservation['teetime_cancel_time'] = $this->model->setCancelDate(
+            $reservation['teetime_date_start'], $reservation['teetime_hour_start'],
+            $reservation['teetime_cancel_time']);
+            $reservation['created_at'] = Carbon::parse($reservation['created_at'])->format('Y-m-d',env('APP_TIMEZONE'));
+            $reservation['updated_at'] = Carbon::parse($reservation['created_at'])->format('Y-m-d',env('APP_TIMEZONE'));
+            $reservation['teetime_date_start'] = Carbon::parse($reservation['teetime_date_start'].' '.$reservation['teetime_hout_start'])->format('d-m-Y h:i A');
+        }
+
+        return $reservations;
+    }
+
+    public function _show($id){
+        $reservations = Reservation::select(['reservations.*', 
+                                      'holes.name as hole_name', 
+                                      'teetimes.max_capacity', 
+                                      'teetimes.min_capacity', 
+                                      'teetimes.start_date as teetime_date_start', 
+                                      'teetimes.end_date as teetime_date_end',
+                                      'teetimes.start_hour as teetime_hour_start', 
+                                      'teetimes.end_hour as teetime_hour_end',
+                                      'teetimes.cancel_time as teetime_cancel_time'])
+                                ->where('reservations.id',$id)
                                 ->join('holes', 'holes.id', '=', 'reservations.hole_id')
                                 ->join('teetimes', 'teetimes.id', '=', 'reservations.teetime_id')
                                 ->get();
@@ -73,18 +106,30 @@ class ReservationRepository extends CrudRepository
         $data['partners'] = json_encode($data['partners']);
         $data['partners_name'] = json_encode($data['partners_name']);
         $data['status'] = 'registrado';
+        
+        $operator = $data->header("id");
+        $is_admin = $data->header("is_admin");
 
         $check = $this->model->checkPartners($data['owner'], $data['partners']);
+        $check2 = $this->model->isAdmin($operator,$data['owner'],$data['partners'],$data['guests']);
 
         if (is_int($check)) {
+
             return response()->json(['status'=>400, 'message'=> 'El dueño del juego no puede ser seleccionado como socio'],400);
+
+        }elseif(is_int($check2) && $is_admin){
+
+            return response()->json(['status'=>400, 'message'=> 'El usuario administrador no puede participar en la partida'],400);
+
         }else {
             
             $stored = parent::_store($data);
             
             $this->model->createInvitation($stored);
+
+            $this->multiSendInvitation($stored);
             
-            return $stored;
+            return response()->json(['status' => 200, 'stored' => $stored]);
         }  
     }
 
@@ -93,12 +138,29 @@ class ReservationRepository extends CrudRepository
         $data['partners'] = json_encode($data['partners']);
         $data['partners_name'] = json_encode($data['partners_name']);
 
+        $operator = $data->header("id");
+        $is_admin = $data->header("is_admin");
+
         $check = $this->model->checkPartners($data['owner'], $data['partners']);
+        $check2 = $this->model->isAdmin($operator,$data['owner'],$data['partners'],$data['guests']);
 
         if (is_int($check)) {
+
             return response()->json(['status'=>400, 'message'=> 'El dueño del juego no puede ser seleccionado como socio'],400);
+
+        }elseif(is_int($check2) && $is_admin){
+
+            return response()->json(['status'=>400, 'message'=> 'El usuario administrador no puede participar en la partida'],400);
+
         }else {
-            return parent::_update($id,$data);
+
+            $updated = parent::_update($id,$data);
+
+            $this->model->createInvitation($updated);
+
+            $this->multiSendInvitation($updated);
+
+            return response()->json(['status' => 200, 'stored' => $updated]);
         }  
     }
 
@@ -138,7 +200,7 @@ class ReservationRepository extends CrudRepository
         $teetime = Teetime::where('id',$teetime_id)->first();
 
         if ($guests_email != null) {
-            $guests_email = explode(' ', $guests_email);
+            $guests_email = explode(',', $guests_email);
         }
         
         if ($teetime) {
@@ -165,157 +227,111 @@ class ReservationRepository extends CrudRepository
         }
     }
 
+    public function multiSendInvitation($stored){
+         
+         $pattern = "/[a-z\d._%+-]+@[a-z\d.-]+\.[a-z]{2,4}\b/i";
+         $mailer = new NotificationService;
 
-    public function resendInvitation($id, $reservation_id, Request $request){
-             $teetime = Teetime::where('id',$teetime_id)->first();
-
-        if ($guests_email != null) {
-            $guests_email = explode(' ', $guests_email);
-        }
-        
-        if ($teetime) {
-             $partners = count($partners);
-             $guests_email == "" ? $guests_email = [] : $guests_email;
-             $guests = count($guests) + count($guests_email);
-             $players = $partners + $guests + 1;
-        
-            switch ($players) {
-                case $players > $teetime['max_capacity']:
-                    return response()->json(['status'=>400,'message'=>'La cantidad de jugadores es mayor a la capacidad maxima'],400);
-                    break;
-
-                case $players < $teetime['min_capacity']:
-                    return response()->json(['status'=>400,'message'=>'La cantidad de jugadores es menor a la capacidad minima'],400);
-                    break;
-                
-                default:
-                    return 1;
-                    break;
+        if ($stored['partners_name'] != null && $stored['partners_name'] != '""') {
+            foreach (explode(',',$stored['partners_name']) as $partner) {
+             preg_match ($pattern,$partner,$matches);
+             $emails[] = $matches[0];
             }
-        }else{
-            return response()->json(['status'=>404,'message'=>'Puede que la programacion no exista o no incumple con los parametros'],404);
-        }
-    }
 
-    public function multiResendInvitation($id, $reservation_id, Request $request){
-        if(\Validator::make($request->all(), ['type' => 'required'])->fails()){
-            return response()->json(array(  
-                'success' => false,
-                'message' => 'Requiere el tipo',
-                'value'   => null,
-                'count'   => 0
-            ));
-        }else{
-            $type = $request->type;
         }
-        $invitation = Invitation::select(
-            'reservations.owner_name',
-            'teetimes.start_hour as teetime_start_hour',                           
-            'teetimes.start_date as teetime_start_date',
-            'invitations.id as invitation_id',
-            'reservations.owner as reservation_owner_id',
-            'reservations.owner_name as reservation_owner_name')
-        ->where('invitations.reservation_id',$reservation_id)
-        ->when($type == 'partner', function ($query, $request) use ($id) {
-            $query->where('invitations.partner',$id);
-        })
-        ->when($type == 'guest', function ($query, $request) use ($id) {
-            $query->where('invitations.guest',$id);
-        })
-        ->leftjoin('reservations','reservations.id','=','invitations.reservation_id')
-        ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
-        ->first();
-        if(!empty($invitation)){
-           $exist_mail = Guest::where('email',$request->email)->first();
-            if(empty($exist_mail)){
-                if(str_contains(env('APP_URL'), "https://")){
-                    $receipt_url = env('APP_URL').'/accept/invitation/'.$invitation->invitation_id;
-                }else{
-                    $receipt_url = "https://".env('APP_URL').'/accept/invitation/'.$invitation->invitation_id;
+
+        if ($stored['guests_name'] != null && $stored['guests_name'] != '""') {     
+             foreach (explode(',',$stored['guests_name']) as $guest) {
+             preg_match ($pattern,$guest,$matches);
+             $emails[] = $matches[0];
+            }
+        }
+
+        if ($stored['guests_email'] != null && $stored['guests_email'] != '""') {     
+             foreach (explode(',',$stored['guests_email']) as $_guest) {
+             $_guests[] = $_guest;
+            }
+        }
+
+        if (isset($emails)) {
+            foreach ($emails as $email){
+                $invitation = Invitation::where('reservation_id',$stored->id)
+                                    ->where('guest_email',$email)
+                                    ->first();
+        
+                $receipt_url = env('APP_URL').'/api/accept/invitation/'.$invitation->id;
+
+                $subject = "invitacion a teetime";
+                $message = "Estimado $email, el socio $stored->owner_name lo ha invitado a un juego en el club de golf de Panamá el día ".Carbon::parse($stored->date)->format('d-m-Y')." a las ".Carbon::parse($stored->start_hour)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
+                    $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
+        
+                
+                if (filter_var($email,FILTER_VALIDATE_EMAIL)) {
+                    $mailer->sendEmail($email,$subject,$message,6,"notificaciones@zippyttech.com");
                 }
-            }else{
-                $owner_id     = $invitation->reservation_owner_id;
-                $owner_number = explode(' ', $invitation->reservation_owner_name)[0];
-                $owner_name   = explode(' ', $invitation->reservation_owner_name)[1];
-             
-                $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/%20/'.$email.'/'.$owner_id.'/'.$owner_name.'/'.$owner_number.'/'.$reservation_id;
-            } 
-            $date    = $invitation->teetime_start_date;
-            $time    = $invitation->teetime_start_hour;
-            $name    = $request->name ?? 'invitado';
-            $partner = $invitation->owner_name;
-            $subject = "Invitación Teetime";
-            $message = "Estimado ".$name.", el socio ".$partner." lo ha invitado a un juego en el club de golf de Panamá el día <b>".Carbon::parse($date)->format('d-m-Y')."</b> a las <b>".Carbon::parse($time)->format('h:i A')."</b>.Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> 
-                <a href='".$receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
-           
-            if (filter_var($request->email,FILTER_VALIDATE_EMAIL)) {
-                $mailer = new NotificationService;
-                $mailer->sendEmail($request->email,$subject,$message,6,"notificaciones@zippyttech.com");
-            }
-            return response()->json(array(  
-                'success' => true,
-                'message' => "La invitacion ha sido reenviado",
-                'value'   => null,
-                'count'   => 0
-            )); 
-            //return response()->json(["status"=>200,"message"=>],200);
-        }else{
-            return response()->json(array(  
-                'success' => false,
-                'message' => 'Requiere el tipo',
-                'value'   => null,
-                'count'   => 0
-            )); 
+            }   
         }
 
+        if (isset($_guests)) {
+            foreach ($_guests as $other){
+                $invitation = Invitation::where('reservation_id',$stored->id)
+                                    ->where('guest_email',$other)
+                                    ->first();
+        
+                $email = $other;
+                $_owner_id = $stored->owner;
+                $_owner_number = explode(' ', $stored->owner_name)[0];
+                $_owner_name = explode(' ', $stored->owner_name)[1];
+                $reservation_id = $stored->id;
+
+                $receipt_url = 'https://'.env('FRONT_URL').'/guest/register-guest/%20/'.$email.'/'.$_owner_id.'/'.$_owner_name.'/'.$_owner_number.'/'.$reservation_id;
+
+                $subject = "invitacion a teetime";
+                $message = "Estimado $email, el socio $stored->owner_name lo ha invitado a un juego en el club de golf de Panamá el día ".Carbon::parse($stored->date)->format('d-m-Y')." a las ".Carbon::parse($stored->start_hour)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
+                    $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
+        
+               
+                if (filter_var($other,FILTER_VALIDATE_EMAIL)) {
+                    $mailer->sendEmail($other,$subject,$message,6,"notificaciones@zippyttech.com");
+                }
+            } 
+
+        }
     }
-    public function resendInvitation_2($id, $reservation_id, Request $request){
+
+    public function resendInvitation($reservation_id, Request $request){
+    
         $type = $request->type;
         $exist_mail = Guest::where('email',$request->email)->first();
-        $invitation = Invitation::select(['reservations.owner_name',
-                                          'teetimes.start_hour as teetime_start_hour',                           
-                                          'teetimes.start_date as teetime_start_date',
-                                          'invitations.id as invitation_id',
-                                          'reservations.owner as reservation_owner_id',
-                                          'reservations.owner_name as reservation_owner_name'])
-                                ->where('invitations.reservation_id',$reservation_id)
-                                ->when($type == 'partner', function ($query,$request) use ($id) {
-                                        
-                                        $query->where('invitations.partner',$id);
-                                    })
-                                ->when($type == 'guest', function ($query,$request) use ($id) {
-                                      
-                                        $query->where('invitations.guest',$id);
-                                    })
-                                ->leftjoin('reservations','reservations.id','=','invitations.reservation_id')
-                                ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
-                                ->first();
-            
-
+        
         if ($exist_mail) {
-            $receipt_url = 'https://qarubick2teetime.zippyttech.com/accept/invitation/'.$invitation->invitation_id;
+            $invitation = Invitation::where('reservation_id',$reservation_id)
+                                    ->where('guest_email',$request->email)
+                                    ->first();
+        
+            $receipt_url = 'https://'.env('APP_URL').'/api/accept/invitation/'.$invitation->id;
         }else{
             
             $email = $request->email;
-            $owner_id = $invitation->reservation_owner_id;
-            $owner_number = explode(' ', $invitation->reservation_owner_name)[0];
-            $owner_name = explode(' ', $invitation->reservation_owner_name)[1];
+            $_owner_id = $request->owner_id;
+            $_owner_number = explode(' ', $request->owner_name)[0];
+            $_owner_name = explode(' ', $request->owner_name)[1];
              
-            $receipt_url = 'https://qarubick2.zippyttech.com/guest/register-guest/%20/'.$email.'/'.$owner_id.'/'.$owner_name.'/'.$owner_number.'/'.$reservation_id;
+            $receipt_url = 'https://'.env('FRONT_URL').'/guest/register-guest/%20/'.$email.'/'.$_owner_id.'/'.$_owner_name.'/'.$_owner_number.'/'.$reservation_id;
         }
 
-        $date = $invitation->teetime_start_date;
-        $time = $invitation->teetime_start_hour;
+        $date = $request->teetime_start_date;
+        $time = $request->teetime_start_hour;
         $name = $request->name ?? 'invitado';
-        $partner = $invitation->owner_name;
+        $partner = $request->owner_name;
+        $hole = $request->hole_name;
         $subject = "Invitación Teetime";
         
-        $message = "Estimado $name, el socio $partner lo ha invitado a un juego en el club de golf de Panamá el día ". 
-                    Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". 
-                    Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
+        $message = "Estimado $name, el socio $partner lo ha invitado a un juego en el club de golf de Panamá
+                    en el $hole el día ".Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
                     $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
         
-
+                
         if (filter_var($request->email,FILTER_VALIDATE_EMAIL)) {
             $mailer = new NotificationService;
             $mailer->sendEmail($request->email,$subject,$message,6,"notificaciones@zippyttech.com");
@@ -325,12 +341,16 @@ class ReservationRepository extends CrudRepository
 
     }
 
-    public function standByTeetime($id,$hole_id){
+    public function standByTeetime(Request $request, $id,$hole_id){
         
+        $date = str_replace('-','',$request->date);
+        $time = str_replace(':','',$request->start_hour);
+
         try {
         $temp_data = new TempData();
         $temp_data->teetime_id = $id;
         $temp_data->hole_id = $hole_id;
+        $temp_data->ref_data = $date.''.$time; 
         $temp_data->created_at = Carbon::now(env('APP_TIMEZONE'));
         $temp_data->save();
 
@@ -341,10 +361,16 @@ class ReservationRepository extends CrudRepository
         }
     }
 
-    public function restartTeetime($id,$hole_id){
+    public function restartTeetime(Request $request,$id,$hole_id){
         
+        $date = str_replace('-','',$request->date);
+        $time = str_replace(':','',$request->start_hour);
+        $ref_data = $date.''.$time;
+        
+
         $temp_data = TempData::where('teetime_id',$id)
                              ->where('hole_id',(integer)$hole_id)
+                             ->where('ref_data',$ref_data)
                              ->first();
         if ($temp_data) {
             $temp_data->delete();
@@ -352,5 +378,57 @@ class ReservationRepository extends CrudRepository
         }else{
             return response()->json(['status'=>400,'message'=>'Verifique el id del teetime']);
         }   
+    }
+
+    public function advanceFilter(Request $request){
+        $teetime  = Reservation::select(['reservations.*', 
+                                      'holes.name as hole_name', 
+                                      'teetimes.max_capacity', 
+                                      'teetimes.min_capacity', 
+                                      'teetimes.start_date as teetime_date_start', 
+                                      'teetimes.end_date as teetime_date_end',
+                                      'teetimes.start_hour as teetime_hour_start', 
+                                      'teetimes.end_hour as teetime_hour_end',
+                                      'teetimes.cancel_time as teetime_cancel_time'])
+                                ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
+                                ->leftjoin('holes', 'holes.id', '=', 'reservations.hole_id')
+                                ->when($request->t_date, function ($query,$t_date){
+                                    $start_date = explode('_', $t_date)[0];
+                                    $end_date = explode('_', $t_date)[1];
+
+                                    return $query->where('teetimes.start_date','>=',$start_date)
+                                                 ->where('teetimes.start_date','<=',$end_date);
+
+                                })
+                                ->when($request->r_date, function ($query,$r_date){
+                                    $r_start_date = explode('_', $r_date)[0];
+                                    $r_end_date = explode('_',$r_date)[1];
+
+                                    return $query->where('reservations.created_at','>=',$r_start_date.' 00:00:00')
+                                                 ->where('reservations.created_at','<=',$r_end_date.' 23:59:59');
+                                })
+                                ->when($request->owner, function ($query,$owner) {
+                                    return $query->where('reservations.owner',$owner);
+                                })
+                                ->when($request->partner, function ($query, $partner) {
+                                    return $query->where('reservations.partners_name','ILIKE','%'.$partner.'%');
+                                })
+                                ->when($request->guest, function ($query,$guest) {
+                                    return $query->where('reservations.guests_name','ILIKE','%'.$guest.'%')
+                                                 ->orWhere('reservations.guests_email','ILIKE','%'.$guest.'%');
+                                })
+                                ->with('invitations')
+                                ->get();
+
+            foreach ($teetime as $t) {
+                $t['teetime_cancel_time'] = $this->model->setCancelDate(
+                $t['teetime_date_start'], $t['teetime_hour_start'],
+                $t['teetime_cancel_time']);
+            }
+            
+            
+
+        return ["list"=>$teetime,"total"=>count($teetime)];
+
     }
 }

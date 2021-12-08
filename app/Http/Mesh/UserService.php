@@ -22,8 +22,8 @@ class UserService extends ServicesMesh
     {
         
             $client = new Client();
-            $response = $client->get(env('USERS_API').'/get/user/' . $id);
-            
+            $response = $client->get(env('USERS_API').'/us/get/user/' . $id);
+
             if ($response->getStatusCode() !== 200){
                 Log::critical($response->getStatusCode() . ":   " .  $response->getBody());
                 return [];
@@ -56,7 +56,7 @@ class UserService extends ServicesMesh
 
             $client = json_decode($response->getBody(), true);
 
-            return $client['Usuario'] ?? ["id" => null];
+            return $client['value'] ?? ["id" => null];
 
         } catch (Exception $exception) {
             Log::critical($exception->getMessage());
