@@ -41,59 +41,95 @@
 
 </div>
 <div>
-    <table class="default" id="table_1">
-        <?php 
-            $i = 0; 
-        ?>
+    <table class="default" id="table_1" border="1">
 
-        <?php foreach ($data as $d) { ?> 
-            <?php if (!$d->isEmpty()) { ?>
-
-                 <?php foreach (json_decode($d[$i]->guests) as $guest){
-                    $players[] = $guest;
-                } 
-
-                    foreach (json_decode($d[$i]->partners) as $partner) {
-                        $players[] = $partner;
-                    }
-                ?>
+        <?php
+        foreach ($data as $d) { ?> 
+            <?php if ($d) { ?>
 
                 <thead>
                     <tr>
                         <td>FECHA</td>
-                        <td colspan="3">SALIDA <?= strtoupper($d[$i]->hole_name)?></td>
+                        <td colspan="3">SALIDA <?= strtoupper($d->hole_name)?></td>
                     </tr>
                 </thead>
              <tr>
-                <td><?= $d[$i]->start_hour?></td>
+                <td><?= $d->start_hour?></td>
                 <td>REF</td>
                 <td>PLAYERS</td>
                 <td>RESERVADO POR</td>
             </tr>
-            <?php foreach ($d as $info) {?>
             <tr>
                 <td>
                    TEE 028 
                 </td>
                 <td>
-                    <?= $info['id'] ?> 
+                    <table>
+                         <?php 
+                            $regex = "/[a-z\d._%+-]+@[a-z\d.-]+\.[a-z]{2,4}\b/i";
+                            $partners = explode(',', $d->partners_name);
+                            $guests = explode(',', $d->guests_name);
+                            $_partner = [];
+                            $_guest = [];
+
+                            foreach ($partners as $partner) {
+                                $partners = explode(' ', $partner);
+                            }
+                            
+                            foreach ($guests as $guest) {
+                                $guests = explode(' ', $guest);
+                            }
+
+                           
+                            foreach ($partners as $partner) {
+                                if (!preg_match($regex, $partner)) {
+                                    $_partner[] = $partner;
+                                }
+                            }
+
+                            foreach ($guests as $guest) {
+                                if (!preg_match($regex, $guest)) {
+                                    $_guest[] = $guest;
+                                }
+                            }
+
+                            foreach ($_partner as $p) {
+                              $player[] = $p;
+                            }
+
+                            foreach ($_guest as $g) {
+                                $player[] = $g;
+                            }
+                            
+
+                            foreach ($player as $p) { ?> 
+                                   <tr>
+                                       <td> <?php 
+                                       if (preg_match('!\d+!', $p)) {
+                                           echo $p;
+                                       }?></td>
+                                   </tr> 
+                           <?php } ?>                             
+                    </table>
                 </td>
                 <td>
                     <table>
-                        <?php foreach ($players as $player) {?>
+                        <?php 
+
+                        foreach (explode(',',$d->partners_name.','.$d->guests_name) as $player) {?>
                            <tr>
-                                <td><?= $player ?> </td>
+                                <td><?php echo $player ?> </td>
                            </tr>
                         <?php } ?> 
                     </table>
                 </td>
                 <td>
-                    <?= $info['owner'] ?> 
+                    <?= $d->owner ?> 
                 </td>
             </tr>
-        <?php }
-            $i++; 
+        <?php  
             }
+
         }?>
     </table>
 </div>

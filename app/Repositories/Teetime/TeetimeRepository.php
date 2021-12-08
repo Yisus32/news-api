@@ -299,9 +299,6 @@ class TeetimeRepository extends CrudRepository
         }
         
 
-
-
-        
          //AGREGAR INTERVALO A CADA FECHA IMPORTANTE
          //AGREGAR ARRAY DE BREAK_TIMES AL FINAL DE CADA ARRAY
          //   
@@ -319,6 +316,7 @@ class TeetimeRepository extends CrudRepository
 
         $slots = abs(((($diff_services_hours*60)/$interval) - (($diff_break_hours*60)/$interval))-1);
 
+
         for ($i=0; $i < $slots ; $i++) { 
 
             if ($bt_start_hour && ($start_date->format('H:i:s') < $bt_start_hour->format('H:i:s'))) {
@@ -331,16 +329,18 @@ class TeetimeRepository extends CrudRepository
             
             for ($j=0; $j <$n_holes ; $j++) { 
             
-                $reservation[] = [
+                    
+                    if(!$this->check_disponibility($start_date->format('Y-m-d'),$start_date->format('H:i:s'),$holes[$j])){
+                        $reservation[] = [
                                   "hole_id" => $holes[$j],
                                   "date" => $start_date->format('Y-m-d'),
                                   "start_hour" => $start_date->format('H:i:s'),
                                   "available_time" => $available_time->format('Y-m-d H:i:s'),
                                   "cancel_time" => $cancel_time
-                                ]; 
-            }
+                                ];
+                    }
+            }//FOR HOLES 
             
-            //SUBIR CAMBIOS 
             if ($bt_start_hour && ($start_date->format('H:i:s') < $bt_start_hour->format('H:i:s'))) {
                  $start_date->addMinutes($interval);
             }
@@ -354,6 +354,24 @@ class TeetimeRepository extends CrudRepository
         }
 
         return $reservation;
+    }
+
+    public function check_disponibility($start_date,$start_hour,$hole_id){
+        
+        $reservation = Reservation::select('reservations.*',
+                                           'teetimes.start_date as teetime_start_date',
+                                           'teetimes.start_hour as teetime_start_hour')
+                                    ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
+                                    ->where('reservations.status','registrado')
+                                    ->where('reservations.date',$start_date)
+                                    ->where('reservations.start_hour',$start_hour)
+                                    ->where('reservations.hole_id',$hole_id)
+                                    ->first();
+        if ($reservation) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
 
