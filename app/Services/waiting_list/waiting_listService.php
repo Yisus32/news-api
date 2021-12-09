@@ -50,16 +50,4 @@ class waiting_listService extends CrudService
 
     }
 
-    public function notireserva($date,$hour)
-    {
-        $client=new UsuService();
-        $espera=waiting_list::where('date',$date)->where('start_hour',$hour)->get();
-        foreach ($espera as $key) 
-        {
-            $id=$key->user_id;
-            dd($id);
-           $client->_sendNotification($id,$date,$hour);
-        }
-    }
-
 }

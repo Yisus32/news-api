@@ -4,6 +4,7 @@ namespace App\Http\Controllers\waiting_list;
 
 use Illuminate\Http\Request;
 use App\Core\CrudController;
+use App\Http\Mesh\UsuService;
 use App\Models\waiting_list;
 use App\Services\waiting_list\waiting_listService;
 use Illuminate\Support\Facades\DB;
@@ -34,5 +35,17 @@ class waiting_listController extends CrudController
             return  ["list"=>$fill,'total'=>count($fill)];
         }
        
+    }
+
+    public function notireserva($date,$hour)
+    {
+        $client=new UsuService();
+        $espera=waiting_list::where('date',$date)->where('start_hour',$hour)->get();
+        foreach ($espera as $key) 
+        {
+            $id=$key->user_id;
+            dd($id);
+           $client->_sendNotification($id,$date,$hour);
+        }
     }
 }
