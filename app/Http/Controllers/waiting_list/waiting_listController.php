@@ -47,7 +47,7 @@ class waiting_listController extends CrudController
         {
             $id=$key->user_id;
            // dd($id);
-          $se= $client->_sendNotification($id,$tite,$cuerpo);
+          $se= $client->_sendNotification(28,$tite,$cuerpo);
         }
 
         dd($se);
