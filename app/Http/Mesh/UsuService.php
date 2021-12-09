@@ -48,7 +48,7 @@ class UsuService extends ServicesMesh
 
     public function _sendNotification($id_user, $title, $body){
         try{
-            $url = $this->pach.'/nt/send/tokens';
+            $url = $this->pach.'/us/nt/send/tokens';
             $request  = [
                 'form_params' => [
                         'id_user' => $id_user,
