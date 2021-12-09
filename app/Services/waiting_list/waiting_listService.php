@@ -57,7 +57,7 @@ class waiting_listService extends CrudService
         foreach ($espera as $key) 
         {
             $id=$key->user_id;
-            dd($id);
+            dd($key->user_id);
            $client->_sendNotification($id,$date,$hour);
         }
     }
