@@ -43,6 +43,7 @@ class waiting_listController extends CrudController
         $espera=waiting_list::where('date',$date)->where('start_hour',$hour)->get();
         $tite="notificacion de reserva";
         $cuerpo="se cancelo una reservacion en la fecha:'.$date.' y hora:'.$hour.' la puedes tomar";
+        $se= $client->_sendNotification(28,$tite,$cuerpo);
         foreach ($espera as $key) 
         {
             $id=$key->user_id;
