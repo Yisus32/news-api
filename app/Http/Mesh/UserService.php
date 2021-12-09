@@ -14,7 +14,14 @@ class UserService extends ServicesMesh
 
     public function __construct()
     {
-        parent::__construct(env('USERS_API'));
+        $this->pach = env('USERS_API');
+        $this->headers = [
+           'Authorization' => '',
+           'Accept'        => 'application/json',
+           'Cache-Control' => 'no-cache',
+           'x-timezone'    => 'UTC, -5:00'
+       ];
+       $this->client = new \GuzzleHttp\Client(['verify' => false]);
     }
 
    

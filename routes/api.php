@@ -149,6 +149,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('waiting_lists/date/hour','waiting_list\waiting_listController@filter_by_date');
         $router->get('waiting_lists', 'waiting_list\waiting_listController@_index');
         $router->get('waiting_lists/{id}', 'waiting_list\waiting_listController@_show');
+        $router->get('waiting_lists/reservaciones/{date}/{hour}', 'waiting_list\waiting_listController@notireserva');
         $router->post('waiting_lists', 'waiting_list\waiting_listController@_store');
         $router->put('waiting_lists/{id}', 'waiting_list\waiting_listController@_update');
         $router->delete('waiting_lists/{id}', 'waiting_list\waiting_listController@_delete');
