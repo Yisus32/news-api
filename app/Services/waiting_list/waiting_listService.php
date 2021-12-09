@@ -40,7 +40,7 @@ class waiting_listService extends CrudService
         //dd($verifireser);
         if(count($verifireser)>0)
         {
-            return response()->json(["error"=>true,"message"=> "No existen reservaciones en esa fecha puede jugar"],422);
+            return response()->json(["error"=>true,"message"=> "Existen reservaciones para esta fecha y hora"],422);
         }
 
         else
@@ -48,18 +48,6 @@ class waiting_listService extends CrudService
             return parent::_store($request);
         }
 
-    }
-
-    public function notireserva($date,$hour)
-    {
-        $client=new UsuService();
-        $espera=waiting_list::where('date',$date)->where('start_hour',$hour)->get();
-        foreach ($espera as $key) 
-        {
-            $id=$key->user_id;
-            dd($id);
-           $client->_sendNotification($id,$date,$hour);
-        }
     }
 
 }
