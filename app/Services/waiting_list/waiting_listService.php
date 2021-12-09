@@ -37,15 +37,17 @@ class waiting_listService extends CrudService
         $date=$request->date;
         $hour=$request->start_hour;
         $verifireser=Reservation::where('date',$date)->where('start_hour',$hour)->get();
+        dd($verifireser);
         if(count($verifireser)>0)
-        {
-          return parent::_store($request);
-        }
-
-        else
         {
             return response()->json(["error"=>true,"message"=> "No existen reservaciones en esa fecha puede jugar"],422);
         }
+
+        else
+        { 
+            return parent::_store($request);
+        }
+
     }
 
     public function notireserva($date,$hour)
