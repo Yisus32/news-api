@@ -44,6 +44,7 @@ class waiting_listController extends CrudController
         $tite="notificacion de reserva";
         $cuerpo="se cancelo una reservacion en la fecha:'.$date.' y hora:'.$hour.' la puedes tomar";
         $se= $client->_sendNotification(28,$tite,$cuerpo);
+        dd($se);
         foreach ($espera as $key) 
         {
             $id=$key->user_id;
@@ -51,7 +52,7 @@ class waiting_listController extends CrudController
           $se= $client->_sendNotification(28,$tite,$cuerpo);
         }
 
-        dd($se);
+       
 
     }
 }
