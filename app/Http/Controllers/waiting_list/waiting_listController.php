@@ -44,7 +44,7 @@ class waiting_listController extends CrudController
         foreach ($espera as $key) 
         {
             $id=$key->user_id;
-            dd($id);
+           // dd($id);
            $client->_sendNotification($id,$date,$hour);
         }
     }
