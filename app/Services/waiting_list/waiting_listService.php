@@ -40,12 +40,13 @@ class waiting_listService extends CrudService
         //dd($verifireser);
         if(count($verifireser)>0)
         {
-            return response()->json(["error"=>true,"message"=> "Existen reservaciones para esta fecha y hora"],422);
+            return parent::_store($request);
         }
 
         else
         { 
-            return parent::_store($request);
+            return response()->json(["error"=>true,"message"=> " No existen reservaciones para esta fecha y hora puede jugar"],422);
+            
         }
 
     }
