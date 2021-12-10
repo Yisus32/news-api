@@ -354,10 +354,10 @@ class ReservationRepository extends CrudRepository
         $temp_data->created_at = Carbon::now(env('APP_TIMEZONE'));
         $temp_data->save();
 
-        return response()->json(['status'=>200, 'message'=>'se apartado la reserva por 5 minutos']);   
+        return response()->json(['status'=>200, 'message'=>'se apartado la reserva por 5 minutos'],200);   
         
         } catch (\Exception $e) {
-            return response()->json(['status'=>400,'message'=>'Este espacio está siendo registrado por otro usuario']);   
+            return response()->json(['status'=>400,'message'=>'Este espacio está siendo registrado por otro usuario'],400);   
         }
     }
 
