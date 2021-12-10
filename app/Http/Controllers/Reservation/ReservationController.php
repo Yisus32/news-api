@@ -91,14 +91,16 @@ class ReservationController extends CrudController
        
          
         foreach ($holes as $hole) {
-           $data = Reservation::select('reservations.*',
+           $reservations = Reservation::select('reservations.*',
                                         'holes.name as hole_name')
                                          ->where('status','registrado')
                                          ->leftjoin('holes','holes.id','=','reservations.hole_id')
                                          ->where('holes.id',$hole->hole_id)
                                          ->get();
+        
+            $data[$hole->hole_id] = $reservations;
         }     
-             
+        
         $report->data($data);
         return $report->report("automatic","Reservaciones",null,null,false,1);
     }

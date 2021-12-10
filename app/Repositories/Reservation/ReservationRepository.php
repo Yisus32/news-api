@@ -374,9 +374,9 @@ class ReservationRepository extends CrudRepository
                              ->first();
         if ($temp_data) {
             $temp_data->delete();
-            return response()->json(['status' => 200, 'message' => 'El espacio está disponible nuevamente']);    
+            return response()->json(['status' => 200, 'message' => 'El espacio está disponible nuevamente'],200);    
         }else{
-            return response()->json(['status'=>400,'message'=>'Verifique el id del teetime']);
+            return response()->json(['status'=>400,'message'=>'Verifique el id del teetime'],400);
         }   
     }
 
