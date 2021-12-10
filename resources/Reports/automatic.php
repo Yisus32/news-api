@@ -45,12 +45,12 @@
 
         <?php
         foreach ($data as $d) { ?> 
-            <?php if ($d) { ?>
+            <?php if ($d) { dd($d)?>
 
                 <thead>
                     <tr>
                         <td>FECHA</td>
-                        <td colspan="3">SALIDA <?= strtoupper($d->hole_name)?></td>
+                        <td colspan="3">SALIDA</td>
                     </tr>
                 </thead>
              <tr>
@@ -65,62 +65,12 @@
                 </td>
                 <td>
                     <table>
-                         <?php 
-                            $regex = "/[a-z\d._%+-]+@[a-z\d.-]+\.[a-z]{2,4}\b/i";
-                            $partners = explode(',', $d->partners_name);
-                            $guests = explode(',', $d->guests_name);
-                            $_partner = [];
-                            $_guest = [];
-
-                            foreach ($partners as $partner) {
-                                $partners = explode(' ', $partner);
-                            }
-                            
-                            foreach ($guests as $guest) {
-                                $guests = explode(' ', $guest);
-                            }
-
                            
-                            foreach ($partners as $partner) {
-                                if (!preg_match($regex, $partner)) {
-                                    $_partner[] = $partner;
-                                }
-                            }
-
-                            foreach ($guests as $guest) {
-                                if (!preg_match($regex, $guest)) {
-                                    $_guest[] = $guest;
-                                }
-                            }
-
-                            foreach ($_partner as $p) {
-                              $player[] = $p;
-                            }
-
-                            foreach ($_guest as $g) {
-                                $player[] = $g;
-                            }
-                            
-
-                            foreach ($player as $p) { ?> 
-                                   <tr>
-                                       <td> <?php 
-                                       if (preg_match('!\d+!', $p)) {
-                                           echo $p;
-                                       }?></td>
-                                   </tr> 
-                           <?php } ?>                             
                     </table>
                 </td>
                 <td>
                     <table>
-                        <?php 
-
-                        foreach (explode(',',$d->partners_name.','.$d->guests_name) as $player) {?>
-                           <tr>
-                                <td><?php echo $player ?> </td>
-                           </tr>
-                        <?php } ?> 
+                       
                     </table>
                 </td>
                 <td>
