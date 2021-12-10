@@ -367,6 +367,8 @@ class TeetimeRepository extends CrudRepository
                 $start_date->addMinutes($interval);
             }                                  
         }
+
+        //SE VALIDO ROLES DE USUARIO, SE MODIFICO LAS FECHAS DE DISPONIBILIDAD Y CANCELACIÓN Y QUE MUESTRE CADA SLOT SEGUN LA HORA.
         
         if (isset($reservation)) {
             //$reservation["count"] = count($reservation);

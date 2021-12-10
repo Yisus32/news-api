@@ -367,11 +367,12 @@ class ReservationRepository extends CrudRepository
         $time = str_replace(':','',$request->start_hour);
         $ref_data = $date.''.$time;
         
-
+       
         $temp_data = TempData::where('teetime_id',$id)
                              ->where('hole_id',(integer)$hole_id)
                              ->where('ref_data',$ref_data)
                              ->first();
+
         if ($temp_data) {
             $temp_data->delete();
             return response()->json(['status' => 200, 'message' => 'El espacio está disponible nuevamente'],200);    
