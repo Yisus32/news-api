@@ -59,7 +59,7 @@ class UsuService extends ServicesMesh
             return json_decode($response->getBody());
         }catch (Exception $e) {
             Log::critical('ApiUser _sendNotification '.$e);
-            return false;
+            return [$e->getMessage()];
         }
     }
 
