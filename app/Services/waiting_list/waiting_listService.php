@@ -8,6 +8,7 @@ namespace App\Services\waiting_list;
 
 
 use App\Core\CrudService;
+use App\Http\Mesh\UsuService;
 use App\Models\Reservation;
 use App\Models\Teetime;
 use App\Models\waiting_list;
@@ -33,7 +34,21 @@ class waiting_listService extends CrudService
 
     public function _store(Request $request)
     {
-        
+        $date=$request->date;
+        $hour=$request->start_hour;
+        $verifireser=Reservation::where('date',$date)->where('start_hour',$hour)->get();
+        //dd($verifireser);
+        if(count($verifireser)>0)
+        {
+            return parent::_store($request);
+        }
+
+        else
+        { 
+            return response()->json(["error"=>true,"message"=> " No existen reservaciones para esta fecha y hora puede jugar"],422);
+            
+        }
+
     }
 
 }

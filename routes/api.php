@@ -35,6 +35,14 @@ $router->group(['prefix' => 'api'], function (Router $router) {
      *routes with report prefix
      * rutas con el prefijo report
     */
+
+    $router->group(['prefix' => 'search'], function () use ($router) {
+         $router->get('advance', 'Reservation\ReservationController@advanceFilter');
+         $router->get('guests/{full_name}', 'Guest\GuestController@searchByName');
+         $router->get('paginateDays', 'Teetime\TeetimeController@paginate_days');
+
+    });
+   
     $router->group(['prefix' => 'report'], function () use ($router) {
         $router->post('/automatic', 'ReportController@automatic');
 
@@ -47,6 +55,10 @@ $router->group(['prefix' => 'api'], function (Router $router) {
             $router->get('/game_log', 'game_log\game_logController@report');
             $router->get('/alq_car', 'alq_car\alq_carController@rezero');
             $router->post('/automatic', 'ReportController@automatic');
+            $router->get('/alq_car/top/day/{year}/{month}/{i}/{tipo}', 'alq_car\alq_carController@topdayreport');
+            $router->get('/alq_car/mes/top/{year}/{i}/{tipo}', 'alq_car\alq_carController@topmesreport');
+            $router->get('/alq_cars/indicadores/day/{year}/{month}/{i}', 'alq_car\alq_carController@rondastiporeportday');
+            $router->get('/alq_cars/indicadores/mes/{year}/{i}', 'alq_car\alq_carController@rondastiporeportmes');
         });
     });
 
@@ -103,6 +115,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('guests', 'Guest\GuestController@_store');
         $router->post('guests/email', 'Guest\GuestController@email');
         $router->put('guests/{id}', 'Guest\GuestController@_update');
+        $router->get('guests/confirmation/{id}', 'Guest\GuestController@acceptInvitation');
         $router->delete('guests/{id}', 'Guest\GuestController@_delete');
 
             /** routes para group **/ 
@@ -136,6 +149,7 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('waiting_lists/date/hour','waiting_list\waiting_listController@filter_by_date');
         $router->get('waiting_lists', 'waiting_list\waiting_listController@_index');
         $router->get('waiting_lists/{id}', 'waiting_list\waiting_listController@_show');
+        $router->get('reservaciones/espera/{date}/{hour}', 'waiting_list\waiting_listController@notireserva');
         $router->post('waiting_lists', 'waiting_list\waiting_listController@_store');
         $router->put('waiting_lists/{id}', 'waiting_list\waiting_listController@_update');
         $router->delete('waiting_lists/{id}', 'waiting_list\waiting_listController@_delete');
@@ -167,7 +181,9 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->put('documents/{id}',      'Document\DocumentController@_update');
         $router->delete('documents/{id}',   'Document\DocumentController@_delete');
         $router->post('documents/validate', 'Document\DocumentController@_validate');
-
+        $router->post('validate', 'Document\DocumentController@_validate_document');
+        $router->post('documents/create', 'Document\DocumentController@_create');
+        $router->post('name', 'Document\DocumentController@validateName');
         /** routes para bitatoalla **/ 
         $router->get('bitatoallas/toalla', 'bitatoalla\bitatoallaController@bita');
         $router->post('bitatoallas/obs', 'bitatoalla\bitatoallaController@reception');
@@ -186,7 +202,8 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->get('alq_cars/fill/date','alq_car\alq_carController@filter_by_date');
         $router->get('alq_cars/top/{year}/{month}/{i}/{tipo}', 'alq_car\alq_carController@topday');
         $router->get('alq_cars/mes/top/{year}/{i}/{tipo}', 'alq_car\alq_carController@topmes');
-        $router->get('alq_cars/indicadores/list', 'alq_car\alq_carController@indicador');
+        $router->get('alq_cars/indicadores/list/mes/{year}/{i}', 'alq_car\alq_carController@indicadormes');
+        $router->get('alq_cars/indicadores/list/day/{year}/{month}/{i}', 'alq_car\alq_carController@indicadorday');
         $router->post('alq_cars', 'alq_car\alq_carController@sav');
         $router->put('alq_cars/{id}', 'alq_car\alq_carController@_update');
         $router->delete('alq_cars/{id}', 'alq_car\alq_carController@_delete');
@@ -239,4 +256,8 @@ $router->get('probando2',function(Request $request){
     $req = new UserService;
     $user = $req->getUsersById($request->id);
     return $user;
-});
+}); 
+/** routes para Filter **/ 
+ 
+
+

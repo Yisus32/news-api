@@ -48,7 +48,7 @@ class UsuService extends ServicesMesh
 
     public function _sendNotification($id_user, $title, $body){
         try{
-            $url = $this->pach.'/nt/send/tokens';
+            $url = $this->pach.'/us/nt/send/tokens';
             $request  = [
                 'form_params' => [
                         'id_user' => $id_user,
@@ -57,11 +57,29 @@ class UsuService extends ServicesMesh
                     ]
                 ];
             $request_data = json_encode($request);
-            $response = $this->client->request('POST', $url, $request);
+            $response =$this->client->post($url,$request);
             return json_decode($response->getBody());
         }catch (Exception $e) {
             Log::critical('ApiUser _sendNotification '.$e);
             return false;
         }
     }
+
+    public function RondasQA(){
+        $url = 'qarubick2teetime.zippyttech.com/api/alq_cars';
+            $response = $this->client->request('GET', $url,$this->headers);
+            return json_decode($response->getBody());
+    }
+
+    public function getcategory(){
+        try{
+            $url = $this->pach.'/us/get/user/api/ext';
+            $response = $this->client->request('GET', $url);
+            return json_decode($response->getBody());
+        }catch (Exception $e) {
+            Log::critical('getcategory- '.$e);
+            return false;
+        }
+    }
+
 }

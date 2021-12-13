@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddRefdataInTempData extends Migration
+class AlterCampCardNumberInGuests extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class AddRefdataInTempData extends Migration
      */
     public function up()
     {
-        Schema::table('temp_data', function (Blueprint $table) {
-            $table->dropColumn('hole_id');
-            $table->string('ref_data')->unique()->nullable();
+        Schema::table('guests', function (Blueprint $table) {
+            $table->dropColumn('card_number');
         });
 
-
+        Schema::table('guests', function (Blueprint $table) {
+            $table->string('card_number')->unique()->nullable();
+        });
     }
 
     /**
@@ -28,7 +29,7 @@ class AddRefdataInTempData extends Migration
      */
     public function down()
     {
-        Schema::table('temp_data', function (Blueprint $table) {
+        Schema::table('guests', function (Blueprint $table) {
             //
         });
     }

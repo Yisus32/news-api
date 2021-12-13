@@ -87,7 +87,7 @@ class Reservation extends CrudModel
        
         $pattern = "/[a-z\d._%+-]+@[a-z\d.-]+\.[a-z]{2,4}\b/i";
         
-        if ($stored['partners_name'] != null) {
+        if ($stored['partners_name'] != null && $stored['partners_name'] != '""') {
             foreach (explode(',',$stored['partners_name']) as $partner) {
              preg_match ($pattern,$partner,$matches);
              $emails[] = $matches[0];
@@ -95,7 +95,7 @@ class Reservation extends CrudModel
 
         }
 
-        if ($stored['guests_name'] != null) {
+        if ( $stored['guests_name'] != null && $stored['guests_name'] != '""') {
              
              foreach (explode(',',$stored['guests_name']) as $guest) {
              preg_match ($pattern,$guest,$matches);
@@ -105,27 +105,33 @@ class Reservation extends CrudModel
         
         $checkInvitation = Invitation::where('reservation_id',$stored['id'])->get();
         
-        if ($checkInvitation->isEmpty()) {
-            foreach ($emails as $email) {
-                $invitation = new Invitation;
-                $invitation->reservation_id = $stored->id;
-                $invitation->guest_email = $email;
-                $invitation->save();
+       if (isset($emails)) {
+            if ($checkInvitation->isEmpty()) {
+                foreach ($emails as $email) {
+                    $invitation = new Invitation;
+                    $invitation->reservation_id = $stored->id;
+                    $invitation->guest_email = $email;
+                    $invitation->save();
             } 
-        }else{
-            foreach ($checkInvitation as $check) {
-                $invitation = Invitation::where('id',$check['id'])->first();
-                $invitation->delete();
-            } 
+            }else{
+                foreach ($checkInvitation as $check) {
+                    $invitation = Invitation::where('id',$check['id'])->first();
+                    $invitation->delete();
+                } 
 
-            foreach($emails as $email){    
-                $invitation = new Invitation;
-                $invitation->reservation_id = $stored->id;
-                $invitation->guest_email = $email;
-                $invitation->save();
+                foreach($emails as $email){    
+                    $invitation = new Invitation;
+                    $invitation->reservation_id = $stored->id;
+                    $invitation->guest_email = $email;
+                    $invitation->save();
+                }
             }
-        }
-        
-        return $invitation; 
+
+            return $invitation;
+       }else{
+            return [];
+       }
+         
+         
     }
 }

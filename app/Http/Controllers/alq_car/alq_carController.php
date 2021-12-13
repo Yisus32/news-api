@@ -247,210 +247,7 @@ class alq_carController extends CrudController
     }
 
 
-    public function repo(Request $request)
-    {
-     
-        if (empty($request->star)) {
-            return Response()->json(["error" => true, "message" => "la fecha es requerida"],400);
-        }
-
-        
-        $now = Carbon::now()->timezone("America/Panama");
-        $r=$request->get('star');
-        $f=$request->get('end');
-
-        $alqu= $game=DB::table('alq_car')->whereBetween(DB::Raw('cast(alq_car.fecha as date)'), array($r, $f))
-        ->join('group','group.id','=','alq_car.gro_id')
-        ->join('cars_golf','cars_golf.id','=','alq_car.car_id')
-        ->join('holes','holes.id','=','alq_car.id_hole')
-        ->select('group.cod as codegroup','group.description as descri','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id','alq_car.fecha','alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p')->get(); 
-        $alqu->descri='N/A';
-        $index=[
-            'FECHA',
-            'HORA DE ENTRADA',
-            'N° DE SOCIO',
-            'TIPO DE SOCIO',
-            'CATEGORIA DE SOCIO',
-            'N° DE SOCIO QUE INVITA',
-            'NOMBRE DEL SOCIO QUE INVITA',
-            'NOMBRE DE SOCIO / INVITADO /DEPENDIENTE/RECIPROCIDAD',
-            'SOCIO / INVITADO / REC.',
-            'NUMERO DE CARNET DE INVITADOS',
-            'RECUENTO DE RONDAS',
-            'HORA DE INICIO JUEGO',
-            'HOYO SALIDA',
-            '# CARRITO',
-            'GRUPO RONDA',
-            'CANTIDAD DE HOYOS JUGADOS',
-            'CARRITO / CAMINANDO',
-            'Observaciones',
-        ];
-
-        $html = '
-        <html>
-        <table>
-        ';
-        $cabecera = '<tr>';
-        foreach ($index as $c) {
-            $cabecera .= "<td>$c</td>"; // esto es un array con los campos que van en la cabecera, lo que hago es llenarlo con un td para la tabla
-        }
-        $cabecera .= '</tr>';
-
-        $html .= $cabecera;
-        foreach($alqu as $l){
-            $agrupar = '
-                <tr>
-                    <td>'.$l->fecha.'</td> 
-                    <td>N/A</td> 
-                    <td>'.$l->user_num.'</td> 
-                    <td></td> 
-                    <td></td> 
-                    <td>N/A</td> 
-                    <td>N/A</td> 
-                    <td>'.$l->user_name.'</td> 
-                    <td>'.$l->tipo_p.'</td> 
-                    <td>N/A</td> 
-                    <td>1</td> 
-                    <td>'.$l->codegroup.'</td>
-                    <td>'.$l->namehole.'</td>
-                    <td>'.$l->numcar.'</td>
-                    <td></td> 
-                    <td>'.$l->hol_id.'</td>
-                    <td></td>
-                    <td>'.$l->obs.'</td>
-
-                </tr>
-            ';
-            $html .= $agrupar;
-            $valores = false;
-
-            $html .= $valores;
-        }
-        $html .= '</table></html>';
-        //return $html; // aqui estoy probando mi tabla en html
-        
-
-        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Html();
-        $spreadsheet = $reader->loadFromString($html);
-        //AQUI CAMBIO EL COLOR DE LA CELDAS DE TITULO
-        $spreadsheet->getActiveSheet()->getStyle('A1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('B1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('C1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('D1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('E1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('F1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('G1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('H1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('I1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('D1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('J1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('K1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('L1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('M1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('N1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('O1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('P1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('Q1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-        $spreadsheet->getActiveSheet()->getStyle('R1')->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FF0000FF');
-
-
-
-        //AQUI CAMBIO EL COLOR DE LA LETRA DE LOS TITULOS
-        $spreadsheet->getActiveSheet()->getStyle('A1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );
-        $spreadsheet->getActiveSheet()->getStyle('B1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('C1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('D1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('E1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('F1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('G1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('H1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('I1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('D1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('J1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('K1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('L1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('M1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('N1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('O1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('P1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('Q1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        $spreadsheet->getActiveSheet()->getStyle('R1')->getFont()
-        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );;
-        
-
-        //aqui cambio el alto y ancho de las celdas
-        $spreadsheet->getActiveSheet()->getRowDimension('1')->setRowHeight(80, 'pt');
-        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(20, 'pt');
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
-
-
-
-        //aqui alineo
-        $spreadsheet->getActiveSheet()->getStyle('A2')->getAlignment()->applyFromArray( [ 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER, 'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER, 'textRotation' => 0, 'wrapText' => TRUE ] );
     
-        //Todo esto de aqui abajo es para que se fuerce la descarga al ir al endpoint
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="reporte.xlsx"');
-        $writer->save("php://output"); 
-        return null;
-       
-}
 
 
 public function rezero(Request $request)
@@ -462,6 +259,7 @@ public function rezero(Request $request)
     ->join('holes','holes.id','=','alq_car.id_hole')
     ->leftJoin('guests','guests.id','=','alq_car.user_id')
     ->select('guests.host_number as invnumsoc','guests.host_name as invnamesoc','guests.card_number as carnet','group.cod as codegroup','cars_golf.cod as numcar','holes.name as namehole','alq_car.user_id','alq_car.user_num','alq_car.user_name','alq_car.car_id','alq_car.hol_id','alq_car.gro_id',DB::Raw('cast(alq_car.fecha as date)'),'alq_car.id_hole','alq_car.obs','alq_car.tipo_p','alq_car.can_p','alq_car.created_at')
+    ->orderBy('alq_car.created_at')->orderBy('codegroup')
     ->when($request->dat, function($query, $interval){
         $date = explode('_', $interval);
         $date[0] = Carbon::parse($date[0])->format('Y-m-d');
@@ -499,6 +297,20 @@ public function rezero(Request $request)
     ->get(); 
 
  //dd($alqu);
+ $ser=new UsuService();
+        $resp=$ser->getcategory();
+
+        foreach($alqu as $ronditas)
+        {
+            foreach($resp as $tuser)
+            {
+                if($ronditas->user_id==$tuser->id)
+                {
+                    $ronditas->categoria=$tuser->category_type_name;
+                    $ronditas->clase=$tuser->clase_usuario;
+                }
+            }
+        }
   
     $excel=new Spreadsheet();
     $hoja=$excel->getActiveSheet();
@@ -549,28 +361,38 @@ public function rezero(Request $request)
     $excel->getActiveSheet()->getColumnDimension('P')->setWidth(350, 'px');
     
 
-    $excel->getActiveSheet()->getStyle('A1:P1')
+    $excel->getActiveSheet()->getStyle('A:P')
     ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-    $excel->getActiveSheet()->getStyle('A1:P1')
-    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $excel->getActiveSheet()->getStyle('A:P')
+    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
     
     
     $fila=2;
     $ser=new UsuService();
     foreach($alqu as $rows)
     {
-        //aqui busco el usuario
-        $resp=$ser->simpleget($rows->user_id);
-        //dd($resp);
-        foreach ($resp as $key)
-            {
-                $rows->clase=$key->clase_usuario;
-                $rows->categoria=$key->category_type_name;
             
         $hoja->setCellValue('A'.$fila,$rows->fecha);
         $hoja->setCellValue('B'.$fila,$rows->user_num);
-        $hoja->setCellValue('C'.$fila,$rows->categoria);
-        $hoja->setCellValue('D'.$fila,$rows->clase);
+        if(array_key_exists('categoria', $rows))
+        {
+            $hoja->setCellValue('C'.$fila,$rows->categoria);
+        }
+        else
+        {
+            $hoja->setCellValue('C'.$fila,'');
+        }
+
+        if(array_key_exists('clase', $rows))
+        {
+            $hoja->setCellValue('D'.$fila,$rows->clase);
+        }
+        else
+        {
+            $hoja->setCellValue('D'.$fila,'');
+        }
+       
+    
         if($rows->invnumsoc!==null)
         {
             $hoja->setCellValue('E'.$fila,$rows->invnumsoc);
@@ -610,7 +432,7 @@ public function rezero(Request $request)
 
 
         $fila++;
-            }
+            
     }
 
 
@@ -647,46 +469,461 @@ public function topmes($year, $i,$tipo)
 
     }
 
-    public function indicador(Request $request)
+    public function indicadormes($year,$i)
     {
-        $ronda=alq_car::all();
+        $ronda=DB::table('alq_car')->select(['user_id',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id'])
+        ->whereYear('created_at', $year)->whereMonth('created_at',$i)->orderBy('recuento','desc')->get();
         $ser=new UsuService();
-       
-        foreach($ronda as $ids)
-        {
-            $resp=$ser->simpleget($ids->user_id);
+        $resp=$ser->getcategory();
 
-            foreach ($resp as $key)
+        foreach($ronda as $ronditas)
+        {
+            foreach($resp as $tuser)
             {
-                //$ids->clase=$key->clase_usuario;
-                $ids->categoria=$key->category_type_name;
+                if($ronditas->user_id==$tuser->id)
+                {
+                    $ronditas->categoria=$tuser->category_type_name;
+                }
             }
         }
-        //dd($resp);
-            
-           
-     $cont = [];
-    $c2 = 0;
-    foreach ($ronda as $user){
-        
-        //if(array_key_exists('categoria', $user)){
-            if(array_key_exists($user['categoria'], $cont)){
-                $c2 = $cont[$user['categoria']];
-            }else{
-                $c2 = $cont[$user['categoria']] = 0;
-            }
-            
 
-            $cont[$user['categoria']] = $c2 + 1;
-        //}
-        
+        $cont = [];
+    $c2 = 0;
+    $cuenta=0;
+    foreach ($ronda as $ronditas){
+            if(array_key_exists('categoria', $ronditas)){
+                $cuenta++;
+              if(array_key_exists($ronditas->categoria, $cont)){
+                  $c2 = $cont[$ronditas->categoria];
+              }else{
+                  $c2 = $cont[$ronditas->categoria] = 0;
+              }
+              $cont[$ronditas->categoria] = $c2 + 1;
+            }   
     }
-    return ["list"=>$cont,"total"=>count($cont)];
-        
+
+    $vista = [];
+    foreach($cont as $c=>$l){
+      $vista[] = [
+          "name"=>$c,
+          "value"=>$l
+      ];
+    }
+          return ["list"=>$vista,"total"=>$cuenta];
+        //return ["list"=>$cont,"total"=>$cuenta];
+    }
+ 
+
+
+    public function indicadorday($year,$month,$i)
+    {
+        $ronda=DB::table('alq_car')->select(['user_id',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id'])
+        ->whereYear('created_at', $year) ->whereMonth('created_at',$month)
+        ->whereDay('created_at', $i)->orderBy('recuento','desc')->get();
+        $ser=new UsuService();
+        $resp=$ser->getcategory();
+
+        foreach($ronda as $ronditas)
+        {
+            foreach($resp as $tuser)
+            {
+                if($ronditas->user_id==$tuser->id)
+                {
+                    $ronditas->categoria=$tuser->category_type_name;
+                }
+            }
+        }
+
+        $cont = [];
+    $c2 = 0;
+    $cuenta=0;
+    foreach ($ronda as $ronditas){
+            if(array_key_exists('categoria', $ronditas)){
+                $cuenta++;
+              if(array_key_exists($ronditas->categoria, $cont)){
+                  $c2 = $cont[$ronditas->categoria];
+              }else{
+                  $c2 = $cont[$ronditas->categoria] = 0;
+              }
+              $cont[$ronditas->categoria] = $c2 + 1;
+            }   
+    }
+
+    $vista = [];
+    foreach($cont as $c=>$l){
+      $vista[] = [
+          "name"=>$c,
+          "value"=>$l
+      ];
+    }
+          return ["list"=>$vista,"total"=>$cuenta];
+        //return ["list"=>$cont,"total"=>$cuenta];
     }
  
     
+//sirve para exportar a excel el top de rondas 
+public function topdayreport($year,$month,$i,$tipo,Request $request)
+{
+    $outputs = DB::table('alq_car')->select(['user_id','user_name','user_num',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id','user_name','user_num'])
+    ->where('tipo_p',$tipo)->whereYear('created_at', $year) ->whereMonth('created_at',$month)
+    ->whereDay('created_at', $i)->orderBy('recuento','desc')->get();
 
+    $excel=new Spreadsheet();
+    $hoja=$excel->getActiveSheet();
+    $hoja->setTitle("Top Rondas");
+    $hoja->mergeCells('A1:D1');
+    $hoja->setCellValue('A1','Top Rondas '.$tipo.' '.$year.'/'.$month.'/'.$i.'');
+    $hoja->setCellValue('A2','#');
+    $hoja->setCellValue('B2','N° DE SOCIO');
+    $hoja->setCellValue('C2','NOMBRE');
+    $hoja->setCellValue('D2','RONDAS');
+
+    $excel->getActiveSheet()->getStyle('A1:D1')->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()->setRGB('12AE0D');
+
+    $excel->getActiveSheet()->getStyle('A2:D2')->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()->setRGB('0066CC');
+
+    $excel->getActiveSheet()->getStyle('A1:D1')->getFont()
+        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE,'size'=>18, 'color' => [ 'rgb' => 'ffffff' ] ] );
+
+    $excel->getActiveSheet()->getStyle('A2:D2')->getFont()
+        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );
+        $excel->getActiveSheet()->getRowDimension('1')->setRowHeight(50, 'pt');
+    $excel->getActiveSheet()->getRowDimension('2')->setRowHeight(50, 'pt');
+
+    $excel->getActiveSheet()->getColumnDimension('A')->setWidth(160, 'px');
+    $excel->getActiveSheet()->getColumnDimension('B')->setWidth(170, 'px');
+    $excel->getActiveSheet()->getColumnDimension('C')->setWidth(170, 'px');
+    $excel->getActiveSheet()->getColumnDimension('D')->setWidth(200, 'px');
+    
+
+    $excel->getActiveSheet()->getStyle('A:D')
+    ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $excel->getActiveSheet()->getStyle('A:D')
+    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
    
+    
+    
+    $fila=3;
+    $ser=new UsuService();
+    foreach($outputs as $rows)
+    {
+            
+        $hoja->setCellValue('A'.$fila,$rows->user_id);
+        if($rows->user_num!==null)
+        {
+            $hoja->setCellValue('B'.$fila,$rows->user_num);
+        }
+        else
+        {
+            $hoja->setCellValue('B'.$fila,'N/A');
+        }
+        $hoja->setCellValue('C'.$fila,$rows->user_name);
+        $hoja->setCellValue('D'.$fila,$rows->recuento);
+       
+        $fila++;
+            
+    }
+
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="reporte top day.xlsx"');
+        $writer=IOFactory::createWriter($excel,'Xlsx');
+        $writer->save("php://output");
+        exit;
+
+    
 }
+
+
+public function topmesreport($year,$i,$tipo,Request $request)
+{
+    $ust=DB::table('alq_car')->select(['user_id','user_name','user_num',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id','user_name','user_num'])
+    ->where('tipo_p',$tipo)->whereYear('created_at', $year)->whereMonth('created_at',$i)
+    ->orderBy('recuento','desc')->get();
+
+
+    $excel=new Spreadsheet();
+    $hoja=$excel->getActiveSheet();
+    $hoja->setTitle("Top Rondas");
+    $hoja->mergeCells('A1:D1');
+    $hoja->setCellValue('A1','Top Rondas '.$tipo.' '.$year.'/'.$i.'');
+    $hoja->setCellValue('A2','#');
+    $hoja->setCellValue('B2','N° DE SOCIO');
+    $hoja->setCellValue('C2','NOMBRE');
+    $hoja->setCellValue('D2','RONDAS');
+
+    $excel->getActiveSheet()->getStyle('A1:D1')->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()->setRGB('12AE0D');
+
+    $excel->getActiveSheet()->getStyle('A2:D2')->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()->setRGB('0066CC');
+
+    $excel->getActiveSheet()->getStyle('A1:D1')->getFont()
+        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE,'size'=>18, 'color' => [ 'rgb' => 'ffffff' ] ] );
+
+    $excel->getActiveSheet()->getStyle('A2:D2')->getFont()
+        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );
+        $excel->getActiveSheet()->getRowDimension('1')->setRowHeight(50, 'pt');
+    $excel->getActiveSheet()->getRowDimension('2')->setRowHeight(50, 'pt');
+
+    $excel->getActiveSheet()->getColumnDimension('A')->setWidth(160, 'px');
+    $excel->getActiveSheet()->getColumnDimension('B')->setWidth(170, 'px');
+    $excel->getActiveSheet()->getColumnDimension('C')->setWidth(170, 'px');
+    $excel->getActiveSheet()->getColumnDimension('D')->setWidth(200, 'px');
+    
+
+    $excel->getActiveSheet()->getStyle('A:D')
+    ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $excel->getActiveSheet()->getStyle('A:D')
+    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+   
+    
+    
+    $fila=3;
+    $ser=new UsuService();
+    foreach($ust as $rows)
+    {
+            
+        $hoja->setCellValue('A'.$fila,$rows->user_id);
+        if($rows->user_num!==null)
+        {
+            $hoja->setCellValue('B'.$fila,$rows->user_num);
+        }
+        else
+        {
+            $hoja->setCellValue('B'.$fila,'N/A');
+        }
+        $hoja->setCellValue('C'.$fila,$rows->user_name);
+        $hoja->setCellValue('D'.$fila,$rows->recuento);
+       
+        $fila++;
+            
+    }
+
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="reporte top mes.xlsx"');
+        $writer=IOFactory::createWriter($excel,'Xlsx');
+        $writer->save("php://output");
+        exit;
+
+    
+}
+
+public function rondastiporeportday($year,$month,$i)
+{
+   
+    $excel=new Spreadsheet();
+    $hoja=$excel->getActiveSheet();
+    $hoja->setTitle("Rondas segun tipo de socio");
+    $hoja->mergeCells('A1:B1');
+    $hoja->setCellValue('A1','Rondas segun tipo de socio');
+    $hoja->setCellValue('A2','TIPO DE SOCIO');
+    $hoja->setCellValue('B2','RONDA');
+
+    $excel->getActiveSheet()->getStyle('A1:B1')->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()->setRGB('12AE0D');
+
+    $excel->getActiveSheet()->getStyle('A2:B2')->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()->setRGB('0066CC');
+
+    $excel->getActiveSheet()->getStyle('A1:B1')->getFont()
+        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE,'size'=>18, 'color' => [ 'rgb' => 'ffffff' ] ] );
+
+    $excel->getActiveSheet()->getStyle('A2:B2')->getFont()
+        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );
+        $excel->getActiveSheet()->getRowDimension('1')->setRowHeight(50, 'pt');
+    $excel->getActiveSheet()->getRowDimension('2')->setRowHeight(50, 'pt');
+
+    $excel->getActiveSheet()->getColumnDimension('A')->setWidth(160, 'px');
+    $excel->getActiveSheet()->getColumnDimension('B')->setWidth(170, 'px');
+
+    
+
+    $excel->getActiveSheet()->getStyle('A:B')
+    ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $excel->getActiveSheet()->getStyle('A:B')
+    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+   
+    
+    
+    $fila=3;
+    $ronda=DB::table('alq_car')->select(['user_id',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id'])
+        ->whereYear('created_at', $year) ->whereMonth('created_at',$month)
+        ->whereDay('created_at', $i)->orderBy('recuento','desc')->get();
+    $ser=new UsuService();
+    $resp=$ser->getcategory();
+
+    foreach($ronda as $ronditas)
+    {
+        foreach($resp as $tuser)
+        {
+            if($ronditas->user_id==$tuser->id)
+            {
+                $ronditas->categoria=$tuser->category_type_name;
+            }
+        }
+    }
+
+    $cont = [];
+$c2 = 0;
+$cuenta=0;
+foreach ($ronda as $ronditas){
+        if(array_key_exists('categoria', $ronditas)){
+            $cuenta++;
+          if(array_key_exists($ronditas->categoria, $cont)){
+              $c2 = $cont[$ronditas->categoria];
+          }else{
+              $c2 = $cont[$ronditas->categoria] = 0;
+          }
+          $cont[$ronditas->categoria] = $c2 + 1;
+        }   
+}
+
+$vista = [];
+foreach($cont as $c=>$l){
+  $vista[] = [
+      "name"=>$c,
+      "value"=>$l
+  ];
+
+  $hoja->setCellValue('A'.$fila,$c);
+  $hoja->setCellValue('B'.$fila,$l);
+ 
+  $fila++;
+}     
+
+       
+       
+       
+       
+            
+    
+
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="reporte rondas tipo.xlsx"');
+        $writer=IOFactory::createWriter($excel,'Xlsx');
+        $writer->save("php://output");
+        exit;
+
+    
+}
+
+
+public function rondastiporeportmes($year,$i)
+{
+   
+    $excel=new Spreadsheet();
+    $hoja=$excel->getActiveSheet();
+    $hoja->setTitle("Rondas segun tipo de socio");
+    $hoja->mergeCells('A1:B1');
+    $hoja->setCellValue('A1','Rondas segun tipo de socio');
+    $hoja->setCellValue('A2','TIPO DE SOCIO');
+    $hoja->setCellValue('B2','RONDA');
+
+    $excel->getActiveSheet()->getStyle('A1:B1')->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()->setRGB('12AE0D');
+
+    $excel->getActiveSheet()->getStyle('A2:B2')->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()->setRGB('0066CC');
+
+    $excel->getActiveSheet()->getStyle('A1:B1')->getFont()
+        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE,'size'=>18, 'color' => [ 'rgb' => 'ffffff' ] ] );
+
+    $excel->getActiveSheet()->getStyle('A2:B2')->getFont()
+        ->applyFromArray( [ 'name' => 'Arial', 'bold' => TRUE, 'italic' => FALSE,'strikethrough' => FALSE, 'color' => [ 'rgb' => 'ffffff' ] ] );
+        $excel->getActiveSheet()->getRowDimension('1')->setRowHeight(50, 'pt');
+    $excel->getActiveSheet()->getRowDimension('2')->setRowHeight(50, 'pt');
+
+    $excel->getActiveSheet()->getColumnDimension('A')->setWidth(160, 'px');
+    $excel->getActiveSheet()->getColumnDimension('B')->setWidth(170, 'px');
+
+    
+
+    $excel->getActiveSheet()->getStyle('A:B')
+    ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $excel->getActiveSheet()->getStyle('A:B')
+    ->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+   
+    
+    
+    $fila=3;
+    $ronda=DB::table('alq_car')->select(['user_id',DB::raw('Count(user_id) as recuento')])->groupBy(['user_id'])
+    ->whereYear('created_at', $year)->whereMonth('created_at',$i)->orderBy('recuento','desc')->get();
+    $ser=new UsuService();
+    $resp=$ser->getcategory();
+
+    foreach($ronda as $ronditas)
+    {
+        foreach($resp as $tuser)
+        {
+            if($ronditas->user_id==$tuser->id)
+            {
+                $ronditas->categoria=$tuser->category_type_name;
+            }
+        }
+    }
+
+    $cont = [];
+$c2 = 0;
+$cuenta=0;
+foreach ($ronda as $ronditas){
+        if(array_key_exists('categoria', $ronditas)){
+            $cuenta++;
+          if(array_key_exists($ronditas->categoria, $cont)){
+              $c2 = $cont[$ronditas->categoria];
+          }else{
+              $c2 = $cont[$ronditas->categoria] = 0;
+          }
+          $cont[$ronditas->categoria] = $c2 + 1;
+        }   
+}
+
+$vista = [];
+foreach($cont as $c=>$l){
+  $vista[] = [
+      "name"=>$c,
+      "value"=>$l
+  ];
+
+  $hoja->setCellValue('A'.$fila,$c);
+  $hoja->setCellValue('B'.$fila,$l);
+ 
+  $fila++;
+}     
+
+       
+       
+       
+       
+            
+    
+
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="reporte rondas tipo.xlsx"');
+        $writer=IOFactory::createWriter($excel,'Xlsx');
+        $writer->save("php://output");
+        exit;
+
+    
+}
+
+
+}
+

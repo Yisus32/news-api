@@ -34,6 +34,7 @@ class InvitationController extends CrudController
 
         $reservation->save();
 
-        return Response()->json(["message" => "Invitación aceptada correctamente"], 200);
+        header('Location: '.'https://'.env('FRONT_URL').'/teetime/reservations');
+        exit();
     }
 }

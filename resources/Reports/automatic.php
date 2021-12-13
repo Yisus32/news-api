@@ -41,59 +41,45 @@
 
 </div>
 <div>
-    <table class="default" id="table_1">
-        <?php 
-            $i = 0; 
-        ?>
+    <table class="default" id="table_1" border="1">
 
-        <?php foreach ($data as $d) { ?> 
-            <?php if (!$d->isEmpty()) { ?>
-
-                 <?php foreach (json_decode($d[$i]->guests) as $guest){
-                    $players[] = $guest;
-                } 
-
-                    foreach (json_decode($d[$i]->partners) as $partner) {
-                        $players[] = $partner;
-                    }
-                ?>
+        <?php
+        foreach ($data as $d) { ?> 
+            <?php if ($d) { dd($d)?>
 
                 <thead>
                     <tr>
                         <td>FECHA</td>
-                        <td colspan="3">SALIDA <?= strtoupper($d[$i]->hole_name)?></td>
+                        <td colspan="3">SALIDA</td>
                     </tr>
                 </thead>
              <tr>
-                <td><?= $d[$i]->start_hour?></td>
+                <td><?= $d->start_hour?></td>
                 <td>REF</td>
                 <td>PLAYERS</td>
                 <td>RESERVADO POR</td>
             </tr>
-            <?php foreach ($d as $info) {?>
             <tr>
                 <td>
                    TEE 028 
                 </td>
                 <td>
-                    <?= $info['id'] ?> 
-                </td>
-                <td>
                     <table>
-                        <?php foreach ($players as $player) {?>
-                           <tr>
-                                <td><?= $player ?> </td>
-                           </tr>
-                        <?php } ?> 
+                           
                     </table>
                 </td>
                 <td>
-                    <?= $info['owner'] ?> 
+                    <table>
+                       
+                    </table>
+                </td>
+                <td>
+                    <?= $d->owner ?> 
                 </td>
             </tr>
-        <?php }
-            $i++; 
+        <?php  
             }
+
         }?>
     </table>
 </div>
