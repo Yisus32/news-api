@@ -57,7 +57,7 @@ class UsuService extends ServicesMesh
                     ]
                 ];
             $request_data = json_encode($request);
-            $response = $this->client->request('POST', $url, $request);
+            $response =$this->client->post($url,$request);
             return json_decode($response->getBody());
         }catch (Exception $e) {
             Log::critical('ApiUser _sendNotification '.$e);
