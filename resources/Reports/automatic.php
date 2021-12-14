@@ -34,54 +34,45 @@
 </style>
 <body>
 <div>
-    <img  style="width: 100px;float: right;" src="<?php echo $logo ?>" alt="Logo">
+    
     <div style="text-align: center;">
         <h2>Reporte <?= $title ?></h2>
     </div>
 
 </div>
 <div>
-    <table class="default" id="table_1" border="1">
-
-        <?php
-        foreach ($data as $d) { ?> 
-            <?php if ($d) { dd($d)?>
-
-                <thead>
-                    <tr>
-                        <td>FECHA</td>
-                        <td colspan="3">SALIDA</td>
-                    </tr>
-                </thead>
-             <tr>
-                <td><?= $d->start_hour?></td>
-                <td>REF</td>
-                <td>PLAYERS</td>
-                <td>RESERVADO POR</td>
-            </tr>
+    <table class="default" border="1">
+    
+    <?php foreach ($data as $d) {?>
+    <!-------------------------------------------->
+         <thead>
             <tr>
-                <td>
-                   TEE 028 
-                </td>
-                <td>
-                    <table>
-                           
-                    </table>
-                </td>
-                <td>
-                    <table>
-                       
-                    </table>
-                </td>
-                <td>
-                    <?= $d->owner ?> 
-                </td>
-            </tr>
-        <?php  
-            }
+                <td colspan="2">FECHA</td>
+                <td colspan="2">SALIDA <?php echo strtoupper(\App\Models\Hole::where('id',$d["hole_id"])->value('name')); ?></td>
+            </tr>      
+         </thead>
+         <!-------------------------------------------->
+        
+        <?php foreach ($d["groupeddata"] as $groupeddata) {?>
+          <tr>
+            <td><?= $groupeddata["start_hour"] ?></td>
+            <td>REF</td>
+            <td>JUGADOR</td>
+            <td>RESERVADO POR</td>
+          </tr>
+        
+           <?php foreach ($groupeddata["players"] as $player) {?> 
+                <tr>
+                    <td> <?= $groupeddata["reservation_id"] ?> </td>
+                    <td><?= str_replace('"',"",$player[0]) ?></td>
+                    <td><?= strtoupper($player[2].' '.$player[1]) ?></td>
+                    <td>Celda 7</td>
+                </tr>
+            <?php }//foreach($d["groupeddata"] as $groupeddata)?> 
+        <?php }//foreach($d["groupeddata"] as $groupeddata)?>
+    <?php }//foreach($data as $d)?>
 
-        }?>
-    </table>
+</table>
 </div>
 </body>
 </html>

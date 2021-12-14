@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Validator;
 use App\Models\TempData;
+use App\Http\Mesh\UserService;
 
 //commit de reposicion
 
@@ -86,6 +87,7 @@ class ReservationController extends CrudController
 
     public function report(Request $request){
         $report = new ReportService();
+        $user = new UserService();
  
         $holes = Reservation::all();
        
@@ -95,14 +97,76 @@ class ReservationController extends CrudController
                                         'holes.name as hole_name')
                                          ->where('status','registrado')
                                          ->leftjoin('holes','holes.id','=','reservations.hole_id')
-                                         ->where('holes.id',$hole->hole_id)
+                                         ->orderBy('reservations.start_hour','asc')
+                                         ->orderBy('reservations.date','asc')
+                                         ->orderBy('reservations.hole_id','asc')
                                          ->get();
+        }
         
-            $data[$hole->hole_id] = $reservations;
-        }     
         
+        foreach ($reservations as $reservation) {
+            $partners = explode(',',$reservation->partners_name);
+            $guests = explode(',',$reservation->guests_name);
+
+            $players = array_merge($partners,$guests);
+            
+                                 $data[] = ["reservation_id" => $reservation->id,
+                                            "hole_id" => $reservation->hole_id,
+                                            "hole_name" => $reservation->hole_name,
+                                            "start_hour" => $reservation->start_hour,
+                                            "date" => $reservation->date,
+                                            "players" => $this->searchPlayers($players,$user),
+                                            "owner" =>   $reservation->owner_name
+                                          ]; 
+        }
+
+        $data = $this->groupArray($data,"hole_id");  
         $report->data($data);
         return $report->report("automatic","Reservaciones",null,null,false,1);
+    }
+    
+    function groupArray($array,$groupkey){
+         if (count($array)>0)
+        {
+            $keys = array_keys($array[0]);
+            $removekey = array_search($groupkey, $keys);        if ($removekey===false)
+            return array("Clave \"$groupkey\" no existe");
+        else
+            unset($keys[$removekey]);
+        $groupcriteria = array();
+        $return=array();
+        foreach($array as $value)
+        {
+            $item=null;
+            foreach ($keys as $key)
+            {
+                $item[$key] = $value[$key];
+            }
+            $busca = array_search($value[$groupkey], $groupcriteria);
+            if ($busca === false)
+            {
+                $groupcriteria[]=$value[$groupkey];
+                $return[]=array($groupkey=>$value[$groupkey],'groupeddata'=>array());
+                $busca=count($return)-1;
+            }
+            $return[$busca]['groupeddata'][]=$item;
+
+        }
+
+        return $return;
+     }
+     else
+        return array();
+    }
+
+    public function searchPlayers($players, $user){
+
+       foreach ($players as $player) {
+           $new_players = explode(' ',$player);
+           $array[] = $new_players;
+       }
+
+        return $array;
     }
 
     public function advanceFilter(Request $request){
