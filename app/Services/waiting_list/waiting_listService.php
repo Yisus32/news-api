@@ -48,7 +48,7 @@ class waiting_listService extends CrudService
 
         else
         { 
-            return response()->json(["error"=>true,"message"=> " No existen reservaciones para esta fecha y hora puede jugar"],422);
+            return response()->json(["error"=>true,"message"=> " No existen reservaciones para esta fecha y rango de horas puede jugar"],422);
             
         }
 
