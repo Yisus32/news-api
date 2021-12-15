@@ -38,7 +38,7 @@ class waiting_listService extends CrudService
         $hour=$request->start_hour;
         $fhour=$request->end_hour;
         $verifireser=Reservation::where('date',$date)->whereTime('start_hour', '>=',$hour)
-        ->whereTime('end_hour', '<=', $fhour)->get();
+        ->whereTime('start_hour', '<=', $fhour)->get();
         //dd($verifireser);
         if(count($verifireser)>0)
         {
