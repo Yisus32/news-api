@@ -40,6 +40,7 @@ class waiting_listService extends CrudService
         //dd($verifireser);
         if(count($verifireser)>0)
         {
+            $request->sta="A";
             return parent::_store($request);
         }
 
