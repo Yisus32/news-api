@@ -14,6 +14,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Validator;
 use App\Models\TempData;
 use App\Http\Mesh\UserService;
+use Carbon\CarbonPeriod;
 
 //commit de reposicion
 
@@ -96,10 +97,14 @@ class ReservationController extends CrudController
            $reservations = Reservation::select('reservations.*',
                                         'holes.name as hole_name')
                                          ->where('status','registrado')
+                                         ->when($request->date, function ($query,$date){
+                                            $date = explode('_',$date);
+                                            return $query->where('reservations.date','>=',$date[0])
+                                                         ->where('reservations.date','<=',$date[1]);
+                                         })
                                          ->leftjoin('holes','holes.id','=','reservations.hole_id')
-                                         ->orderBy('reservations.start_hour','asc')
                                          ->orderBy('reservations.date','asc')
-                                         ->orderBy('reservations.hole_id','asc')
+                                         ->orderBy('reservations.start_hour','asc')
                                          ->get();
         }
         
@@ -110,7 +115,7 @@ class ReservationController extends CrudController
 
             $players = array_merge($partners,$guests);
             
-                                 $data[] = ["reservation_id" => $reservation->id,
+                                 $data[] = ["reservation_id" => Carbon::parse($reservation->date)->format('d-m-Y'),
                                             "hole_id" => $reservation->hole_id,
                                             "hole_name" => $reservation->hole_name,
                                             "start_hour" => $reservation->start_hour,
@@ -120,7 +125,18 @@ class ReservationController extends CrudController
                                           ]; 
         }
 
-        $data = $this->groupArray($data,"hole_id");  
+        $data = $this->groupArray($data,"date");
+
+        for ($i=0; $i < count($data) ; $i++) {            
+            $data[$i]["groupeddata"] = $this->groupArray($data[$i]["groupeddata"],"hole_id");
+            
+        }
+
+         /**for ($i=0; $i < count($data) ; $i++) { 
+           $data[$i]["date"] = Carbon::parse($data[$i]["groupeddata"][0]["date"])->format('D d/m/Y');    
+        }**/
+            
+
         $report->data($data);
         return $report->report("automatic","Reservaciones",null,null,false,1);
     }
@@ -129,7 +145,8 @@ class ReservationController extends CrudController
          if (count($array)>0)
         {
             $keys = array_keys($array[0]);
-            $removekey = array_search($groupkey, $keys);        if ($removekey===false)
+            $removekey = array_search($groupkey, $keys);        
+        if ($removekey===false)
             return array("Clave \"$groupkey\" no existe");
         else
             unset($keys[$removekey]);
