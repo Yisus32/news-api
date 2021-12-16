@@ -120,7 +120,7 @@ class ReservationController extends CrudController
                                             "hole_name" => $reservation->hole_name,
                                             "start_hour" => $reservation->start_hour,
                                             "date" => $reservation->date,
-                                            "players" => $this->searchPlayers($players,$user),
+                                            "players" => $players,
                                             "owner" =>   $reservation->owner_name
                                           ]; 
         }
@@ -136,7 +136,6 @@ class ReservationController extends CrudController
            $data[$i]["date"] = Carbon::parse($data[$i]["groupeddata"][0]["date"])->format('D d/m/Y');    
         }**/
             
-
         $report->data($data);
         return $report->report("automatic","Reservaciones",null,null,false,1);
     }
