@@ -66,8 +66,8 @@
            <?php foreach ($third["players"] as $player) {?> 
                 <tr>
                     <td> <?= $third["reservation_id"] ?> </td>
-                    <td><?= str_replace('"',"",$player) ?></td>
-                    <td><?= strtoupper($player) ?></td>
+                    <td><?= $player["ref"] ?></td>
+                    <td><?= strtoupper($player["full_name"]) ?></td>
                     <td> </td>
                 </tr>
                 <?php }//foreach($d["groupeddata"] as $groupeddata)?>
