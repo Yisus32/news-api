@@ -48,7 +48,7 @@ class waiting_listService extends CrudService
 
         else
         { 
-            return response()->json(["error"=>true,"message"=> "Hay reservas disponibles para el intervalo de tiempo seleccionado"],422);
+            return response()->json(["error"=>true,"message"=> "No puedes crear una lista de espera para esta fecha y rango de horas"],422);
             
         }
 
