@@ -111,20 +111,25 @@ class ReservationController extends CrudController
         
         foreach ($reservations as $reservation) {
             $partners = explode(',',$reservation->partners_name);
-            $guests = explode(',',$reservation->guests_name);
+            
+            foreach (json_decode($reservation->guests) as $guest) {
+                $guests[] = $guest;
+            }
 
             $players = array_merge($partners,$guests);
+
             
                                  $data[] = ["reservation_id" => Carbon::parse($reservation->date)->format('d-m-Y'),
                                             "hole_id" => $reservation->hole_id,
                                             "hole_name" => $reservation->hole_name,
                                             "start_hour" => $reservation->start_hour,
                                             "date" => $reservation->date,
-                                            "players" => $players,
+                                            "players" => $this->searchPlayers($players),
                                             "owner" =>   $reservation->owner_name
                                           ]; 
         }
 
+        
         $data = $this->groupArray($data,"date");
 
         for ($i=0; $i < count($data) ; $i++) {            
@@ -175,13 +180,20 @@ class ReservationController extends CrudController
         return array();
     }
 
-    public function searchPlayers($players, $user){
-
+    public function searchPlayers($players){
+        $parttern = "/[a-z\d._%+-]+@[a-z\d.-]+\.[a-z]{2,4}\b/i";
        foreach ($players as $player) {
-           $new_players = explode(' ',$player);
-           $array[] = $new_players;
-       }
-
+           if (is_int($player)) {
+               $guest = Guest::where('id',$player)->first();
+               $array[] = ["ref" => $guest->card_number, "full_name" => $guest->full_name];
+           }else{
+            
+                $array[] = ["ref" => null, "full_name" => $player];
+                  
+              }
+           }
+       
+       
         return $array;
     }
 
