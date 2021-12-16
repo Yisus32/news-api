@@ -41,33 +41,36 @@
 
 </div>
 <div>
+    <?php foreach ($data as $first) {?>
+        <?php foreach ($first["groupeddata"] as $second) {?>
+            <br>
     <table class="default" border="1">
-    
-    <?php foreach ($data as $d) {?>
+        
     <!-------------------------------------------->
-         <thead>
+         <thead style="background-color: #0066cc">
             <tr>
-                <td colspan="2">FECHA</td>
-                <td colspan="2">SALIDA <?php echo strtoupper(\App\Models\Hole::where('id',$d["hole_id"])->value('name')); ?></td>
+                <td colspan="2"> <?= Carbon\Carbon::parse($first["date"])->format('D d/m/Y') ?> </td>
+                <td colspan="2">SALIDA <?php echo strtoupper(\App\Models\Hole::where('id',$second["hole_id"])->value('name')); ?></td>
             </tr>      
          </thead>
          <!-------------------------------------------->
         
-        <?php foreach ($d["groupeddata"] as $groupeddata) {?>
-          <tr>
-            <td><?= $groupeddata["start_hour"] ?></td>
+        <?php foreach ($second["groupeddata"] as $third) {?>
+          <tr style="background-color: #7097bd">
+            <td><?= $third["start_hour"] ?></td>
             <td>REF</td>
             <td>JUGADOR</td>
             <td>RESERVADO POR</td>
           </tr>
         
-           <?php foreach ($groupeddata["players"] as $player) {?> 
+           <?php foreach ($third["players"] as $player) {?> 
                 <tr>
-                    <td> <?= $groupeddata["reservation_id"] ?> </td>
+                    <td> <?= $third["reservation_id"] ?> </td>
                     <td><?= str_replace('"',"",$player[0]) ?></td>
                     <td><?= strtoupper($player[2].' '.$player[1]) ?></td>
-                    <td>Celda 7</td>
+                    <td> </td>
                 </tr>
+                <?php }//foreach($d["groupeddata"] as $groupeddata)?>
             <?php }//foreach($d["groupeddata"] as $groupeddata)?> 
         <?php }//foreach($d["groupeddata"] as $groupeddata)?>
     <?php }//foreach($data as $d)?>
