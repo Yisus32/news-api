@@ -89,7 +89,6 @@ class ReservationController extends CrudController
     public function report(Request $request){
         $report = new ReportService();
         $user = new UserService();
- 
         $holes = Reservation::all();
        
          
@@ -97,21 +96,40 @@ class ReservationController extends CrudController
            $reservations = Reservation::select('reservations.*',
                                         'holes.name as hole_name')
                                          ->where('status','registrado')
-                                         ->when($request->date, function ($query,$date){
-                                            $date = explode('_',$date);
-                                            return $query->where('reservations.date','>=',$date[0])
-                                                         ->where('reservations.date','<=',$date[1]);
+                                         ->when($request->t_date, function ($query,$t_date){
+                                            $t_date = explode('_',$t_date);
+                                            return $query->where('reservations.date','>=',$t_date[0])
+                                                         ->where('reservations.date','<=',$t_date[1]);
                                          })
+                                         ->when($request->r_date, function ($query,$r_date){
+                                            $r_date = explode('_',$r_date);
+                                            return $query->where('reservations.created_at','>=',$r_date[0].' 00:00:00')
+                                                         ->where('reservations.created_at','<=',$r_date[1].' 23:59:59');
+                                         })
+                                         ->when($request->owner, function ($query,$owner){
+                                            return $query->where('reservations.owner',$owner);
+                                         })
+                                         ->when($request->partner, function ($query, $partner) {
+                                            return $query->where('reservations.partners_name','ILIKE','%'.$partner.'%');
+                                        })
+                                        ->when($request->guest, function ($query,$guest) {
+                                            return $query->where('reservations.guests_name','ILIKE','%'.$guest.'%')
+                                                         ->orWhere('reservations.guests_email','ILIKE','%'.$guest.'%');
+                                        })
                                          ->leftjoin('holes','holes.id','=','reservations.hole_id')
                                          ->orderBy('reservations.date','asc')
                                          ->orderBy('reservations.start_hour','asc')
                                          ->get();
         }
         
-        
-        foreach ($reservations as $reservation) {
-            $partners = explode(',',$reservation->partners_name);
+       if (!$reservations->isEmpty()) {
+           foreach ($reservations as $reservation) {
+          
             
+            foreach (json_decode($reservation->partners) as $partner) {
+                $partners[] = $partner;
+            }
+
             foreach (json_decode($reservation->guests) as $guest) {
                 $guests[] = $guest;
             }
@@ -124,7 +142,7 @@ class ReservationController extends CrudController
                                             "hole_name" => $reservation->hole_name,
                                             "start_hour" => $reservation->start_hour,
                                             "date" => $reservation->date,
-                                            "players" => $this->searchPlayers($players),
+                                            "players" => $this->searchPlayers($players,$user),
                                             "owner" =>   $reservation->owner_name
                                           ]; 
         }
@@ -140,9 +158,13 @@ class ReservationController extends CrudController
          /**for ($i=0; $i < count($data) ; $i++) { 
            $data[$i]["date"] = Carbon::parse($data[$i]["groupeddata"][0]["date"])->format('D d/m/Y');    
         }**/
-            
+        
         $report->data($data);
         return $report->report("automatic","Reservaciones",null,null,false,1);
+       }else{
+            return response()->json(["status"=>400,"message"=> "No hay registros para este reporte"],400);
+       }
+        
     }
     
     function groupArray($array,$groupkey){
@@ -180,20 +202,21 @@ class ReservationController extends CrudController
         return array();
     }
 
-    public function searchPlayers($players){
-        $parttern = "/[a-z\d._%+-]+@[a-z\d.-]+\.[a-z]{2,4}\b/i";
+    public function searchPlayers($players,$user){
+       
        foreach ($players as $player) {
-           if (is_int($player)) {
-               $guest = Guest::where('id',$player)->first();
+           $guest = Guest::where('id',$player)->first();
+           if ($guest) {
                $array[] = ["ref" => $guest->card_number, "full_name" => $guest->full_name];
            }else{
-            
-                $array[] = ["ref" => null, "full_name" => $player];
+                
+                $array[] = ["ref" => $user->getUserById(7)["user"]["n_socio"], 
+                            "full_name" => $user->getUserById(7)["user"]["full_name"]];
                   
               }
            }
        
-       
+      
         return $array;
     }
 
