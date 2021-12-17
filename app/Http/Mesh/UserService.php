@@ -53,7 +53,7 @@ class UserService extends ServicesMesh
     {
       
         $uri = env('USERS_API') . '/us/get/user/' . $id ;
-
+     
         try {
             $options = $this->getOptions($this->getHeaders($this->getRequest()));
             $response = $this->client->get($uri, $options);
