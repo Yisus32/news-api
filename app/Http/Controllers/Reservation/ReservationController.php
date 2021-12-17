@@ -201,7 +201,6 @@ class ReservationController extends CrudController
            $guest = Guest::where('id',$player)->first();
 
            if ($guest != null) {
-            var_dump($player);
                $array[] = ["ref" => $guest->card_number, "full_name" => $guest->full_name];
            }else{
                 $array[] = ["ref" => $user->getUserById($player)["user"]["n_socio"], 
