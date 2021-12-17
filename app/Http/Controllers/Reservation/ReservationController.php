@@ -124,17 +124,9 @@ class ReservationController extends CrudController
         
        if (!$reservations->isEmpty()) {
            foreach ($reservations as $reservation) {
-          
-            
-            foreach (json_decode($reservation->partners) as $partner) {
-                $partners[] = $partner;
-            }
 
-            foreach (json_decode($reservation->guests) as $guest) {
-                $guests[] = $guest;
-            }
 
-            $players = array_merge($partners,$guests);
+            $players = array_merge(json_decode($reservation->partners),json_decode($reservation->guests));
 
             
                                  $data[] = ["reservation_id" => Carbon::parse($reservation->date)->format('d-m-Y'),
@@ -204,19 +196,21 @@ class ReservationController extends CrudController
 
     public function searchPlayers($players,$user){
        
+       
        foreach ($players as $player) {
            $guest = Guest::where('id',$player)->first();
-           if ($guest) {
+
+           if ($guest != null) {
+            var_dump($player);
                $array[] = ["ref" => $guest->card_number, "full_name" => $guest->full_name];
            }else{
-                
-                $array[] = ["ref" => $user->getUserById(7)["user"]["n_socio"], 
-                            "full_name" => $user->getUserById(7)["user"]["full_name"]];
+                $array[] = ["ref" => $user->getUserById($player)["user"]["n_socio"], 
+                            "full_name" => $user->getUserById($player)["user"]["full_name"]];
                   
               }
            }
        
-      
+       
         return $array;
     }
 
