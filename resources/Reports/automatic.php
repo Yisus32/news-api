@@ -34,68 +34,48 @@
 </style>
 <body>
 <div>
-    <img  style="width: 100px;float: right;" src="<?php echo $logo ?>" alt="Logo">
+    
     <div style="text-align: center;">
         <h2>Reporte <?= $title ?></h2>
     </div>
 
 </div>
 <div>
-    <table class="default" id="table_1">
-        <?php 
-            $i = 0; 
-        ?>
-
-        <?php foreach ($data as $d) { ?> 
-            <?php if (!$d->isEmpty()) { ?>
-
-                 <?php foreach (json_decode($d[$i]->guests) as $guest){
-                    $players[] = $guest;
-                } 
-
-                    foreach (json_decode($d[$i]->partners) as $partner) {
-                        $players[] = $partner;
-                    }
-                ?>
-
-                <thead>
-                    <tr>
-                        <td>FECHA</td>
-                        <td colspan="3">SALIDA <?= strtoupper($d[$i]->hole_name)?></td>
-                    </tr>
-                </thead>
-             <tr>
-                <td><?= $d[$i]->start_hour?></td>
-                <td>REF</td>
-                <td>PLAYERS</td>
-                <td>RESERVADO POR</td>
-            </tr>
-            <?php foreach ($d as $info) {?>
+    <?php foreach ($data as $first) {?>
+        <?php foreach ($first["groupeddata"] as $second) {?>
+            <br>
+    <table class="default" border="1">
+        
+    <!-------------------------------------------->
+         <thead style="background-color: #0066cc">
             <tr>
-                <td>
-                   TEE 028 
-                </td>
-                <td>
-                    <?= $info['id'] ?> 
-                </td>
-                <td>
-                    <table>
-                        <?php foreach ($players as $player) {?>
-                           <tr>
-                                <td><?= $player ?> </td>
-                           </tr>
-                        <?php } ?> 
-                    </table>
-                </td>
-                <td>
-                    <?= $info['owner'] ?> 
-                </td>
-            </tr>
-        <?php }
-            $i++; 
-            }
-        }?>
-    </table>
+                <td colspan="2"> <?= Carbon\Carbon::parse($first["date"])->format('D d/m/Y') ?> </td>
+                <td colspan="2">SALIDA <?php echo strtoupper(\App\Models\Hole::where('id',$second["hole_id"])->value('name')); ?></td>
+            </tr>      
+         </thead>
+         <!-------------------------------------------->
+        
+        <?php foreach ($second["groupeddata"] as $third) {?>
+          <tr style="background-color: #7097bd">
+            <td><?= $third["start_hour"] ?></td>
+            <td>REF</td>
+            <td>JUGADOR</td>
+            <td>RESERVADO POR</td>
+          </tr>
+        
+           <?php foreach ($third["players"] as $player) {?> 
+                <tr>
+                    <td> <?= $third["reservation_id"] ?> </td>
+                    <td><?= $player["ref"] ?></td>
+                    <td><?= strtoupper($player["full_name"]) ?></td>
+                    <td> </td>
+                </tr>
+                <?php }//foreach($d["groupeddata"] as $groupeddata)?>
+            <?php }//foreach($d["groupeddata"] as $groupeddata)?> 
+        <?php }//foreach($d["groupeddata"] as $groupeddata)?>
+    <?php }//foreach($data as $d)?>
+
+</table>
 </div>
 </body>
 </html>

@@ -252,32 +252,34 @@ class TeetimeRepository extends CrudRepository
                     $end = Carbon::now($request->header("timezone"));
                     $end->addHours($teetime->available);
                     
-                    $teetime->slot = $this->create_reservations($teetime, $holes, $days, $end);
+                    $teetime->slot = $this->create_reservations($teetime, $holes, $days, $request->header('role'));
                 }else{
-                    $teetime->slot = $this->create_reservations($teetime, $holes, $days);
+                    $teetime->slot = $this->create_reservations($teetime, $holes, $days,$request->header('role'));
                 }
              //   return $teetime;
+            }
 
-            }
-                
-            if (isset($diferencia) && $diferencia <= Carbon::now()->format('Y-m-d H:i:s')) {
-                return $teetimes;
+            if ($request->header('role') != "admin" && !$teetimes->isEmpty()) {
+                if (isset($diferencia) && $diferencia <= Carbon::now()->format('Y-m-d H:i:s')) {
+                    return $teetimes;
+                }else{
+                    return abort(404,"No hay disponibilidad aún para este día");
+                }
+            }elseif($request->header('role') == "admin" && !$teetimes->isEmpty()){
+               
+                    return $teetimes;
             }else{
-                return abort(404,"No hay teetimes disponibles aun");
+                return abort(404,"No existen registros de teetime");
             }
-            
         }
-            
-        
+             
         return Response()->json(["error"=>true, "message"=>"no existen registros de teetime"], 404);
-        
-       
     }
 
-    public function create_reservations(Teetime $request,$holes,$days,$limit = null){
+    public function create_reservations(Teetime $request,$holes,$days,$role){
        
        
-        $start_hour = Carbon::createFromFormat('H:i:s',$request->start_hour,env('APP_TIMEZONE'));  
+        $start_hour = Carbon::createFromFormat('H:i:s',$request->start_hour);  
         $end_hour = Carbon::createFromFormat('H:i:s',$request->end_hour);
         $bt_start_hour = $request->bt_start_hour != null ? Carbon::createFromFormat('H:i:s',$request->bt_start_hour,env('APP_TIMEZONE')) : 0;
         $bt_end_hour = $request->bt_end_hour != null ? Carbon::createFromFormat('H:i:s',$request->bt_end_hour,env('APP_TIMEZONE')) : 0;
@@ -289,15 +291,15 @@ class TeetimeRepository extends CrudRepository
         $start_date = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->start_hour,env('APP_TIMEZONE'));
         $x = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->start_hour,env('APP_TIMEZONE'));
         $cancel_time = $x->subHours($request->cancel_time)->format('Y-m-d H:i:s');
+        $available_time = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->start_hour,env('APP_TIMEZONE'))
+                                ->subHours($request->available);
+
         
         if ($bt_end_hour) {
             $break_time_end_hour = Carbon::createFromFormat('Y-m-d H:i:s',$request->start_date.' '.$request->bt_end_hour,env('APP_TIMEZONE'));
         }
         
 
-
-
-        
          //AGREGAR INTERVALO A CADA FECHA IMPORTANTE
          //AGREGAR ARRAY DE BREAK_TIMES AL FINAL DE CADA ARRAY
          //   
@@ -313,7 +315,8 @@ class TeetimeRepository extends CrudRepository
         }
         
 
-        $slots = abs(((($diff_services_hours*60)/$interval) - (($diff_break_hours*60)/$interval))-1);
+        $slots = abs(((($diff_services_hours*60)/$interval) - (($diff_break_hours*60)/$interval)));
+        
 
         for ($i=0; $i < $slots ; $i++) { 
 
@@ -324,32 +327,79 @@ class TeetimeRepository extends CrudRepository
             if ($bt_start_hour && ($start_date->format('H:i:s') >= $bt_start_hour->format('H:i:s'))){
                  $start_date = $break_time_end_hour->addMinutes($interval);
             }
+
+
             
-            for ($j=0; $j <$n_holes ; $j++) { 
-            
-                $reservation[] = [
+            for ($j=0; $j < $n_holes ; $j++) { 
+                
+                $available_time = Carbon::createFromFormat('Y-m-d H:i:s',$start_date->format('Y-m-d').' '.$start_date->format('H:i:s'),env('APP_TIMEZONE'))->subHours($request->available);
+
+                $cancel_time = Carbon::createFromFormat('Y-m-d H:i:s',$start_date->format('Y-m-d').' '.$start_date->format('H:i:s'),env('APP_TIMEZONE'))->subHours($request->cancel_time);
+
+                $now = Carbon::now(env('APP_TIMEZONE'))->format('Y-m-d H:i:s');
+
+                $check = $this->check_disponibility($start_date->format('Y-m-d'),$start_date->format('H:i:s'),$holes[$j]);
+
+                    
+                    if(!$check){
+                        if ($now >= $available_time->format('Y-m-d H:i:s') || ($role == 'admin')) {
+                                 $reservation[] = [
                                   "hole_id" => $holes[$j],
                                   "date" => $start_date->format('Y-m-d'),
                                   "start_hour" => $start_date->format('H:i:s'),
-                                  "available_time" => $request->available_time,
-                                  "cancel_time" => $cancel_time
-                                ]; 
-            }
+                                  "available_time" => $available_time->format('Y-m-d H:i:s'),
+                                  "cancel_time" => $cancel_time->format('Y-m-d H:i:s'),
+                                  "status" => ($now > $start_date->format('Y-m-d H:i:s')) ? "expired" : "available"
+                                ];                           
+                        }elseif($role == "admin"){
+                             $reservation[] = [
+                                  "hole_id" => $holes[$j],
+                                  "date" => $start_date->format('Y-m-d'),
+                                  "start_hour" => $start_date->format('H:i:s'),
+                                  "available_time" => $available_time->format('Y-m-d H:i:s'),
+                                  "cancel_time" => $cancel_time->format('Y-m-d H:i:s'),
+                                  "status" => (Carbon::parse($now)->format('Y-m-d H:i') > $start_date->format('Y-m-d H:i')) ? "expired" : "available"
+                                ];
+                        }//IF INTERNO
+                   }//IF EXTERNO
+            }//FOR HOLES 
             
-            //SUBIR CAMBIOS 
             if ($bt_start_hour && ($start_date->format('H:i:s') < $bt_start_hour->format('H:i:s'))) {
                  $start_date->addMinutes($interval);
             }
 
             if (!$bt_start_hour && !$bt_end_hour) {
                 $start_date->addMinutes($interval);
-            }
-
-            
-                                          
+            }                                  
         }
 
-        return $reservation;
+        //SE VALIDO ROLES DE USUARIO, SE MODIFICO LAS FECHAS DE DISPONIBILIDAD Y CANCELACIÓN Y QUE MUESTRE CADA SLOT SEGUN LA HORA.
+        
+        if (isset($reservation)) {
+            //$reservation["count"] = count($reservation);
+            return $reservation;
+        }else{
+            return abort(404,"Aún no se han habilitado reservas para esta fecha");
+        }
+    }
+
+    public function check_disponibility($start_date,$start_hour,$hole_id){
+       
+        $now = Carbon::now(env('APP_TIMEZONE'));
+        $reservation = Reservation::select('reservations.*',
+                                           'teetimes.start_date as teetime_start_date',
+                                           'teetimes.start_hour as teetime_start_hour')
+                                    ->leftjoin('teetimes','teetimes.id','=','reservations.teetime_id')
+                                    ->where('reservations.status','registrado')
+                                    ->where('reservations.date',$start_date)
+                                    ->where('reservations.start_hour',$start_hour)
+                                    ->where('reservations.hole_id',$hole_id)
+                                    ->first();
+        if ($reservation) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
 

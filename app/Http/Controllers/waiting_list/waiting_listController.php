@@ -4,6 +4,8 @@ namespace App\Http\Controllers\waiting_list;
 
 use Illuminate\Http\Request;
 use App\Core\CrudController;
+use App\Http\Mesh\UsuService;
+use App\Jobs\wait_list_job;
 use App\Models\waiting_list;
 use App\Services\waiting_list\waiting_listService;
 use Illuminate\Support\Facades\DB;
@@ -34,5 +36,22 @@ class waiting_listController extends CrudController
             return  ["list"=>$fill,'total'=>count($fill)];
         }
        
+    }
+
+    public function notireserva($date,$hour)
+    {
+       /* $client=new UsuService();
+        $espera=waiting_list::where('date',$date)->where('start_hour',$hour)->get();
+        $tite="notificacion de reserva";
+        $cuerpo="se cancelo una reservacion en la fecha:'$date' y hora:'$hour ' la puedes tomar";
+
+        foreach ($espera as $key) 
+        {
+          $id=$key->user_id;
+          $se= $client->_sendNotification($id,$tite,$cuerpo);
+        }*/
+       
+        $r=dispatch(new wait_list_job($date,$hour));
+        dd($r);
     }
 }

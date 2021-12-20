@@ -28,5 +28,25 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
        $schedule->command('statoalla')->timezone('America/Caracas')->everyMinute();
+
+       $schedule->command('queue:retry all')->everyMinute()->when(function () {
+        $job = DB::table('failed_jobs')->select('')->get();
+        if(count($job) > 10){
+            return true;
+        }
+    })->withoutOverlapping();
+    $schedule->command('queue:work --stop-when-empty')->everyMinute()->when(function () {
+            $job = DB::table('jobs')->select('')->get();
+            if(count($job) > 0){
+                return true;
+            }
+        })->withoutOverlapping();
+    $schedule->command('queue:flush')->everyMinute()->when(function () {
+        $job = DB::table('failed_jobs')->select('*')->get();
+        if(count($job) > 30){
+            return true;
+        }
+    })->withoutOverlapping();
+
     }
 }

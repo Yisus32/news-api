@@ -8,6 +8,7 @@ namespace App\Services\waiting_list;
 
 
 use App\Core\CrudService;
+use App\Http\Mesh\UsuService;
 use App\Models\Reservation;
 use App\Models\Teetime;
 use App\Models\waiting_list;
@@ -33,7 +34,24 @@ class waiting_listService extends CrudService
 
     public function _store(Request $request)
     {
-        
+        $date=$request->date;
+        $hour=$request->start_hour;
+        $fhour=$request->end_hour;
+        $verifireser=Reservation::where('date',$date)->whereTime('start_hour', '>=',$hour)
+        ->whereTime('start_hour', '<=', $fhour)->get();
+        //dd($verifireser);
+        if(count($verifireser)>0)
+        {
+            $request['sta']="A";
+            return parent::_store($request);
+        }
+
+        else
+        { 
+            return response()->json(["error"=>true,"message"=> "No puedes crear una lista de espera para esta fecha y rango de horas"],422);
+            
+        }
+
     }
 
 }

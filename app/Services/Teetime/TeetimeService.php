@@ -120,7 +120,7 @@ class TeetimeService extends CrudService
             return response()->json([$teetime], 200);
 
         }catch (\Exception $e){
-            return response()->json(["error"=>true,"message"=>"No existen reservaciones disponibles"],404);
+            return response()->json(["error"=>true,"message"=>$e->getMessage()],404);
         }
 
         

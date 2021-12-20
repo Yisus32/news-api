@@ -14,7 +14,14 @@ class UserService extends ServicesMesh
 
     public function __construct()
     {
-        parent::__construct(env('USERS_API'));
+        $this->pach = env('USERS_API');
+        $this->headers = [
+           'Authorization' => '',
+           'Accept'        => 'application/json',
+           'Cache-Control' => 'no-cache',
+           'x-timezone'    => 'UTC, -5:00'
+       ];
+       $this->client = new \GuzzleHttp\Client(['verify' => false]);
     }
 
    
@@ -22,6 +29,7 @@ class UserService extends ServicesMesh
     {
         
             $client = new Client();
+            
             $response = $client->get(env('USERS_API').'/us/get/user/' . $id);
 
             if ($response->getStatusCode() !== 200){
@@ -43,8 +51,9 @@ class UserService extends ServicesMesh
      */
     public function getUserById($id)
     {
-        $uri = env('USERS_API') . 'get/user/' . $id ;
-
+      
+        $uri = env('USERS_API') . '/us/get/user/' . $id ;
+     
         try {
             $options = $this->getOptions($this->getHeaders($this->getRequest()));
             $response = $this->client->get($uri, $options);
@@ -55,7 +64,6 @@ class UserService extends ServicesMesh
             }
 
             $client = json_decode($response->getBody(), true);
-
             return $client['value'] ?? ["id" => null];
 
         } catch (Exception $exception) {

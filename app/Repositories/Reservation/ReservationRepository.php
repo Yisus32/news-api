@@ -62,8 +62,8 @@ class ReservationRepository extends CrudRepository
             $reservation['teetime_cancel_time'] = $this->model->setCancelDate(
             $reservation['teetime_date_start'], $reservation['teetime_hour_start'],
             $reservation['teetime_cancel_time']);
-            $reservation['created_at'] = Carbon::parse($reservation['created_at'])->format('Y-m-d',env('APP_TIMEZONE'));
-            $reservation['updated_at'] = Carbon::parse($reservation['created_at'])->format('Y-m-d',env('APP_TIMEZONE'));
+            $reservation['created_at'] = Carbon::parse($reservation['created_at'])->format('Y-m-d H:i:s',env('APP_TIMEZONE'));
+            $reservation['updated_at'] = Carbon::parse($reservation['created_at'])->format('Y-m-d H:i:s',env('APP_TIMEZONE'));
             $reservation['teetime_date_start'] = Carbon::parse($reservation['teetime_date_start'].' '.$reservation['teetime_hout_start'])->format('d-m-Y h:i A');
         }
 
@@ -123,13 +123,25 @@ class ReservationRepository extends CrudRepository
 
         }else {
             
-            $stored = parent::_store($data);
-            
-            $this->model->createInvitation($stored);
+            $checkingExistence = Reservation::where('teetime_id',$data["teetime_id"])
+                                            ->where('hole_id',$data["hole_id"])
+                                            ->where('date',$data["date"])
+                                            ->where('start_hour',$data["start_hour"])
+                                            ->first();
 
-            $this->multiSendInvitation($stored);
+         
+            if (!$checkingExistence) {
+                $stored = parent::_store($data);
             
-            return response()->json(['status' => 200, 'stored' => $stored]);
+                $this->model->createInvitation($stored);
+
+                $this->multiSendInvitation($stored);
+            
+                return response()->json(['status' => 200, 'stored' => $stored]);
+            }else{
+               return response()->json(['status'=>400, 'message'=> 'Usted está reservando un espacio que ya no se encuentra disponible, por favor refresque la página'],400); 
+            }
+            
         }  
     }
 
@@ -154,13 +166,23 @@ class ReservationRepository extends CrudRepository
 
         }else {
 
-            $updated = parent::_update($id,$data);
+            $checkingExistence = Reservation::where('teetime_id',$data["teetime_id"])
+                                            ->where('hole_id',$data["hole_id"])
+                                            ->where('date',$data["date"])
+                                            ->where('start_hour',$data["start_hour"])
+                                            ->first();
+            
+            if ((isset($checkingExistence) && $checkingExistence->id == $id) || !$checkingExistence) {
+                $updated = parent::_update($id,$data);
 
-            $this->model->createInvitation($updated);
+                $this->model->createInvitation($updated);
 
-            $this->multiSendInvitation($updated);
+                $this->multiSendInvitation($updated);
 
-            return response()->json(['status' => 200, 'stored' => $updated]);
+                return response()->json(['status' => 200, 'stored' => $updated]);
+            }else{
+               return response()->json(['status'=>400, 'message'=> 'Usted está reservando un espacio que ya no se encuentra disponible, por favor refresque la página'],400); 
+            }
         }  
     }
 
@@ -354,10 +376,10 @@ class ReservationRepository extends CrudRepository
         $temp_data->created_at = Carbon::now(env('APP_TIMEZONE'));
         $temp_data->save();
 
-        return response()->json(['status'=>200, 'message'=>'se apartado la reserva por 5 minutos']);   
+        return response()->json(['status'=>200, 'message'=>'se apartado la reserva por 5 minutos'],200);   
         
         } catch (\Exception $e) {
-            return response()->json(['status'=>400,'message'=>'Este espacio está siendo registrado por otro usuario']);   
+            return response()->json(['status'=>400,'message'=>'Este espacio está siendo registrado por otro usuario'],400);   
         }
     }
 
@@ -367,16 +389,17 @@ class ReservationRepository extends CrudRepository
         $time = str_replace(':','',$request->start_hour);
         $ref_data = $date.''.$time;
         
-
+       
         $temp_data = TempData::where('teetime_id',$id)
                              ->where('hole_id',(integer)$hole_id)
                              ->where('ref_data',$ref_data)
                              ->first();
+
         if ($temp_data) {
             $temp_data->delete();
-            return response()->json(['status' => 200, 'message' => 'El espacio está disponible nuevamente']);    
+            return response()->json(['status' => 200, 'message' => 'El espacio está disponible nuevamente'],200);    
         }else{
-            return response()->json(['status'=>400,'message'=>'Verifique el id del teetime']);
+            return response()->json(['status'=>400,'message'=>'Verifique el id del teetime'],400);
         }   
     }
 

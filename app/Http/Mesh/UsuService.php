@@ -48,20 +48,18 @@ class UsuService extends ServicesMesh
 
     public function _sendNotification($id_user, $title, $body){
         try{
-            $url = $this->pach.'/nt/send/tokens';
+            $url ='https://'.$this->pach.'/us/nt/send/tokens';
             $request  = [
-                'form_params' => [
                         'id_user' => $id_user,
                         'title'   => $title,
                         'body'    => $body
-                    ]
                 ];
-            $request_data = json_encode($request);
-            $response = $this->client->request('POST', $url, $request);
+            // $request_data = json_encode($request);
+            $response =$this->client->post($url,['json'=>$request]);
             return json_decode($response->getBody());
         }catch (Exception $e) {
             Log::critical('ApiUser _sendNotification '.$e);
-            return false;
+            return [$e->getMessage()];
         }
     }
 
