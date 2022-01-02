@@ -123,13 +123,25 @@ class ReservationRepository extends CrudRepository
 
         }else {
             
-            $stored = parent::_store($data);
-            
-            $this->model->createInvitation($stored);
+            $checkingExistence = Reservation::where('teetime_id',$data["teetime_id"])
+                                            ->where('hole_id',$data["hole_id"])
+                                            ->where('date',$data["date"])
+                                            ->where('start_hour',$data["start_hour"])
+                                            ->first();
 
-            $this->multiSendInvitation($stored);
+         
+            if (!$checkingExistence) {
+                $stored = parent::_store($data);
             
-            return response()->json(['status' => 200, 'stored' => $stored]);
+                $this->model->createInvitation($stored);
+
+                $this->multiSendInvitation($stored);
+            
+                return response()->json(['status' => 200, 'stored' => $stored]);
+            }else{
+               return response()->json(['status'=>400, 'message'=> 'Usted está reservando un espacio que ya no se encuentra disponible, por favor refresque la página'],400); 
+            }
+            
         }  
     }
 
@@ -154,13 +166,23 @@ class ReservationRepository extends CrudRepository
 
         }else {
 
-            $updated = parent::_update($id,$data);
+            $checkingExistence = Reservation::where('teetime_id',$data["teetime_id"])
+                                            ->where('hole_id',$data["hole_id"])
+                                            ->where('date',$data["date"])
+                                            ->where('start_hour',$data["start_hour"])
+                                            ->first();
+            
+            if ((isset($checkingExistence) && $checkingExistence->id == $id) || !$checkingExistence) {
+                $updated = parent::_update($id,$data);
 
-            $this->model->createInvitation($updated);
+                $this->model->createInvitation($updated);
 
-            $this->multiSendInvitation($updated);
+                $this->multiSendInvitation($updated);
 
-            return response()->json(['status' => 200, 'stored' => $updated]);
+                return response()->json(['status' => 200, 'stored' => $updated]);
+            }else{
+               return response()->json(['status'=>400, 'message'=> 'Usted está reservando un espacio que ya no se encuentra disponible, por favor refresque la página'],400); 
+            }
         }  
     }
 

@@ -327,6 +327,8 @@ class TeetimeRepository extends CrudRepository
             if ($bt_start_hour && ($start_date->format('H:i:s') >= $bt_start_hour->format('H:i:s'))){
                  $start_date = $break_time_end_hour->addMinutes($interval);
             }
+
+
             
             for ($j=0; $j < $n_holes ; $j++) { 
                 
@@ -334,19 +336,21 @@ class TeetimeRepository extends CrudRepository
 
                 $cancel_time = Carbon::createFromFormat('Y-m-d H:i:s',$start_date->format('Y-m-d').' '.$start_date->format('H:i:s'),env('APP_TIMEZONE'))->subHours($request->cancel_time);
 
+                $now = Carbon::now(env('APP_TIMEZONE'))->format('Y-m-d H:i:s');
+
                 $check = $this->check_disponibility($start_date->format('Y-m-d'),$start_date->format('H:i:s'),$holes[$j]);
 
-                $now = Carbon::now(env('APP_TIMEZONE'))->format('Y-m-d H:i:s');
-                  
+                    
                     if(!$check){
-                        if ($now >= $available_time->format('Y-m-d H:i:s') || $role == 'admin') {
-                             $reservation[] = [
+                        if ($now >= $available_time->format('Y-m-d H:i:s') || ($role == 'admin')) {
+                                 $reservation[] = [
                                   "hole_id" => $holes[$j],
                                   "date" => $start_date->format('Y-m-d'),
                                   "start_hour" => $start_date->format('H:i:s'),
                                   "available_time" => $available_time->format('Y-m-d H:i:s'),
                                   "cancel_time" => $cancel_time->format('Y-m-d H:i:s'),
-                                ];
+                                  "status" => ($now > $start_date->format('Y-m-d H:i:s')) ? "expired" : "available"
+                                ];                           
                         }elseif($role == "admin"){
                              $reservation[] = [
                                   "hole_id" => $holes[$j],
@@ -354,6 +358,7 @@ class TeetimeRepository extends CrudRepository
                                   "start_hour" => $start_date->format('H:i:s'),
                                   "available_time" => $available_time->format('Y-m-d H:i:s'),
                                   "cancel_time" => $cancel_time->format('Y-m-d H:i:s'),
+                                  "status" => (Carbon::parse($now)->format('Y-m-d H:i') > $start_date->format('Y-m-d H:i')) ? "expired" : "available"
                                 ];
                         }//IF INTERNO
                    }//IF EXTERNO
@@ -379,7 +384,8 @@ class TeetimeRepository extends CrudRepository
     }
 
     public function check_disponibility($start_date,$start_hour,$hole_id){
-        
+       
+        $now = Carbon::now(env('APP_TIMEZONE'));
         $reservation = Reservation::select('reservations.*',
                                            'teetimes.start_date as teetime_start_date',
                                            'teetimes.start_hour as teetime_start_hour')
