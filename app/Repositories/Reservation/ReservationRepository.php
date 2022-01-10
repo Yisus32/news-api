@@ -24,6 +24,7 @@ use App\Models\TempData;
 //use Illuminate\Queue\Queue;
 //use Illuminate\Support\Facades\Queue as FacadesQueue;
 //commit de reposicion
+//commit para hacer pase a qa
 
 /** @property Reservation $model */
 class ReservationRepository extends CrudRepository
