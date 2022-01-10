@@ -9,5 +9,5 @@ class waiting_list extends CrudModel
 {
     protected $guarded = ['id'];
     protected $table = 'waiting_list';
-    protected $fillable =['user_id','name','date','sta','start_hour','end_hour'];
+    protected $fillable =['user_id','name','date','sta','start_hour','end_hour','num_soc'];
 }
