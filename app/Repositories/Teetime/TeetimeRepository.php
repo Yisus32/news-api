@@ -179,7 +179,10 @@ class TeetimeRepository extends CrudRepository
         $start_day = Carbon::now(env('APP_TIMEZONE'))->format('Y-m-d');
         $end_day = Teetime::max('end_date');
 
+
         $period = CarbonPeriod::create($start_day, $end_day);
+
+        dd($start_day,$end_day,$period);
 
         foreach ($period as $p) {
             $dates[] = $p->format('Y-m-d');
