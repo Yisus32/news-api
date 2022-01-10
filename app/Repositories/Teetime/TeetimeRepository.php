@@ -186,6 +186,12 @@ class TeetimeRepository extends CrudRepository
             $dates[] = $p->format('Y-m-d');
         }
 
+        if (isset($dates)) {
+            return $dates;
+        }else{
+            return response()->json(["error"=>true,"message"=>"No existen programaciones disponibles en el sistema"],400);
+        }
+
 
         return $dates;
     }
