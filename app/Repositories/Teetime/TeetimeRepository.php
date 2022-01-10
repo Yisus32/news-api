@@ -182,11 +182,10 @@ class TeetimeRepository extends CrudRepository
 
         $period = CarbonPeriod::create($start_day, $end_day);
 
-        dd($start_day,$end_day,$period);
-
         foreach ($period as $p) {
             $dates[] = $p->format('Y-m-d');
         }
+
 
         return $dates;
     }
