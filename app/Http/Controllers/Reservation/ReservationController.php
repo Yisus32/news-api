@@ -193,7 +193,6 @@ class ReservationController extends CrudController
     }
 
     public function searchPlayers(array $players,$user){
-        dd($players);
        foreach ($players as $player) {
 
            $guest = Guest::where('id',$player)->first();
@@ -201,8 +200,11 @@ class ReservationController extends CrudController
            if ($guest != null) {
                $array[] = ["ref" => $guest->card_number, "full_name" => $guest->full_name];
            }else{
-                $array[] = ["ref" => $user->getUsersById($player)->user->n_socio, 
+                if ($user->getUsersById($player) != null) {
+                    $array[] = ["ref" => $user->getUsersById($player)->user->n_socio, 
                             "full_name" => $user->getUserById($player)->user->full_name]; 
+                }
+                
               }
            }
        
