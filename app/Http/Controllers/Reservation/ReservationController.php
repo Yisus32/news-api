@@ -193,7 +193,7 @@ class ReservationController extends CrudController
     }
 
     public function searchPlayers(array $players,$user){
-
+        dd($players);
        foreach ($players as $player) {
 
            $guest = Guest::where('id',$player)->first();
