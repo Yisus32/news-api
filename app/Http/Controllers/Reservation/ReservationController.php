@@ -125,7 +125,6 @@ class ReservationController extends CrudController
        if (!$reservations->isEmpty()) {
            foreach ($reservations as $reservation) {
 
-
             $players = array_merge(json_decode($reservation->partners),json_decode($reservation->guests));
 
             
@@ -135,11 +134,10 @@ class ReservationController extends CrudController
                                             "start_hour" => $reservation->start_hour,
                                             "date" => $reservation->date,
                                             "players" => $this->searchPlayers($players,$user),
-                                            "owner" =>   $reservation->owner_name
+                                            "owner" =>  $reservation->owner_name
                                           ]; 
         }
 
-        
         $data = $this->groupArray($data,"date");
 
         for ($i=0; $i < count($data) ; $i++) {            
@@ -194,23 +192,21 @@ class ReservationController extends CrudController
         return array();
     }
 
-    public function searchPlayers($players,$user){
-       
-       
+    public function searchPlayers(array $players,$user){
+
        foreach ($players as $player) {
+
            $guest = Guest::where('id',$player)->first();
 
            if ($guest != null) {
                $array[] = ["ref" => $guest->card_number, "full_name" => $guest->full_name];
            }else{
-                $array[] = ["ref" => $user->getUserById($player)["user"]["n_socio"], 
-                            "full_name" => $user->getUserById($player)["user"]["full_name"]];
-                  
+                $array[] = ["ref" => $user->getUsersById($player)->user->n_socio, 
+                            "full_name" => $user->getUserById($player)->user->full_name]; 
               }
            }
        
-       
-        return $array;
+       return $array;
     }
 
     public function advanceFilter(Request $request){
