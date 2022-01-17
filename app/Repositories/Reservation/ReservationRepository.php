@@ -102,7 +102,6 @@ class ReservationRepository extends CrudRepository
     }
 
     public function _store(Request $data){
-
         $data['guests'] = json_encode($data['guests']);
         $data['partners'] = json_encode($data['partners']);
         $data['partners_name'] = json_encode($data['partners_name']);
@@ -281,12 +280,20 @@ class ReservationRepository extends CrudRepository
                 $invitation = Invitation::where('reservation_id',$stored->id)
                                     ->where('guest_email',$email)
                                     ->first();
-        
+            
                 $receipt_url = env('APP_URL').'/api/accept/invitation/'.$invitation->id;
 
                 $subject = "invitacion a teetime";
-                $message = "Estimado $email, el socio $stored->owner_name lo ha invitado a un juego en el club de golf de Panamá el día ".Carbon::parse($stored->date)->format('d-m-Y')." a las ".Carbon::parse($stored->start_hour)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
-                    $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
+                $message = "<img src='".env("APP_URL")."/images/cdg.jpg' width='950' height='150' style='opacity:0.4;'>
+                <br>
+                <br>
+                <br>
+                Estimado $email, el socio $stored->owner_name lo ha invitado a un juego en el club de golf de Panamá el día ".Carbon::parse($stored->date)->format('d-m-Y')." a las ".Carbon::parse($stored->start_hour)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
+                    $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>
+                    <br>
+                    <br>
+                    <br>
+                    <img src='".env("APP_URL")."/images/cdg.jpg' width='950' height='150' style='opacity:0.4; margin-top:200px'>";
         
                 
                 if (filter_var($email,FILTER_VALIDATE_EMAIL)) {
@@ -310,8 +317,16 @@ class ReservationRepository extends CrudRepository
                 $receipt_url = 'https://'.env('FRONT_URL').'/guest/register-guest/%20/'.$email.'/'.$_owner_id.'/'.$_owner_name.'/'.$_owner_number.'/'.$reservation_id;
 
                 $subject = "invitacion a teetime";
-                $message = "Estimado $email, el socio $stored->owner_name lo ha invitado a un juego en el club de golf de Panamá el día ".Carbon::parse($stored->date)->format('d-m-Y')." a las ".Carbon::parse($stored->start_hour)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
-                    $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
+                $message = "<img src='".env("APP_URL")."/images/cdg.jpg' width='950' height='150' style='opacity:0.4;'>
+                <br>
+                <br>
+                <br>
+                Estimado $email, el socio $stored->owner_name lo ha invitado a un juego en el club de golf de Panamá el día ".Carbon::parse($stored->date)->format('d-m-Y')." a las ".Carbon::parse($stored->start_hour)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
+                    $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>
+                    <br>
+                    <br>
+                    <br>
+                    <img src='".env("APP_URL")."/images/cdg.jpg' width='950' height='150' style='opacity:0.4; margin-top:200px'>";
         
                
                 if (filter_var($other,FILTER_VALIDATE_EMAIL)) {
@@ -350,9 +365,18 @@ class ReservationRepository extends CrudRepository
         $hole = $request->hole_name;
         $subject = "Invitación Teetime";
         
-        $message = "Estimado $name, el socio $partner lo ha invitado a un juego en el club de golf de Panamá
+
+        $message = "<img src='".env("APP_URL")."/images/cdg.jpg' width='950' height='150' style='opacity:0.4;'>
+                <br>
+                <br>
+                <br>
+                    Estimado $name, el socio $partner lo ha invitado a un juego en el club de golf de Panamá
                     en el $hole el día ".Carbon::parse($date)->format('d-m-Y')." a las ".Carbon::parse($time)->format('h:i A').". Para aceptar la solicitud solo debe hacer click al siguiente enlace <br> <br> <a href='".
-                    $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>";
+                    $receipt_url."' target='_blank'>Haga click para aceptar la invitación</a>
+                <br>
+                <br>
+                <br>
+                <img src='".env("APP_URL")."/images/cdg.jpg' width='950' height='150' style='opacity:0.4; margin-top:200px'>";
         
                 
         if (filter_var($request->email,FILTER_VALIDATE_EMAIL)) {
