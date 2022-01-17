@@ -58,6 +58,10 @@ class ReservationController extends CrudController
         }   
     }
 
+    public function apartReservation(Request $data){
+        return $this->service->apartReservation($data);                                   
+    }
+
     public function _update($id, Request $data){
        
         if ($data->header('time') == 'expired') {

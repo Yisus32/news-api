@@ -43,6 +43,10 @@ class ReservationService extends CrudService
         }
    }
 
+    public function apartReservation(Request $data){
+        return $this->repository->apartReservation($data);                                  
+    }
+
    public function _update($id,$data){
 
       $check = $this->repository->checkCapacity($data['partners'],$data['guests'],$data['guests_email'],$data['teetime_id']);

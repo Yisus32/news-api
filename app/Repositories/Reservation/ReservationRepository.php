@@ -145,6 +145,23 @@ class ReservationRepository extends CrudRepository
         }  
     }
 
+    public function apartReservation(Request $data){
+        $data['status'] = 'apartado';
+
+        $checkingExistence = Reservation::where('teetime_id',$data["teetime_id"])
+                                            ->where('hole_id',$data["hole_id"])
+                                            ->where('date',$data["date"])
+                                            ->where('start_hour',$data["start_hour"])
+                                            ->first();
+        if (!$checkingExistence) 
+        {   
+            $stored = parent::_store($data);
+            return response()->json(["status" => 200, "message" => "La reserva se ha apartado correctamente"],200);
+        }else{
+            return response()->json(["status" => 400, "message" => "Esta reserva no se encuentra disponible"],400);
+        }                                    
+    }
+
     public function _update($id, $data){
         $data['guests'] = json_encode($data['guests']);
         $data['partners'] = json_encode($data['partners']);
