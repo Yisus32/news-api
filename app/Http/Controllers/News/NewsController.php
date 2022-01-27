@@ -12,4 +12,8 @@ class NewsController extends CrudController
     {
         parent::__construct($service);
     }
+
+    public function _index(Request $data){
+         return $this->service->_index($data);
+    }
 }
