@@ -22,4 +22,8 @@ class TypeService extends CrudService
         parent::__construct($repository);
     }
 
+    public function _show($id, $request=null){
+        return $this->repository->_show($id);
+    }
+
 }

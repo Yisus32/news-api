@@ -4,23 +4,32 @@ stages:
   - deploy
   - rollback
 
+
+dev_backup_job:
+  stage: backup
+  script:
+    - docker image tag devrubick2news-api:latest devrubick2news-api:prev || true
+  tags:
+    - devapp
+  only :
+    - dev
+
 dev_build_job:
   stage: build
   script:
+  
     - cp .env.example .env
     - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
     - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
-    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=devrubick2teetime;g" .env
-    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=devrubick2teetime;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=devrubick2news;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=devrubick2news;g" .env
     - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$DEV_DB_PASS;g" .env
     - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.26;g" .env
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=1;g" .env
-    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=devrubick2teetime.zippyttech.com;g" .env
-    - sed -i -e "s;^\s*USERS_API=.*;USERS_API=devrubick2user.zippyttech.com;g" .env
-    - sed -i -e "s;^\s*FRONT_URL=.*;FRONT_URL=devapp.zippyttech.com;g" .env
-    - echo "APP_TIMEZONE=America/Panama" >> .env 
-    - docker build -t devrubick2teetime-api .
+    - echo "APP_URL=https://devrubick2client.zippyttech.com" >> .env
+    - echo "#WASTE_API=https://devrubick2waste.zippyttech.com/api/" >> .env 
+    - docker build -t devrubick2client-api .
   when: on_success
   tags:
     - devapp
@@ -30,10 +39,10 @@ dev_build_job:
 dev_deploy_job:
   stage: deploy
   script:
-    - docker stop devrubick2teetime-api || true
-    - docker rm devrubick2teetime-api || true
-    - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 9023:80 -v devrubick2teetime-api-images:/var/www/html/public/images -v devrubick2teetime-api-images:/var/www/html/public/logos devrubick2teetime-api
-    - docker exec devrubick2teetime-api php artisan migrate
+    - docker stop devrubick2news-api || true
+    - docker rm devrubick2news-api || true
+    - docker run -d --restart always --name devrubick2news-api --network devapp -p 9009:80 -v devrubick2news-api-images:/var/www/html/public/images -v devrubick2news-api-images:/var/www/html/public/logos devrubick2news-api
+    - docker exec devrubick2news-api php artisan migrate
   when: on_success
   tags:
     - devapp
@@ -43,10 +52,10 @@ dev_deploy_job:
 dev_rollback_job:
   stage: rollback
   script:
-    - docker stop devrubick2teetime-api || true
-    - docker rm devrubick2teetime-api || true
-    - docker image tag devrubick2teetime-api:prev devrubick2teetime-api:latest || true
-    - docker run -d --restart always --name devrubick2teetime-api --network devapp -p 9023:80 -v devrubick2teetime-api-images:/var/www/html/public/images -v devrubick2teetime-api-images:/var/www/html/public/logos devrubick2teetime-api
+    - docker stop devrubick2news-api || true
+    - docker rm devrubick2news-api || true
+    - docker image tag devrubick2news-api:prev devrubick2news-api:latest || true
+    - docker run -d --restart always --name devrubick2news-api --network devapp -p 9009:80 -v devrubick2news-api-images:/var/www/html/public/images -v devrubick2news-api-images:/var/www/html/public/logos devrubick2news-api
   when: manual
   tags:
     - devapp
@@ -56,7 +65,7 @@ dev_rollback_job:
 qa_backup_job:
   stage: backup
   script:
-    - docker image tag qarubick2teetime-api:latest qarubick2teetime-api:prev || true
+    - docker image tag qarubick2news-api:latest qarubick2news-api:prev || true
   tags:
     - qarubick2
   only :
@@ -68,17 +77,21 @@ qa_build_job:
     - cp .env.example .env
     - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
     - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
-    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=qarubick2teetime;g" .env
-    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=qarubick2teetime;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=qarubick2news;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=qarubick2news;g" .env
     - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$QA_DB_PASS;g" .env
     - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.25;g" .env
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=1;g" .env
-    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=qarubick2teetime.zippyttech.com;g" .env
-    - sed -i -e "s;^\s*USERS_API=.*;USERS_API=qarubick2user.zippyttech.com;g" .env
-    - sed -i -e "s;^\s*FRONT_URL=.*;FRONT_URL=qarubick2.zippyttech.com;g" .env
-    - echo "APP_TIMEZONE=America/Panama" >> .env 
-    - docker build -t qarubick2teetime-api .
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=qareservas.berygo.com;g" .env
+    - echo "APP_URL=https://qarubick2news.zippyttech.com" >> .env
+    - echo "URL_API_ACCOUNT=https://qarubick2account.zippyttech.com" >> .env 
+    - echo "URL_API_CLIENT=https://qarubick2client.zippyttech.com" >> .env 
+    - echo "URL_API_NOTIFICATION=https://qarubick2notifications.zippyttech.com" >> .env 
+    - echo "URL_API_WALLET=https://qarubick2wallet.zippyttech.com" >> .env 
+    - echo "URL_API_USER=https://qarubick2user.zippyttech.com" >> .env 
+    - echo "#WASTE_API=https://qarubick2waste.zippyttech.com/api/" >> .env 
+    - docker build -t qarubick2client-api .
   when: on_success
   tags:
     - qarubick2
@@ -88,11 +101,10 @@ qa_build_job:
 qa_deploy_job:
   stage: deploy
   script:
-    - docker stop qarubick2teetime-api || true
-    - docker rm qarubick2teetime-api || true
-    - docker run -d --restart always --name qarubick2teetime-api --memory="512m" -v qarubick2teetime-api-images:/var/www/html/public/images -v qarubick2teetime-api-images:/var/www/html/public/logos --network qaapp -p 8116:80  qarubick2teetime-api
-    - docker exec qarubick2teetime-api php artisan migrate
-    - docker exec qarubick2teetime-api php artisan schedule:run
+    - docker stop qarubick2news-api || true
+    - docker rm qarubick2news-api || true
+    - docker run -d --restart always --name qarubick2news-api --network qaapp -p 8103:80 -v qarubick2news-api-images:/var/www/html/public/images -v qarubick2news-api-images:/var/www/html/public/logos qarubick2news-api
+    - docker exec qarubick2news-api php artisan migrate
   when: on_success
   tags:
     - qarubick2
@@ -102,11 +114,10 @@ qa_deploy_job:
 qa_rollback_job:
   stage: rollback
   script:
-    - docker stop qarubick2teetime-api || true
-    - docker rm qarubick2teetime-api || true
-    - docker image tag qarubick2teetime-api:prev qarubick2teetime-api:latest || true
-    - docker run -d --restart always --name qarubick2teetime-api --memory="512m" -v qarubick2teetime-api-images:/var/www/html/public/images -v qarubick2teetime-api-images:/var/www/html/public/logos --network qaapp -p 8116:80 qarubick2teetime-api
-    - docker exec qarubick2teetime-api php artisan schedule:run
+    - docker stop qarubick2news-api || true
+    - docker rm qarubick2news-api || true
+    - docker image tag qarubick2news-api:prev qarubick2news-api:latest || true
+    - docker run -d --restart always --name qarubick2news-api --network qaapp -p 8103:80 -v qarubick2news-api-images:/var/www/html/public/images -v qarubick2news-api-images:/var/www/html/public/logos qarubick2news-api
   when: manual
   tags:
     - qarubick2
@@ -116,11 +127,11 @@ qa_rollback_job:
 prod_backup_job:
   stage: backup
   script:
-    - docker image tag rubick2teetime-api:latest rubick2teetime-api:prev || true
+    - docker image tag rubick2news-api:latest rubick2news-api:prev || true
   tags:
     - prodapp
   only :
-    - prodapp
+    - tags
 
 prod_build_job:
   stage: build
@@ -128,48 +139,52 @@ prod_build_job:
     - cp .env.example .env
     - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
     - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
-    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=rubick2teetime;g" .env
-    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=rubick2teetime;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=rubick2news;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=rubick2news;g" .env
     - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$PROD_DB_PASS;g" .env
     - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
-    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=rubick2teetime.zippyttech.com;g" .env
-    - echo "APP_TIMEZONE=America/Panama" >> .env 
-    - docker build -t rubick2teetime-api .
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=reservas.berygo.com;g" .env
+    - echo "#API_URL:" >> .env
+    - echo "URL_API_ACCOUNT=https://rubick2account.zippyttech.com" >> .env 
+    - echo "URL_API_CLIENT=https://rubick2client.zippyttech.com" >> .env 
+    - echo "URL_API_NOTIFICATION=https://rubick2notifications.zippyttech.com" >> .env 
+    - echo "URL_API_WALLET=https://rubick2wallet.zippyttech.com" >> .env 
+    - echo "URL_API_USER=https://rubick2user.zippyttech.com" >> .env 
+    - echo "WASTE_API=https://rubick2waste.zippyttech.com/api/" >> .env 
+    - docker build -t rubick2client-api .
   when: on_success
   tags:
     - prodapp
   only :
-    - prodapp
+    - tags
 
 prod_deploy_job:
   stage: deploy
   script:
-    - docker stop rubick2teetime-api || true
-    - docker rm rubick2teetime-api || true
-    - docker run -d --restart always --name rubick2teetime-api  --memory="512m" -v rubick2teetime-api-images:/var/www/html/public/images -v rubick2teetime-api-images:/var/www/html/public/logos --network app -p 9020:80 rubick2teetime-api
-    - docker exec rubick2teetime-api php artisan migrate
-    - docker exec rubick2teetime-api php artisan schedule:run
+    - docker stop rubick2news-api || true
+    - docker rm rubick2news-api || true
+    - docker run -d --restart always --name rubick2news-api --network app -p 9009:80 -v rubick2news-api-images:/var/www/html/public/images -v rubick2news-api-images:/var/www/html/public/logos rubick2news-api
+    - docker exec rubick2news-api php artisan migrate
   when: on_success
   tags:
     - prodapp
   only:
-    - prodapp
+    - tags
 
 prod_rollback_job:
   stage: rollback
   script:
-    - docker stop rubick2teetime-api || true
-    - docker rm rubick2teetime-api || true
-    - docker image tag rubick2teetime-api:prev rubick2teetime-api:latest || true
-    - docker run -d --restart always --name rubick2teetime-api --memory="512m" -v rubick2teetime-api-images:/var/www/html/public/images -v rubick2teetime-api-images:/var/www/html/public/logos --network app -p 9020:80 rubick2teetime-api
-    - docker exec rubick2teetime-api php artisan schedule:run
+    - docker stop rubick2news-api || true
+    - docker rm rubick2news-api || true
+    - docker image tag rubick2news-api:prev rubick2news-api:latest || true
+    - docker run -d --restart always --name rubick2news-api --network app -p 9009:80 -v rubick2news-api-images:/var/www/html/public/images -v rubick2news-api-images:/var/www/html/public/logos rubick2news-api
   when: manual
   tags:
     - prodapp
   only:
-    - prodapp
+    - tags
 
 berygo_build_job:
   stage:  build
@@ -177,15 +192,21 @@ berygo_build_job:
     - cp .env.example .env
     - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
     - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
-    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=teetimerubick2berygo;g" .env
-    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=teetimerubick2berygo;g" .env
-    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$TEETIME_BERYGO_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=clientrubick2berygo;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=clientrubick2berygo;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$CLIENT_BERYGO_DB_PASS;g" .env
     - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
-    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=teetime-berygo.zippyttech.com;g" .env
-    - sed -i -e "s;^\s*USERS_API=.*;USERS_API=user-berygo.zippyttech.com;g" .env
-    - docker build -t teetime-api .
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=https://client.berygo.com;g" .env
+    - echo "APP_URL=https://client.berygo.com" >> .env
+    - echo "URL_API_ACCOUNT=https://account.berygo.com" >> .env 
+    - echo "URL_API_CLIENT=https://client.berygo.com" >> .env 
+    - echo "URL_API_NOTIFICATION=https://notifications.berygo.com" >> .env 
+    - echo "URL_API_WALLET=https://wallet.berygo.com" >> .env 
+    - echo "URL_API_USER=https://user.berygo.com" >> .env 
+    - echo "WASTE_API=https://waste.berygo.com/api/" >> .env 
+    - docker build -t client-api .
   when: on_success
   tags:
     - berygo
@@ -195,16 +216,55 @@ berygo_build_job:
 berygo_deploy_job:
   stage: deploy
   script:
-    - docker stop teetime-api || true
-    - docker rm teetime-api || true
-    - docker run -d --restart always --name teetime-api --memory="512m" -v teetime-api-images:/var/www/html/public/images -v teetime-api-images:/var/www/html/public/logos --network app -p 9023:80 teetime-api
-    - docker exec teetime-api php artisan migrate
-    - docker exec teetime-api php artisan schedule:run
+    - docker stop client-api || true
+    - docker rm client-api || true
+    - docker run -d --restart always --name client-api --memory="512m" -v client-api-images:/var/www/html/public/images -v client-api-images:/var/www/html/public/logos --network app -p 9009:80 client-api
+    - docker exec client-api php artisan migrate
   when: on_success
   tags:
     - berygo
   only:
     - berygo
+
+berygo_merida_build_job:
+  stage:  build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=clientrubick2berygomerida;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=clientrubick2berygomerida;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$CLIENT_BERYGO_MERIDA_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=clientmerida.berygo.com;g" .env
+    - echo "APP_URL=https://clientmerida.berygo.com" >> .env
+    - echo "URL_API_ACCOUNT=https://accountmerida.berygo.com" >> .env 
+    - echo "URL_API_CLIENT=https://clientmerida.berygo.com" >> .env 
+    - echo "URL_API_NOTIFICATION=https://notificationsmerida.berygo.com" >> .env 
+    - echo "URL_API_WALLET=https://walletmerida.berygo.com" >> .env 
+    - echo "URL_API_USER=https://usermerida.berygo.com" >> .env 
+    - echo "WASTE_API=https://wastemerida.berygo.com/api/" >> .env 
+    - docker build -t client-api .
+  when: on_success
+  tags:
+    - berygomerida
+  only:
+    - berygomerida
+
+berygo_merida_deploy_job:
+  stage: deploy
+  script:
+    - docker stop client-api || true
+    - docker rm client-api || true
+    - docker run -d --restart always --name client-api --memory="512m" -v client-api-images:/var/www/html/public/images -v client-api-images:/var/www/html/public/logos --network app -p 9009:80 client-api
+    - docker exec client-api php artisan migrate
+  when: on_success
+  tags:
+    - berygomerida
+  only:
+    - berygomerida
 
 cdg_build_job:
   stage:  build
@@ -212,16 +272,21 @@ cdg_build_job:
     - cp .env.example .env
     - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
     - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
-    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=teetimerubick2cdg;g" .env
-    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=teetimerubick2cdg;g" .env
-    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$TEETIME_CDG_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=accountrubick2cdg;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=accountrubick2cdg;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$ACCOUNT_BERYGO_DB_PASS;g" .env
     - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
-    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=teetime-cdg.zippyttech.com;g" .env
-    - sed -i -e "s;^\s*FRONT_URL=.*;FRONT_URL=teetime-cdg.zippyttech.com;g" .env
-    - sed -i -e "s;^\s*USERS_API=.*;USERS_API=user-cdg.zippyttech.com;g" .env
-    - docker build -t teetime-api .
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=account-cdg.zippyttech.com;g" .env
+    - echo "APP_URL=https://client-cdg.com" >> .env
+    - echo "URL_API_ACCOUNT=https://account-cdg.zippyttech.com" >> .env 
+    - echo "URL_API_CLIENT=https://client-cdg.zippyttech.com" >> .env 
+    - echo "URL_API_NOTIFICATION=https://notifications-cdg.zippyttech.com" >> .env 
+    - echo "URL_API_WALLET=https://wallet-cdg.zippyttech.com" >> .env 
+    - echo "URL_API_USER=https://user-cdg.zippyttech.com" >> .env 
+    - echo "WASTE_API=https://waste-cdg.zippyttech.com/api/" >> .env 
+    - docker build -t account-api .
   when: on_success
   tags:
     - cdg
@@ -231,11 +296,10 @@ cdg_build_job:
 cdg_deploy_job:
   stage: deploy
   script:
-    - docker stop teetime-api || true
-    - docker rm teetime-api || true
-    - docker run -d --restart always --name teetime-api --memory="512m" -v teetime-api-images:/var/www/html/public/images -v teetime-api-images:/var/www/html/public/logos --network app -p 9023:80 teetime-api
-    - docker exec teetime-api php artisan migrate
-    - docker exec teetime-api php artisan schedule:run
+    - docker stop account-api || true
+    - docker rm account-api || true
+    - docker run -d --restart always --name account-api --memory="512m" -v account-api-images:/var/www/html/public/images -v account-api-images:/var/www/html/public/logos --network app -p 9016:80 account-api
+    - docker exec account-api php artisan migrate
   when: on_success
   tags:
     - cdg
@@ -248,32 +312,150 @@ aguaseo_build_job:
     - cp .env.example .env
     - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
     - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
-    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=rubick2aguaseo-teetime;g" .env
-    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=rubick2aguaseo-teetime;g" .env
-    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$AGUASEO_TEETIME_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=rubick2aguaseo-client;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=rubick2aguaseo-client;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$AGUASEO_CLIENT_DB_PASS;g" .env
     - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
     - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
     - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
-    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=teetime-aguaseo.zippyttech.com;g" .env
-    - sed -i -e "s;^\s*USERS_API=.*;USERS_API=user-aguaseo.zippyttech.com;g" .env
-    - docker build -t aguaseo-teetime-api .
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=client.rubick.aguaseo.com;g" .env
+    - echo "APP_URL=https://client-aguaseo.zippyttech.com" >> .env 
+    - echo "URL_API_ACCOUNT=https://account-aguaseo.zippyttech.com" >> .env 
+    - echo "URL_API_CLIENT=https://client-aguaseo.zippyttech.com" >> .env 
+    - echo "URL_API_NOTIFICATION=https://notifications-aguaseo.zippyttech.com" >> .env 
+    - echo "URL_API_WALLET=https://wallet-aguaseo.zippyttech.com" >> .env 
+    - echo "URL_API_USER=https://user-aguaseo.zippyttech.com" >> .env 
+    - echo "WASTE_API=https://waste-aguaseo.zippyttech.com/api/" >> .env 
+    - docker build -t aguaseo-client-api .
   when: on_success
   tags:
     - aguaseo
   only:
     - aguaseo
-
 
 aguaseo_deploy_job:
   stage: deploy
   script:
-    - docker stop aguaseo-teetime-api || true
-    - docker rm aguaseo-teetime-api || true
-    - docker run -d --restart always --name aguaseo-teetime-api --memory="512m" -v aguaseo-teetime-api-images:/var/www/html/public/images -v aguaseo-teetime-api-images:/var/www/html/public/logos --network app -p 9023:80 aguaseo-teetime-api
-    - docker exec aguaseo-teetime-api php artisan migrate
-    - docker exec aguaseo-teetime-api php artisan schedule:run
+    - docker stop aguaseo-client-api || true
+    - docker rm aguaseo-client-api || true
+    - docker run -d --restart always --name aguaseo-client-api --memory="512m" -v aguaseo-client-api-images:/var/www/html/public/images -v aguaseo-client-api-images:/var/www/html/public/logos --network app -p 9009:80 aguaseo-client-api
+    - docker exec aguaseo-client-api php artisan migrate
   when: on_success
   tags:
     - aguaseo
   only:
     - aguaseo
+
+bukewallet_build_job:
+  stage:  build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=clientrubick2bukewallet;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=clientrubick2bukewallet;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$BUKEWALLET_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=client.bukewallet.com;g" .env
+    - echo "#API_URL:" >> .env
+    - echo "APP_URL=https://client.bukewallet.com" >> .env 
+    - echo "URL_API_ACCOUNT=https://account.bukewallet.com" >> .env 
+    - echo "URL_API_CLIENT=https://client.bukewallet.com" >> .env 
+    - echo "URL_API_NOTIFICATION=https://notifications.bukewallet.com" >> .env 
+    - echo "URL_API_WALLET=https://wallet.bukewallet.com" >> .env 
+    - echo "URL_API_USER=https://user.bukewallet.com" >> .env 
+    - docker build -t bukewallet-client-api .
+  when: on_success
+  tags:
+    - bukewallet
+  only:
+    - bukewallet
+
+bukewallet_deploy_job:
+  stage: deploy
+  script:
+    - docker stop bukewallet-client-api || true
+    - docker rm bukewallet-client-api || true
+    - docker run -d --restart always --name bukewallet-client-api --memory="512m" -v bukewallet-client-api-images:/var/www/html/public/images -v bukewallet-client-api-images:/var/www/html/public/logos --network app -p 9009:80 bukewallet-client-api
+    - docker exec bukewallet-client-api php artisan migrate
+  when: on_success
+  tags:
+    - bukewallet
+  only:
+    - bukewallet
+
+contralor_build_job:
+  stage:  build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*SECRET_KEY=.*;SECRET_KEY=$SECRET_KEY;g" .env
+    - sed -i -e "s;^\s*DB_CONNECTION=.*;DB_CONNECTION=pgsql;g" .env
+    - sed -i -e "s;^\s*DB_DATABASE=.*;DB_DATABASE=clientrubick2contralor;g" .env
+    - sed -i -e "s;^\s*DB_USERNAME=.*;DB_USERNAME=clientrubick2contralor;g" .env
+    - sed -i -e "s;^\s*DB_PASSWORD=.*;DB_PASSWORD=$CONTRALOR_DB_PASS;g" .env
+    - sed -i -e "s;^\s*DB_HOST=.*;DB_HOST=10.0.0.31;g" .env
+    - sed -i -e "s;^\s*DB_PORT=.*;DB_PORT=5432;g" .env
+    - sed -i -e "s;^\s*DEBUG=.*;DEBUG=0;g" .env
+    - sed -i -e "s;^\s*APP_URL=.*;APP_URL=contralor.zippyttech.com/client;g" .env
+    - echo "APP_URL=https://contralor.zippyttech.com/client" >> .env 
+    - echo "URL_API_CLIENT=https://contralor.zippyttech.com/client" >> .env 
+    - echo "URL_API_NOTIFICATION=https://contralor.zippyttech.com/notifications" >> .env 
+    - echo "URL_API_USER=https://contralor.zippyttech.com/user" >> .env 
+    - docker build -t contralor-client-api .
+  when: on_success
+  tags:
+    - contralor
+  only:
+    - contralor
+
+contralor_deploy_job:
+  stage: deploy
+  script:
+    - docker stop contralor-client-api || true
+    - docker rm contralor-client-api || true
+    - docker run -d --restart always --name contralor-client-api --memory="512m" -v contralor-client-api-images:/var/www/html/public/images -v contralor-client-api-images:/var/www/html/public/logos --network app -p 9009:80 contralor-client-api
+    - docker exec contralor-client-api php artisan migrate
+  when: on_success
+  tags:
+    - contralor
+  only:
+    - contralor
+
+admiral_build_job:
+  stage:  build
+  script:
+    - cp .env.example .env
+    - sed -i -e "s;^\s*secret_key=.*;secret_key=$secret_key;g" .env
+    - sed -i -e "s;^\s*db_connection=.*;db_connection=pgsql;g" .env
+    - sed -i -e "s;^\s*db_database=.*;db_database=clientrubick2admiral;g" .env
+    - sed -i -e "s;^\s*db_username=.*;db_username=clientrubick2admiral;g" .env
+    - sed -i -e "s;^\s*db_password=.*;db_password=$CLIENT_ADMIRAL_DB_PASS;g" .env
+    - sed -i -e "s;^\s*db_host=.*;db_host=postgresql;g" .env
+    - sed -i -e "s;^\s*db_port=.*;db_port=5432;g" .env
+    - sed -i -e "s;^\s*debug=.*;debug=0;g" .env
+    - sed -i -e "s;^\s*app_url=.*;app_url=ec2-54-159-223-16.compute-1.amazonaws.com;g" .env
+    - echo "#api_url:" >> .env
+    - echo "url_api_client=https://client/client" >> .env 
+    - echo "url_api_notification=https://notifications/notifications" >> .env 
+    - echo "url_api_user=https://user/user" >> .env 
+    - docker build -t admiral-client-api .
+  when: on_success
+  tags:
+    - admiral
+  only:
+    - admiral
+
+admiral_deploy_job:
+  stage: deploy
+  script:
+    - docker stop admiral-client-api || true
+    - docker rm admiral-client-api || true
+    - docker run -d --restart always --name admiral-client-api --memory="512m" -v admiral-client-api-images:/var/www/html/public/images -v admiral-client-api-images:/var/www/html/public/logos --network app -p 9009:80 admiral-client-api
+    - docker exec admiral-client-api php artisan migrate
+  when: on_success
+  tags:
+    - admiral
+  only:
+    - admiral

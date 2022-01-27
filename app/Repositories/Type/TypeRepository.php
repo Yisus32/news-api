@@ -29,7 +29,8 @@ class TypeRepository extends CrudRepository
     }
 
     public function _show($id){
-         return parent::_show($id);
+          $type = Type::where('id',$id)->first();
+          return response()->json(["tipo"=>$type]);
     }
 
     public function _update($id, $data){

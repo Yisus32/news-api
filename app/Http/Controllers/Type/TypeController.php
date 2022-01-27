@@ -12,4 +12,8 @@ class TypeController extends CrudController
     {
         parent::__construct($service);
     }
+
+    public function _show($id, $request=null){
+          return $this->service->_show($id);
+    }
 }
